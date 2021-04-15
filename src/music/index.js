@@ -152,6 +152,11 @@ const longPhrase = (rootNote, mood) => {
     return createComplex(rootNote, moods, shortPhrase);
 }
 
+const passage = (rootNote, mood, n = 4) => {
+    const moods = moodsFromMood(mood, n);
+    return createComplex(rootNote, moods, longPhrase);
+}
+
 const withEnvelope = (context, oscillator, decayRate, gain) => {
     const envelope = context.createGain()
     envelope.gain.value = gain;
@@ -170,7 +175,7 @@ const repeatNotes = (notes, n) => {
 const generateNotes = () => {
     const rootNote = new Note(pick(startingNotes));
 
-    const notes = longPhrase(rootNote, TENSION);
+    const notes = passage(rootNote, RELEASE);
 
     return repeatNotes(notes, 4);
 }

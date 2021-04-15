@@ -1,4 +1,13 @@
+import React, { useState } from 'react';
 import {Note} from 'octavian';
+import {
+    Button,
+    Slider,
+    Grid,
+    TextField,
+    Typography
+} from '@material-ui/core';
+import SoundElementContainer from './soundelement-container';
 
 const TENSION = 'tension';
 const RELEASE = 'release';
@@ -71,7 +80,6 @@ const diatom = (root, mood) => {
     }
     const next = root[method]();
     const alteredNext = alterMethod ? next[alterMethod]() : next;
-    console.log(alteredNext);
     return [root,alteredNext];
 }
 
@@ -86,25 +94,33 @@ const createDiatoms = (rootNote, moods = []) => {
     return notes;
 }
 
-const moodsFromMood = (mood) => {
-    let moods;
+const moodsFromMood = (mood, n = 2) => {
+    let moods = [];
+    let count = 1;
+    let nextMood;
     if(mood === TENSION) {
-        moods = pick([
-            [TENSION, TENSION],
-            [RELEASE, TENSION]
-        ]);
+        while(count < n) {
+            ++count;
+            nextMood = Math.random() < 0.4 ? RELEASE : TENSION;
+            moods.push(nextMood);
+        }
+        moods.push(TENSION);
+        console.log(TENSION, moods);
     } else if(mood === RELEASE) {
-        moods = pick([
-            [TENSION, RELEASE],
-            [RELEASE, RELEASE]
-        ]);
+        while(count < n) {
+            ++count;
+            nextMood = Math.random() < 0.5 ? RELEASE : TENSION;
+            moods.push(nextMood);
+        }
+        moods.push(RELEASE);
+        console.log(RELEASE, moods);
     } else {
-        moods = pick([
-            [TENSION, TENSION],
-            [RELEASE, TENSION],
-            [TENSION, RELEASE],
-            [RELEASE, RELEASE]
-        ]);
+        while(count <= n) {
+            ++count;
+            nextMood = Math.random() < 0.5 ? RELEASE : TENSION;
+            moods.push(nextMood);
+        }
+        console.log(EITHER, moods);
     }
     return moods;
 }
@@ -117,8 +133,13 @@ const shortPhrase = (rootNote, mood) => {
 const createComplex = (rootNote, moods, f) => {
     const notes = moods.reduce(
         (accumulator, mood) => {
-            const next = f(rootNote, mood);
-            console.log(next[1]);
+            let next;
+            if(mood === TENSION) {
+                // Allow moving away from root for sake of tension
+                next = f(accumulator[accumulator.length-1], mood);
+            } else {
+                next = f(rootNote, mood);
+            }
             return [...accumulator, ...secondHalf(next)];
         },
         [rootNote]
@@ -129,12 +150,6 @@ const createComplex = (rootNote, moods, f) => {
 const longPhrase = (rootNote, mood) => {
     const moods = moodsFromMood(mood);
     return createComplex(rootNote, moods, shortPhrase);
-}
-
-const riff = (rootNote, mood, f) => {
-    const riff = f(rootNote, mood);
-    riff.push(rootNote);
-    return riff;
 }
 
 const withEnvelope = (context, oscillator, decayRate, gain) => {
@@ -149,22 +164,43 @@ const withEnvelope = (context, oscillator, decayRate, gain) => {
 const repeatNotes = (notes, n) => {
     const newNotes = [];
     while(--n) newNotes.push(...notes);
-    console.log(newNotes);
     return newNotes;
 }
 
 const generateNotes = () => {
     const rootNote = new Note(pick(startingNotes));
 
-    const notes = riff(rootNote, TENSION, longPhrase);
+    const notes = longPhrase(rootNote, TENSION);
 
-    return repeatNotes(notes, 10);
+    return repeatNotes(notes, 4);
 }
 
-const SoundButton = () => {
+const SoundControls = () => {
+    const [notes, setNotes] = useState([]);
     const context = new AudioContext()
 
-    return <button onClick={ () => playNotes(generateNotes(), context) }>Click Here</button>;
+
+    const handlePlay = () => {
+        const notes = generateNotes();
+        setNotes(notes);
+        playNotes(notes, context);
+    }
+
+    console.log(notes);
+
+    return <Grid container spacing={2} alignContent={'center'} alignItems={'center'} justify={'center'}>
+        <Grid item xs={12} >
+            <SoundElementContainer />
+        </Grid>
+        <Grid item xs={12}>
+            <Typography align={'center'}>
+                { notes.map(note => `${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`).join(' ') }
+            </Typography>
+        </Grid>
+        <Grid item xs={1}>
+            <Button color={'primary'} onClick={ handlePlay }>PLAY ➣</Button>
+        </Grid>
+    </Grid>;
 }
 
-export { SoundButton };
+export { SoundControls };

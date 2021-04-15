@@ -1,15 +1,35 @@
-import logo from './logo.svg';
 import './App.css';
-import { SoundButton } from './music';
+import CssBaseline from "@material-ui/core/CssBaseline";
+import { createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
+import { SoundControls } from './music';
+
+const theme = createMuiTheme({
+  typography: {
+    fontFamily: 'Monospace',
+    lineHeight: '100%'
+  },
+  palette: {
+    type: "dark",
+    primary: {
+      main: '#EF4646',
+    },
+    secondary: {
+      main: '#6868EF',
+    },
+    background: {
+      default: "#303030"
+    },
+  },
+});
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <SoundButton />
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+      <SoundControls />
+    </ThemeProvider>
   );
 }
 

@@ -27,12 +27,12 @@ const tenseMoves = [
 ];
 
 const releaseMoves = [
-    false,
     'minorThird',
     'majorThird',
     'perfectFifth',
     'downOctave',
-    'perfectOctave'
+    // 'perfectOctave',
+    false
 ];
 
 const octaveMoves = [
@@ -40,8 +40,26 @@ const octaveMoves = [
     'perfectOctave'
 ]
 
-const pick = (array) => array[Math.floor(Math.random()*array.length)]
-const secondHalf = (array) => array.splice(-Math.ceil(array.length / 2))
+const pick = (array) => array[Math.floor(Math.random()*array.length)];
+const getRandBias = (length, bias, influence) => {
+    const rawBias = Math.floor((Math.random() * length) *
+        (1 - (Math.random() * influence)) +
+        (bias * (Math.random() * influence)));
+    const clamped = rawBias >= length ? length-1 : rawBias < 0 ? 0 : rawBias;
+    return clamped;
+}
+const pickBiasEarly = (array) => {
+    const picked = getRandBias(array.length, 1, 1.1);
+    let result = array[picked];
+    if(typeof(result) === 'undefined') {
+        console.log('error selecting: ', picked, array);
+        // Try one more time
+        const pickedSecond = getRandBias(array.length, 1, 1.1);
+        result = array[pickedSecond];
+    }
+    return result;
+}
+const secondHalf = (array) => array.splice(-Math.ceil(array.length / 2));
 
 const playNote = (frequency, context, speed) => {
     const oscillator = context.createOscillator()
@@ -66,19 +84,35 @@ const playNotes = (notes, context) => {
 
 const diatom = (root, mood) => {
     let method, alterMethod;
+    const aboveMiddle = root.octave > 4 ? root.octave - 4 : 0;
+    const octaveDropChance = aboveMiddle / 4;
     if(mood === TENSION) {
-        method = pick(tenseMoves);
+        if(Math.random() < octaveDropChance) {
+            alterMethod = 'downOctave'
+            method = pick(tenseMoves);
+        } else {
+            method = pickBiasEarly(tenseMoves);
+        }
     } else if(mood === RELEASE) {
-        method = pick(releaseMoves);
+        method = pickBiasEarly(releaseMoves);
         if(method === false) {
             return [root, root];
         }
         // Falling more likely for release
-        if(!method.includes('Octave') && Math.random() > 0.5) {
+        if(!method.includes('Octave')
+            && root.octave > 1
+            && Math.random() < 0.5 + octaveDropChance) {
             alterMethod = 'downOctave';
         }
     }
-    const next = root[method]();
+    let next;
+    try {
+        next = root[method]();
+    } catch (error) {
+        console.log('error, method:', method, root);
+        const safeNote = new Note(pick(startingNotes));
+        return [safeNote, safeNote];
+    }
     const alteredNext = alterMethod ? next[alterMethod]() : next;
     return [root,alteredNext];
 }
@@ -105,7 +139,6 @@ const moodsFromMood = (mood, n = 2) => {
             moods.push(nextMood);
         }
         moods.push(TENSION);
-        console.log(TENSION, moods);
     } else if(mood === RELEASE) {
         while(count < n) {
             ++count;
@@ -113,14 +146,12 @@ const moodsFromMood = (mood, n = 2) => {
             moods.push(nextMood);
         }
         moods.push(RELEASE);
-        console.log(RELEASE, moods);
     } else {
         while(count <= n) {
             ++count;
             nextMood = Math.random() < 0.5 ? RELEASE : TENSION;
             moods.push(nextMood);
         }
-        console.log(EITHER, moods);
     }
     return moods;
 }
@@ -140,7 +171,7 @@ const createComplex = (rootNote, moods, f) => {
             } else {
                 next = f(rootNote, mood);
             }
-            return [...accumulator, ...secondHalf(next)];
+            return [...accumulator, ...next.slice(1)];
         },
         [rootNote]
     );
@@ -157,6 +188,16 @@ const passage = (rootNote, mood, n = 4) => {
     return createComplex(rootNote, moods, longPhrase);
 }
 
+const section = (rootNote, mood, n = 2) => {
+    const moods = moodsFromMood(mood, n);
+    return createComplex(rootNote, moods, passage);
+}
+
+const piece = (rootNote, mood, n = 2) => {
+    const moods = moodsFromMood(mood, n);
+    return createComplex(rootNote, moods, section);
+}
+
 const withEnvelope = (context, oscillator, decayRate, gain) => {
     const envelope = context.createGain()
     envelope.gain.value = gain;
@@ -167,7 +208,7 @@ const withEnvelope = (context, oscillator, decayRate, gain) => {
 }
 
 const repeatNotes = (notes, n) => {
-    const newNotes = [];
+    const newNotes = notes;
     while(--n) newNotes.push(...notes);
     return newNotes;
 }
@@ -175,23 +216,21 @@ const repeatNotes = (notes, n) => {
 const generateNotes = () => {
     const rootNote = new Note(pick(startingNotes));
 
-    const notes = passage(rootNote, RELEASE);
+    const notes = longPhrase(rootNote, RELEASE, 2);
 
-    return repeatNotes(notes, 4);
+    return repeatNotes(notes, 3);
+    // return notes;
 }
 
 const SoundControls = () => {
     const [notes, setNotes] = useState([]);
     const context = new AudioContext()
 
-
     const handlePlay = () => {
         const notes = generateNotes();
         setNotes(notes);
         playNotes(notes, context);
     }
-
-    console.log(notes);
 
     return <Grid container spacing={2} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item xs={12} >

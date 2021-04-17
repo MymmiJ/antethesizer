@@ -5,10 +5,17 @@ import {
     TextField,
     Typography
 } from '@material-ui/core';
-import SoundElements from './sound-elements';
+import SoundElements, { Segment, SEGMENTS } from './sound-elements';
 
 const SoundElementContainer = () => {
     const [Menu, setMenu] = useState(false);
+    const [UIElements, setUIElements] = useState([]);
+    
+    console.log(UIElements);
+
+    const addUIElement = (segmentType) => {
+        setUIElements(prev => prev.concat(segmentType));
+    }
 
     const toggleOnClick = () => {
         setMenu(prevMenu =>  prevMenu ? false : SoundElements);
@@ -24,7 +31,14 @@ const SoundElementContainer = () => {
         </Grid>
         <Grid item xs={12} >
             {
-                Menu ? <Menu /> : ''
+                Menu ? <Menu addUIElement={ addUIElement } /> : ''
+            }
+        </Grid>
+        <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
+            {
+                UIElements.map((UIElement, i) => {
+                    return <Segment key={ i } segmentType={ UIElement } />;
+                })
             }
         </Grid>
     </Grid>;

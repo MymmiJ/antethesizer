@@ -10,11 +10,13 @@ import SoundElements, { Segment, SEGMENTS } from './sound-elements';
 const SoundElementContainer = () => {
     const [Menu, setMenu] = useState(false);
     const [UIElements, setUIElements] = useState([]);
-    
-    console.log(UIElements);
 
     const addUIElement = (segmentType) => {
         setUIElements(prev => prev.concat(segmentType));
+    }
+
+    const removeUIElement = (i) => {
+        setUIElements(prev => prev.filter((_, index) => index !== i));
     }
 
     const toggleOnClick = () => {
@@ -37,7 +39,10 @@ const SoundElementContainer = () => {
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
             {
                 UIElements.map((UIElement, i) => {
-                    return <Segment key={ i } segmentType={ UIElement } />;
+                    return <Segment
+                        key={ i }
+                        segmentType={ UIElement }
+                        removeUIElement={ () => removeUIElement(i) } />;
                 })
             }
         </Grid>

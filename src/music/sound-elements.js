@@ -17,53 +17,56 @@ import {
 // Move this into a config file
 const SEGMENTS = {
     PIECE: {
-        name: 'Piece',
+        name: 'PIECE',
         action: piece,
         subsection: 'SECTION',
         defaultSubsections: 2,
-        gridSize: 12
+        gridSize: 10
     },
     SECTION: {
-        name: 'Section',
+        name: 'SECTION',
         action: section,
         subsection: 'PASSAGE',
         defaultSubsections: 2,
-        gridSize: 12
+        gridSize: 10
     },
     PASSAGE: {
-        name: 'Passage',
+        name: 'PASSAGE',
         action: passage,
         subsection: 'LONG_PHRASE',
         defaultSubsections: 4,
-        gridSize: 12
+        gridSize: 10
     },
     LONG_PHRASE: {
-        name: 'Long Phrase',
+        name: 'LONG PHRASE',
         action: longPhrase,
         subsection: 'SHORT_PHRASE',
         defaultSubsections: 2,
-        gridSize: 12
+        gridSize: 10
     },
     SHORT_PHRASE: {
-        name: 'Short Phrase',
+        name: 'SHORT PHRASE',
         action: shortPhrase,
         subsection: 'DIATOM', // TODO: Better name for this!
         defaultSubsections: 2,
-        gridSize: 12
+        gridSize: 10
     },
     DIATOM: {
-        name: 'Note Change',
+        name: 'NOTE CHANGE',
         action: diatom,
         subsection: null,
         defaultSubsections: 2,
-        gridSize: 12
+        gridSize: 10
     }
 }
 // Config
 
 // Move these into their own component files
-const Segment = ({segmentType}) => {
-    return <Typography>{segmentType.name}:</Typography>
+const Segment = ({segmentType: { name, gridSize }, removeUIElement }) => {
+    return <Grid item xs={ gridSize }>
+        <Typography>{name}:</Typography>
+        <Button onClick={ removeUIElement }>REMOVE {name}</Button>
+    </Grid>;
 }
 // Small components
 
@@ -80,6 +83,8 @@ const SoundElements = ({addUIElement}) => {
         </Grid>
         <Grid item>
             <Button
+                id={'section'}
+                onClick={ () => addUIElement(SEGMENTS.SECTION) }
             >
                 Section
                 ♬♬♬♬♬
@@ -87,6 +92,8 @@ const SoundElements = ({addUIElement}) => {
         </Grid>
         <Grid item>
             <Button
+                id={'passage'}
+                onClick={ () => addUIElement(SEGMENTS.PASSAGE) }
             >
                 Passage
                 ♬♬♬♬
@@ -94,6 +101,8 @@ const SoundElements = ({addUIElement}) => {
         </Grid>
         <Grid item>
             <Button
+                id={'long_phrase'}
+                onClick={ () => addUIElement(SEGMENTS.LONG_PHRASE) }
             >
                 Long Phrase
                 ♬♬♬
@@ -101,6 +110,8 @@ const SoundElements = ({addUIElement}) => {
         </Grid>
         <Grid item>
             <Button
+                id={'short_phrase'}
+                onClick={ () => addUIElement(SEGMENTS.SHORT_PHRASE) }
             >
                 Short Phrase
                 ♬♬
@@ -108,6 +119,8 @@ const SoundElements = ({addUIElement}) => {
         </Grid>
         <Grid item>
             <Button
+                id={'note_change'}
+                onClick={ () => addUIElement(SEGMENTS.DIATOM) }
             >
                 Note Change
                 ♬

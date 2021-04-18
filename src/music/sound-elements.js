@@ -70,9 +70,9 @@ const Segment = ({segmentType: { name, gridSize, root }, removeSegment, regenera
         container
         spacing={ 3 }
         item xs={ gridSize }
-        alignContent={'center'}
+        alignContent={'flex-start'}
         alignItems={'baseline'}
-        justify={'center'}>
+        justify={'flex-start'}>
         <Grid item>
             <Typography variant="h5">{name}</Typography>
         </Grid>

@@ -119,12 +119,12 @@ const SoundControls = () => {
         <Grid item xs={12} >
             <SoundElementContainer setNotes={ setNotes } setLocks={ setLocks }/>
         </Grid>
-        <Grid item xs={12}>
-            <Typography align={'center'}>
+        <Grid item xs={10}>
+            <Typography align={'left'}>
                 { notes.flat().map(note => `${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`).join(' ') }
             </Typography>
         </Grid>
-        <Grid item>
+        <Grid item xs={10}>
             <Button color={'primary'} onClick={ handlePlay }>PLAY ➣</Button>
         </Grid>
     </Grid>;

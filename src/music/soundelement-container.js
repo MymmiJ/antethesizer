@@ -33,10 +33,10 @@ const SoundElementContainer = ({ setNotes }) => {
     const clearNotes = () => setNotes([]);
 
     const addSegment = (segmentType) => {
-        segmentType.rootNote = 'C3';
         setSegments(prev => {
+            const segment = {...segmentType, root: 'C3' };
             const next = prev.concat({
-                segment: segmentType,
+                segment,
                 uuid: uuidv4()
             });
             addNewNotes(segmentType.action, RELEASE, new Note('C3'), 1);
@@ -46,15 +46,16 @@ const SoundElementContainer = ({ setNotes }) => {
 
     const setRootNote = (index) => (rootNote) => {
         setSegments(prev => prev.map((seg, i) => {
+            console.log(rootNote);
             const result = seg;
             if(i === index) {
-                result.rootNote = rootNote
+                result.segment.root = rootNote
             }
             return result;
         }));
     };
 
-    const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='A#4', repeats=1) => {
+    const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='C3', repeats=1) => {
         setNotes(prev => {
             const next = [...prev];
             next[i] = generateNotes(segmentType.action, mood, rootNote, repeats);
@@ -67,10 +68,10 @@ const SoundElementContainer = ({ setNotes }) => {
     }
 
     const toggleOnClick = (Menu) => () => {
-        setMenu(prevMenu =>  prevMenu ? false : Menu);
+        setMenu(prevMenu =>  prevMenu === Menu ? false : Menu);
     }
 
-    return <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
+    return <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-between'}>
         <Grid item xs={1}>
             <Button style={{ lineHeight: '100%' }} color={'primary'} onClick={ toggleOnClick(SoundElements) }>
 {`░░██╗░░

@@ -3,6 +3,7 @@ import {Note} from 'octavian';
 import {
     Button,
     Grid,
+    Tooltip,
     TextField,
     Typography
 } from '@material-ui/core';
@@ -73,13 +74,22 @@ const SoundElementContainer = ({ setNotes }) => {
 
     return <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-between'}>
         <Grid item xs={1}>
-            <Button style={{ lineHeight: '100%' }} color={'primary'} onClick={ toggleOnClick(SoundElements) }>
+        <Tooltip placement={ 'right' } title={ 'ADD MUSIC COMPONENT' } aria-label={ 'add music component' }>
+            <Button
+                style={{ lineHeight: '100%' }}
+                color={'primary'}
+                
+                onClick={ toggleOnClick(SoundElements) }>
 {`░░██╗░░
 ██████╗
 ╚═██░═╝
-░░╚═╝░░`}</Button>
+░░╚═╝░░`}
+            </Button>
+        </Tooltip>
         </Grid>
-        <Button style={{ lineHeight: '100%' }} color={'secondary'}>OPTIONS</Button>
+        <Tooltip placement={ 'left' } title={ 'VIEW OPTIONS' } aria-label={ 'view options' }>
+            <Button style={{ lineHeight: '100%' }} color={'secondary'}>OPTIONS</Button>
+        </Tooltip>
         <Grid item xs={12} >
             {
                 Menu ? <Menu addSegment={ addSegment } /> : ''

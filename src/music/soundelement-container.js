@@ -33,12 +33,26 @@ const SoundElementContainer = ({ setNotes }) => {
     const clearNotes = () => setNotes([]);
 
     const addSegment = (segmentType) => {
+        segmentType.rootNote = 'C3';
         setSegments(prev => {
-            const next = prev.concat({ segment: segmentType, uuid: uuidv4() });
-            addNewNotes(segmentType.action, RELEASE, new Note('A#4'), 1);
+            const next = prev.concat({
+                segment: segmentType,
+                uuid: uuidv4()
+            });
+            addNewNotes(segmentType.action, RELEASE, new Note('C3'), 1);
             return next;
         })
     }
+
+    const setRootNote = (index) => (rootNote) => {
+        setSegments(prev => prev.map((seg, i) => {
+            const result = seg;
+            if(i === index) {
+                result.rootNote = rootNote
+            }
+            return result;
+        }));
+    };
 
     const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='A#4', repeats=1) => {
         setNotes(prev => {
@@ -52,18 +66,19 @@ const SoundElementContainer = ({ setNotes }) => {
         setNotes(filterIndex(i));
     }
 
-    const toggleOnClick = () => {
-        setMenu(prevMenu =>  prevMenu ? false : SoundElements);
+    const toggleOnClick = (Menu) => () => {
+        setMenu(prevMenu =>  prevMenu ? false : Menu);
     }
 
     return <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item xs={1}>
-            <Button style={{ lineHeight: '100%' }} color={'primary'} onClick={ toggleOnClick }>
+            <Button style={{ lineHeight: '100%' }} color={'primary'} onClick={ toggleOnClick(SoundElements) }>
 {`░░██╗░░
 ██████╗
-╚═██╔═╝
+╚═██░═╝
 ░░╚═╝░░`}</Button>
         </Grid>
+        <Button style={{ lineHeight: '100%' }} color={'secondary'}>OPTIONS</Button>
         <Grid item xs={12} >
             {
                 Menu ? <Menu addSegment={ addSegment } /> : ''
@@ -73,6 +88,7 @@ const SoundElementContainer = ({ setNotes }) => {
             { segments.map((segment, i) => <Segment
                     key={ segment.uuid }
                     segmentType={ segment.segment }
+                    setRootNote={ setRootNote(i) }
                     regenerateNotes={ (mood, rootNote) => regenerateNotes(segment.segment, i, mood, rootNote) }
                     removeSegment={ () => removeSegment(i) } />) }
         </Grid>

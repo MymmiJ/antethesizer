@@ -65,9 +65,7 @@ const SEGMENTS = {
 // Config
 
 // Move these into their own component files
-const Segment = ({segmentType: { name, gridSize }, removeSegment, regenerateNotes }) => {
-    const [root, setRoot] = useState('A#4');
-    console.log(root);
+const Segment = ({segmentType: { name, gridSize, root }, removeSegment, regenerateNotes, setRootNote }) => {
     return <Grid
         container
         spacing={ 3 }
@@ -87,7 +85,7 @@ const Segment = ({segmentType: { name, gridSize }, removeSegment, regenerateNote
                 } catch {
                     console.warn(`Invalid root note: ${ value }`)
                 }
-                setRoot(value);
+                setRootNote(value);
                 
              } } label={'Root Note'} id={`root-note-${ name }-${ root }`} placeholder={'A#4'} value={ root } />
         </Grid>

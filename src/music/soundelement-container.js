@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import {Note} from 'octavian';
 import {
     Button,
     Grid,
@@ -6,17 +7,49 @@ import {
     Typography
 } from '@material-ui/core';
 import SoundElements, { Segment, SEGMENTS } from './sound-elements';
+import { v4 as uuidv4 } from 'uuid'; 
+import {
+    RELEASE,
+    repeatNotes,
+} from './segments';
 
-const SoundElementContainer = () => {
+const generateNotes = (f, mood, rootNote, repeats) => {
+    const notes = f(rootNote, mood);
+
+    return repeatNotes(notes, repeats);
+}
+
+const filterIndex = i => prev => prev.filter((_, index) => index !== i);
+
+const SoundElementContainer = ({ setNotes }) => {
     const [Menu, setMenu] = useState(false);
-    const [UIElements, setUIElements] = useState([]);
+    const [segments, setSegments] = useState([]);
 
-    const addUIElement = (segmentType) => {
-        setUIElements(prev => prev.concat(segmentType));
+    const addNewNotes = (f, mood, rootNote, repeats) => {
+        const notes = generateNotes(f, mood, rootNote, repeats);
+        setNotes(prev => prev.concat([notes]));
     }
 
-    const removeUIElement = (i) => {
-        setUIElements(prev => prev.filter((_, index) => index !== i));
+    const clearNotes = () => setNotes([]);
+
+    const addSegment = (segmentType) => {
+        setSegments(prev => {
+            const next = prev.concat({ segment: segmentType, uuid: uuidv4() });
+            addNewNotes(segmentType.action, RELEASE, new Note('A#4'), 1);
+            return next;
+        })
+    }
+
+    const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='A#4', repeats=1) => {
+        setNotes(prev => {
+            const next = [...prev];
+            next[i] = generateNotes(segmentType.action, mood, rootNote, repeats);
+            return next;
+        });
+    }
+    const removeSegment = (i) => {
+        setSegments(filterIndex(i));
+        setNotes(filterIndex(i));
     }
 
     const toggleOnClick = () => {
@@ -33,18 +66,15 @@ const SoundElementContainer = () => {
         </Grid>
         <Grid item xs={12} >
             {
-                Menu ? <Menu addUIElement={ addUIElement } /> : ''
+                Menu ? <Menu addSegment={ addSegment } /> : ''
             }
         </Grid>
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
-            {
-                UIElements.map((UIElement, i) => {
-                    return <Segment
-                        key={ i }
-                        segmentType={ UIElement }
-                        removeUIElement={ () => removeUIElement(i) } />;
-                })
-            }
+            { segments.map((segment, i) => <Segment
+                    key={ segment.uuid }
+                    segmentType={ segment.segment }
+                    regenerateNotes={ (mood, rootNote) => regenerateNotes(segment.segment, i, mood, rootNote) }
+                    removeSegment={ () => removeSegment(i) } />) }
         </Grid>
     </Grid>;
 };

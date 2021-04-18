@@ -4,6 +4,8 @@ import {
     TextField,
     Typography
 } from '@material-ui/core';
+import { Note } from 'octavian';
+import { useState } from 'react';
 import {
     repeatNotes,
     piece,
@@ -11,7 +13,8 @@ import {
     passage,
     longPhrase,
     shortPhrase,
-    diatom
+    diatom,
+    RELEASE
 } from './segments';
 
 // Move this into a config file
@@ -62,20 +65,45 @@ const SEGMENTS = {
 // Config
 
 // Move these into their own component files
-const Segment = ({segmentType: { name, gridSize }, removeUIElement }) => {
-    return <Grid item xs={ gridSize }>
-        <Typography>{name}:</Typography>
-        <Button onClick={ removeUIElement }>REMOVE {name}</Button>
+const Segment = ({segmentType: { name, gridSize }, removeSegment, regenerateNotes }) => {
+    const [root, setRoot] = useState('A#4');
+    console.log(root);
+    return <Grid
+        container
+        spacing={ 3 }
+        item xs={ gridSize }
+        alignContent={'center'}
+        alignItems={'baseline'}
+        justify={'center'}>
+        <Grid item>
+            <Typography variant="h5">{name}</Typography>
+        </Grid>
+        <Grid item>
+            <TextField onChange={ ({ target: { value }}) => {
+                console.log('Changing value: ', value);
+                try {
+                    const rootNote = new Note(value);
+                    regenerateNotes(RELEASE, rootNote);
+                } catch {
+                    console.warn(`Invalid root note: ${ value }`)
+                }
+                setRoot(value);
+                
+             } } label={'Root Note'} id={`root-note-${ name }-${ root }`} placeholder={'A#4'} value={ root } />
+        </Grid>
+        <Grid item>
+            <Button onClick={ removeSegment }>REMOVE {name}</Button>
+        </Grid>
     </Grid>;
 }
 // Small components
 
-const SoundElements = ({addUIElement}) => {
+const SoundElements = ({addSegment}) => {
     return <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item>
             <Button
                 id={'piece'}
-                onClick={ () => addUIElement(SEGMENTS.PIECE) }
+                onClick={ () => addSegment(SEGMENTS.PIECE) }
             >
                 Piece
                 ♬♬♬♬♬♬
@@ -84,7 +112,7 @@ const SoundElements = ({addUIElement}) => {
         <Grid item>
             <Button
                 id={'section'}
-                onClick={ () => addUIElement(SEGMENTS.SECTION) }
+                onClick={ () => addSegment(SEGMENTS.SECTION) }
             >
                 Section
                 ♬♬♬♬♬
@@ -93,7 +121,7 @@ const SoundElements = ({addUIElement}) => {
         <Grid item>
             <Button
                 id={'passage'}
-                onClick={ () => addUIElement(SEGMENTS.PASSAGE) }
+                onClick={ () => addSegment(SEGMENTS.PASSAGE) }
             >
                 Passage
                 ♬♬♬♬
@@ -102,7 +130,7 @@ const SoundElements = ({addUIElement}) => {
         <Grid item>
             <Button
                 id={'long_phrase'}
-                onClick={ () => addUIElement(SEGMENTS.LONG_PHRASE) }
+                onClick={ () => addSegment(SEGMENTS.LONG_PHRASE) }
             >
                 Long Phrase
                 ♬♬♬
@@ -111,7 +139,7 @@ const SoundElements = ({addUIElement}) => {
         <Grid item>
             <Button
                 id={'short_phrase'}
-                onClick={ () => addUIElement(SEGMENTS.SHORT_PHRASE) }
+                onClick={ () => addSegment(SEGMENTS.SHORT_PHRASE) }
             >
                 Short Phrase
                 ♬♬
@@ -120,14 +148,11 @@ const SoundElements = ({addUIElement}) => {
         <Grid item>
             <Button
                 id={'note_change'}
-                onClick={ () => addUIElement(SEGMENTS.DIATOM) }
+                onClick={ () => addSegment(SEGMENTS.DIATOM) }
             >
                 Note Change
                 ♬
             </Button>
-        </Grid>
-        <Grid item>
-            <TextField label={'Root Note'} id={'root-note'} placeholder={'A#4'} />
         </Grid>
     </Grid>
 }

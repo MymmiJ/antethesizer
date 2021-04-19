@@ -93,13 +93,29 @@ const SoundElementContainer = ({ setNotes }) => {
             }
         </Grid>
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
-            { segments.map((segment, i) => <Segment
+            { segments.map((segment, i) => {
+                let color;
+                switch(i % 3) {
+                    case 0:
+                        color = '#EFA2A2';
+                        break;
+                    case 1:
+                        color = '#C6C6EF';
+                        break;
+                    case 2:
+                    default:
+                        color = '#C6EFC6';
+                        break;
+                }
+                return <Segment
                     key={ segment.uuid }
+                    color={ color }
                     segmentType={ segment.segment }
                     setRootNote={ setSegmentField(i, 'root') }
                     setMood={ setSegmentField(i, 'mood') }
                     regenerateNotes={ (mood, rootNote) => regenerateNotes(segment.segment, i, mood, rootNote) }
-                    removeSegment={ () => removeSegment(i) } />) }
+                    removeSegment={ () => removeSegment(i) } />;
+            }) }
         </Grid>
     </Grid>;
 };

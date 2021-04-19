@@ -69,7 +69,14 @@ const SEGMENTS = {
 // Config
 
 // Move these into their own component files
-const Segment = ({segmentType: { name, gridSize, root, mood }, removeSegment, regenerateNotes, setRootNote, setMood }) => {
+const Segment = ({
+    color,
+    segmentType: { name, gridSize, root, mood },
+    removeSegment,
+    regenerateNotes,
+    setRootNote,
+    setMood
+}) => {
     return <Grid
         container
         spacing={ 3 }
@@ -78,7 +85,7 @@ const Segment = ({segmentType: { name, gridSize, root, mood }, removeSegment, re
         alignItems={'baseline'}
         justify={'flex-start'}>
         <Grid item>
-            <Typography variant="h5">{name}</Typography>
+            <Typography style={{ color }} variant="h5">{name}</Typography>
         </Grid>
         <Grid item>
             <TextField onChange={ ({ target: { value }}) => {
@@ -95,9 +102,10 @@ const Segment = ({segmentType: { name, gridSize, root, mood }, removeSegment, re
         </Grid>
         <Grid>
             <Tooltip placement={ 'top' } title={ 'SELECT MOOD TO RESOLVE TO' } aria-label={ 'select a mood to resolve the music segment towards' }>
-                <InputLabel id="mood-select">Mood</InputLabel>
+                <InputLabel style={{ color }} id="mood-select">Mood</InputLabel>
             </Tooltip>
             <Select
+                style={{ color }}
                 labelId="mood-select"
                 id="mood-selector"
                 value={ mood }
@@ -118,7 +126,7 @@ const Segment = ({segmentType: { name, gridSize, root, mood }, removeSegment, re
         </Grid>
 
         <Grid item>
-            <Button onClick={ removeSegment }>REMOVE {name}</Button>
+            <Button style={{ color }} onClick={ removeSegment }>REMOVE {name}</Button>
         </Grid>
     </Grid>;
 }

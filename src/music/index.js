@@ -100,10 +100,11 @@ const playNote = (frequency, context, lengthOfNote) => {
 const playNotes = (notes, context) => {
     const timeBeforeNewNote = 500;
     const lengthOfNote = 620;
-    notes.map((note, i) => setTimeout(
-        () => playNote(note.frequency, context, lengthOfNote),
-        i * timeBeforeNewNote
-    ));
+    notes.map((note, i) => {
+        setTimeout(
+            () => playNote(note.frequency, context, lengthOfNote),
+            i * timeBeforeNewNote
+    )});
 }
 
 const SoundControls = () => {
@@ -121,7 +122,24 @@ const SoundControls = () => {
         </Grid>
         <Grid item xs={10}>
             <Typography align={'left'}>
-                { notes.flat().map(note => `${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`).join(' ') }
+                { notes.map((noteSegment, i) => {
+                    let color;
+                    switch(i % 3) {
+                        case 0:
+                            color = '#EF4646';
+                            break;
+                        case 1:
+                            color = '#A2A2EF';
+                            break;
+                        case 2:
+                        default:
+                            color = '#A2EFA2';
+                            break;
+                    }
+                    return <span key={ `text-${i}` } style={{ color }}>
+                    { noteSegment.map(note =>`${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`).join(' ') }&nbsp;
+                </span>
+                }) }
             </Typography>
         </Grid>
         <Grid item xs={10}>

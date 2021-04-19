@@ -105,6 +105,9 @@ const createDiatoms = (rootNote, moods = []) => {
 }
 
 const moodsFromMood = (mood, n = 2) => {
+    if(Array.isArray(mood)) {
+        return mood;
+    }
     let moods = [];
     let count = 1;
     let nextMood;

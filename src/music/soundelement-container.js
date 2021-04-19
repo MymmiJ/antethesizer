@@ -85,7 +85,7 @@ const SoundElementContainer = ({ setNotes }) => {
         </Tooltip>
         </Grid>
         <Tooltip placement={ 'left' } title={ 'VIEW OPTIONS' } aria-label={ 'view options' }>
-            <Button style={{ lineHeight: '100%' }} color={'secondary'}>OPTIONS</Button>
+            <Button style={{ lineHeight: '100%', height: '4em' }} color={'secondary'}>OPTIONS</Button>
         </Tooltip>
         <Grid item xs={12} >
             {

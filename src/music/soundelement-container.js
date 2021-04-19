@@ -31,30 +31,27 @@ const SoundElementContainer = ({ setNotes }) => {
         setNotes(prev => prev.concat([notes]));
     }
 
-    const clearNotes = () => setNotes([]);
-
     const addSegment = (segmentType) => {
         setSegments(prev => {
-            const segment = {...segmentType, root: 'C3' };
+            const segment = {...segmentType, root: 'C3', mood: RELEASE };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
             });
-            addNewNotes(segmentType.action, RELEASE, new Note('C3'), 1);
+            addNewNotes(segment.action, segment.mood, new Note(segment.root), 1);
             return next;
         })
     }
 
-    const setRootNote = (index) => (rootNote) => {
+    const setSegmentField = (index, field) => (value) => {
         setSegments(prev => prev.map((seg, i) => {
-            console.log(rootNote);
             const result = seg;
             if(i === index) {
-                result.segment.root = rootNote
+                result.segment[field] = value;
             }
             return result;
-        }));
-    };
+        }))
+    }
 
     const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='C3', repeats=1) => {
         setNotes(prev => {
@@ -99,7 +96,8 @@ const SoundElementContainer = ({ setNotes }) => {
             { segments.map((segment, i) => <Segment
                     key={ segment.uuid }
                     segmentType={ segment.segment }
-                    setRootNote={ setRootNote(i) }
+                    setRootNote={ setSegmentField(i, 'root') }
+                    setMood={ setSegmentField(i, 'mood') }
                     regenerateNotes={ (mood, rootNote) => regenerateNotes(segment.segment, i, mood, rootNote) }
                     removeSegment={ () => removeSegment(i) } />) }
         </Grid>

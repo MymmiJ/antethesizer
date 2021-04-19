@@ -1,11 +1,14 @@
 import {
     Button,
     Grid,
+    Tooltip,
+    Select,
+    MenuItem,
+    InputLabel,
     TextField,
     Typography
 } from '@material-ui/core';
 import { Note } from 'octavian';
-import { useState } from 'react';
 import {
     repeatNotes,
     piece,
@@ -14,7 +17,8 @@ import {
     longPhrase,
     shortPhrase,
     diatom,
-    RELEASE
+    RELEASE,
+    TENSION
 } from './segments';
 
 // Move this into a config file
@@ -65,7 +69,7 @@ const SEGMENTS = {
 // Config
 
 // Move these into their own component files
-const Segment = ({segmentType: { name, gridSize, root }, removeSegment, regenerateNotes, setRootNote }) => {
+const Segment = ({segmentType: { name, gridSize, root, mood }, removeSegment, regenerateNotes, setRootNote, setMood }) => {
     return <Grid
         container
         spacing={ 3 }
@@ -81,14 +85,38 @@ const Segment = ({segmentType: { name, gridSize, root }, removeSegment, regenera
                 console.log('Changing value: ', value);
                 try {
                     const rootNote = new Note(value);
-                    regenerateNotes(RELEASE, rootNote);
+                    regenerateNotes(mood, rootNote);
                 } catch {
                     console.warn(`Invalid root note: ${ value }`)
                 }
                 setRootNote(value);
                 
-             } } label={'Root Note'} id={`root-note-${ name }-${ root }`} placeholder={'A#4'} value={ root } />
+             } } label={'Root Note'} id={`root-note-${ name }-${ root }`} placeholder={'A#1, Bb8, C3'} value={ root } />
         </Grid>
+        <Grid>
+            <Tooltip placement={ 'top' } title={ 'SELECT MOOD TO RESOLVE TO' } aria-label={ 'select a mood to resolve the music segment towards' }>
+                <InputLabel id="mood-select">Mood</InputLabel>
+            </Tooltip>
+            <Select
+                labelId="mood-select"
+                id="mood-selector"
+                value={ mood }
+                onChange={ ({ target: { value }}) => {
+                    console.log('Changing value: ', value);
+                    try {
+                        regenerateNotes(mood, new Note(root));
+                    } catch {
+                        console.warn(`Invalid mood: ${ value }`)
+                    }
+                    setMood(value);
+                    
+                 } }
+            >
+                <MenuItem value={TENSION}>TENSION</MenuItem>
+                <MenuItem value={RELEASE}>RELEASE</MenuItem>
+            </Select>
+        </Grid>
+
         <Grid item>
             <Button onClick={ removeSegment }>REMOVE {name}</Button>
         </Grid>

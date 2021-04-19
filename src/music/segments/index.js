@@ -10,6 +10,7 @@ const startingNotes = ['C3','D3','E3','F3','G3','A3','B3','C4'];
 const tenseMoves = [
     'minorSecond',
     'majorSecond',
+    'minorThird',
     'perfectFourth',
     'diminishedFifth',
     'minorSixth',
@@ -19,7 +20,6 @@ const tenseMoves = [
 ];
 
 const releaseMoves = [
-    'minorThird',
     'majorThird',
     'perfectFifth',
     'downOctave',
@@ -96,7 +96,7 @@ const diatom = (root, mood) => {
 const createDiatoms = (rootNote, moods = []) => {
     const notes = moods.reduce(
         (accumulator, mood) => {
-            const next = diatom(rootNote, mood);
+            const next = diatom(accumulator[accumulator.length-1], mood);
             return [...accumulator, next[1]];
         },
         [rootNote]

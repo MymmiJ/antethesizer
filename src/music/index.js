@@ -11,7 +11,7 @@ import {
 } from './presets';
 
 const playNote = (frequency, context, lengthOfNote, synth = SINE) => {
-    SAWTOOTH.playNote(context, frequency, lengthOfNote);
+    synth.playNote(context, frequency, lengthOfNote);
 }
 
 const playNotes = (notes, context, synth) => {

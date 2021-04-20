@@ -48,7 +48,18 @@ const pickBiasEarly = (array) => {
     if(typeof(result) === 'undefined') {
         console.log('error selecting: ', picked, array);
         // Try one more time
-        const pickedSecond = getRandBias(array.length, 1, 1.1);
+        const pickedSecond = getRandBias(array.length, 0, 1.1);
+        result = array[pickedSecond];
+    }
+    return result;
+}
+const pickBiasLate = (array) => {
+    const picked = getRandBias(array.length, array.length-1, 1.1);
+    let result = array[picked];
+    if(typeof(result) === 'undefined') {
+        console.log('error selecting: ', picked, array);
+        // Try one more time
+        const pickedSecond = getRandBias(array.length, array.length-1, 1.1);
         result = array[pickedSecond];
     }
     return result;

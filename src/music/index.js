@@ -8,7 +8,7 @@ import SoundElementContainer from './soundelement-container';
 import { SINE, BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE } from './presets';
 
 const playNote = (frequency, context, lengthOfNote) => {
-    PLUCKED.playNote(context, frequency, lengthOfNote);
+    VAMPIRE_CASTLE.playNote(context, frequency, lengthOfNote);
 }
 
 const playNotes = (notes, context) => {

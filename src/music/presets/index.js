@@ -151,6 +151,7 @@ const VAMPIRE_CASTLE = new Synth(
     0.01,
     EXP,
     EXP,
+    null,
     new Waveform(
         CUSTOM,
         null,

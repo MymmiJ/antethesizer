@@ -75,7 +75,7 @@ const diatom = (root, mood) => {
         if(Math.random() < octaveDropChance) {
             // console.log('Dropping: octave, chance', root.octave, octaveDropChance);
             alterMethod = 'downOctave';
-            method = pick(tenseMoves);
+            method = pickBiasLate(tenseMoves);
         } else {
             method = pickBiasEarly(tenseMoves);
         }

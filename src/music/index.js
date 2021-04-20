@@ -7,7 +7,7 @@ import {
 import SoundElementContainer from './soundelement-container';
 import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
-    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE
+    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
 } from './presets';
 
 const playNote = (frequency, context, lengthOfNote, synth = SINE) => {
@@ -37,7 +37,11 @@ const SoundControls = () => {
 
     return <Grid container spacing={2} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item xs={12} >
-            <SoundElementContainer setNotes={ setNotes } setLocks={ setLocks }/>
+            <SoundElementContainer
+                setNotes={ setNotes }
+                synth={ synth }
+                setSynth={ setSynth }
+                setLocks={ setLocks }/>
         </Grid>
         <Grid item xs={10}>
             <Typography align={'left'}>

@@ -13,6 +13,7 @@ import {
     RELEASE,
     repeatNotes,
 } from './segments';
+import OptionMenu from './options';
 
 const generateNotes = (f, mood, rootNote, repeats) => {
     const notes = f(rootNote, mood);
@@ -22,7 +23,7 @@ const generateNotes = (f, mood, rootNote, repeats) => {
 
 const filterIndex = i => prev => prev.filter((_, index) => index !== i);
 
-const SoundElementContainer = ({ setNotes }) => {
+const SoundElementContainer = ({ setNotes, synth, setSynth }) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
 
@@ -85,11 +86,14 @@ const SoundElementContainer = ({ setNotes }) => {
         </Tooltip>
         </Grid>
         <Tooltip placement={ 'left' } title={ 'VIEW OPTIONS' } aria-label={ 'view options' }>
-            <Button style={{ lineHeight: '100%', height: '4em' }} color={'secondary'}>OPTIONS</Button>
+            <Button
+            style={{ lineHeight: '100%', height: '4em' }}
+            color={'secondary'}
+            onClick={ toggleOnClick(OptionMenu) }>OPTIONS</Button>
         </Tooltip>
         <Grid item xs={12} >
             {
-                Menu ? <Menu addSegment={ addSegment } /> : ''
+                Menu ? <Menu addSegment={ addSegment } synth={ synth } setSynth={ setSynth } /> : ''
             }
         </Grid>
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>

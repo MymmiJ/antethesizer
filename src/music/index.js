@@ -5,29 +5,34 @@ import {
     Typography
 } from '@material-ui/core';
 import SoundElementContainer from './soundelement-container';
-import { SINE, BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE } from './presets';
+import {
+    SINE, SAWTOOTH, SQUARE, TRIANGLE,
+    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE
+} from './presets';
 
-const playNote = (frequency, context, lengthOfNote) => {
-    VAMPIRE_CASTLE.playNote(context, frequency, lengthOfNote);
+const playNote = (frequency, context, lengthOfNote, synth = SINE) => {
+    SAWTOOTH.playNote(context, frequency, lengthOfNote);
 }
 
-const playNotes = (notes, context) => {
+const playNotes = (notes, context, synth) => {
     const timeBeforeNewNote = 500;
     const lengthOfNote = 620;
     notes.map((note, i) => {
         setTimeout(
-            () => playNote(note.frequency, context, lengthOfNote),
+            () => playNote(note.frequency, context, lengthOfNote, synth),
             i * timeBeforeNewNote
     )});
 }
 
+const context = new AudioContext();
+
 const SoundControls = () => {
     const [notes, setNotes] = useState([]);
+    const [synth, setSynth] = useState(BOWED);
     const [lockedIndexes, setLocks] = useState([]);
-    const context = new AudioContext()
 
     const handlePlay = () => {
-        playNotes(notes.flat(), context);
+        playNotes(notes.flat(), context, synth);
     }
 
     return <Grid container spacing={2} alignContent={'center'} alignItems={'center'} justify={'center'}>

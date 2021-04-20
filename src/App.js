@@ -27,16 +27,17 @@ const theme = createMuiTheme({
  * ! - Essential before release
  * * - Large or surprisingly large task
  * 1 - Highest priority per section
+ * # - in progress
  * UI:
  * - accessibility review (aria+contrast-focused)!
  * - Display sound as per https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
  * Options Menu:
- *  - Synthesizer type 1
+ *  - Synthesizer type 1#
  *  - Import/export wavetables as JSON
  *  - Display wavetable - try: https://github.com/indutny/fft.js/
  *  - Use display to input back into wavetable
- *  - default mood
- *  - default root note for all segmennts
+ *  - default mood 1
+ *  - default root note for all segments
  *  - Overall direction (determine root note by increasing/decreasing from source)
  *  - Allow/add multiple generators per pattern
  * Sections:

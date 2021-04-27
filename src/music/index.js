@@ -27,7 +27,7 @@ const playNotes = (notes, context, synth) => {
 
 const context = new AudioContext();
 
-const SoundControls = () => {
+const SoundControls = ({ addNewSoundControls, removable, removeSelf }) => {
     const [notes, setNotes] = useState([]);
     const [defaultMood, setDefaultMood] = useState(RELEASE);
     const [synth, setSynth] = useState(SAWTOOTH);
@@ -46,6 +46,7 @@ const SoundControls = () => {
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
                 setLocks={ setLocks }
+                addNewSoundControls={ addNewSoundControls }
                 />
         </Grid>
         <Grid item xs={10}>
@@ -73,6 +74,12 @@ const SoundControls = () => {
         <Grid item xs={10}>
             <Button color={'primary'} onClick={ handlePlay }>PLAY ➣</Button>
         </Grid>
+        {
+            removable &&
+            <Grid item xs={10}>
+                <Button color={'secondary'} onClick={ removeSelf }>REMOVE SELF</Button>
+            </Grid>
+        }
     </Grid>;
 }
 

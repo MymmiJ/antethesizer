@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { SoundControls } from './music';
+import { v4 as uuidv4 } from 'uuid'; 
 
 const theme = createMuiTheme({
   typography: {
@@ -79,11 +81,28 @@ const theme = createMuiTheme({
  * 
  */
 
-function App() {
+const App = () => {
+  const [additionalSoundControls, setSoundControls] = useState([]);
+  const addNewSoundControls = () => setSoundControls(prev => [...prev, {
+    key: uuidv4(),
+    removable: true,
+    addNewSoundControls
+  }]);
+  const removeSelf = (id) => setSoundControls(prev => prev.filter(desc => desc.key !== id ));
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
-      <SoundControls />
+      <SoundControls key='alpha-and-omega' addNewSoundControls={ addNewSoundControls } removable={ false } />
+      {
+        additionalSoundControls.map(
+          desc =>
+            <SoundControls
+              key={ desc.key }
+              addNewSoundControls={ desc.addNewSoundControls }
+              removable={ desc.removable }
+              removeSelf={ () => removeSelf(desc.key) } />
+        )
+      }
     </ThemeProvider>
   );
 }

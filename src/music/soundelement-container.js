@@ -77,17 +77,34 @@ const SoundElementContainer = ({
         setMenu(prevMenu =>  prevMenu === Menu ? false : Menu);
     }
 
-    return <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-between'}>
+    return <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-evenly'}>
         <Grid item xs={1}>
-        <Tooltip placement={ 'right' } title={ 'ADD MUSIC COMPONENT' } aria-label={ 'add music component' }>
+        <Tooltip placement={ 'bottom' } title={ 'ADD TRACK COMPONENT' } aria-label={ 'add track component' }>
             <Button
+                id={'add-component'}
                 style={{ lineHeight: '100%' }}
                 color={'primary'}
-                
+                variant={'outlined'}
                 onClick={ toggleOnClick(SoundElements) }>
-{`░░██╗░░
-██████╗
-╚═██░═╝
+            <label htmlFor={'add-component'}>ADD TO TRACK</label>
+{`░░██╗░░\n
+██████╗\n
+╚═██░═╝\n
+░░╚═╝░░`}
+            </Button>
+        </Tooltip>
+        </Grid>
+        <Grid item xs={1}>
+        <Tooltip placement={ 'bottom' } title={ 'ADD NEW TRACK' } aria-label={ 'add new track' }>
+            <Button
+                style={{ lineHeight: '100%' }}
+                color={'secondary'}
+                variant={'outlined'}
+                onClick={ addNewSoundControls }>
+            <label htmlFor={'add-component'}>ADD NEW TRACK</label>
+{`░░██╗░░\n
+██████╗\n
+╚═██░═╝\n
 ░░╚═╝░░`}
             </Button>
         </Tooltip>
@@ -96,22 +113,9 @@ const SoundElementContainer = ({
             <Button
             style={{ lineHeight: '100%', height: '4em' }}
             color={'secondary'}
+            variant={'outlined'}
             onClick={ toggleOnClick(OptionMenu) }>OPTIONS</Button>
         </Tooltip>
-        <Grid item xs={1}>
-        <Tooltip placement={ 'left' } title={ 'ADD NEW TRACK' } aria-label={ 'add new track' }>
-            <Button
-                style={{ lineHeight: '100%' }}
-                color={'secondary'}
-                
-                onClick={ addNewSoundControls }>
-{`░░██╗░░
-██████╗
-╚═██░═╝
-░░╚═╝░░`}
-            </Button>
-        </Tooltip>
-        </Grid>
         <Grid item xs={12} >
             {
                 Menu ? <Menu

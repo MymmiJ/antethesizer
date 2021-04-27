@@ -29,14 +29,13 @@ const theme = createMuiTheme({
  * 1 - Highest priority per section
  * # - in progress
  * UI:
- * - accessibility review (aria+contrast-focused)!
+ * - accessibility review (aria+contrast-focused)! 1
  * - Display sound as per https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
  * Options Menu:
  *  - Import/export wavetables as JSON
  *  - Display wavetable - try: https://github.com/indutny/fft.js/
  *  - Use display to input back into wavetable
- *  - default mood 1
- *  - default root note for all segments
+ *  - default root note for all segments 1
  *  - Overall direction (determine root note by increasing/decreasing from source)
  *  - Allow/add multiple generators per pattern
  *  - Allow custom synths
@@ -47,6 +46,8 @@ const theme = createMuiTheme({
  * - Allow option to end on a root note (either added or replacing the final note)
  * - Turn bias for picking next shift off
  * - Allow selecting 'EITHER' option
+ * - Allow locking of note runs in place 1
+ *     (preventing regeneration & changing mood/root note, retaining ability to e.g. repeat notes)
  * Ornaments:
  *  - Chords 1
  *  - Arpeggios
@@ -57,6 +58,8 @@ const theme = createMuiTheme({
  *  - bpm 1
  *  - time signature
  *  - accents
+ *  - individual note lengths (use American quarter note system)
+ *  - allow use of hemisemidemiquaver system
  *  - syncopation
  * Dynamics:
  *  - vary dynamics based on mood

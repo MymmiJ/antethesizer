@@ -12,10 +12,13 @@ import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
 } from '../presets';
+import { RELEASE, TENSION } from '../segments';
 
 const OptionMenu = ({
     synth,
-    setSynth
+    setSynth,
+    defaultMood,
+    setDefaultMood
 }) => {
     return <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item>
@@ -41,6 +44,23 @@ const OptionMenu = ({
                 <MenuItem value={BIT_VOICE}>8 BIT VOICE</MenuItem>
                 <MenuItem value={DRUM}>PERCUSSIVE</MenuItem>
                 <MenuItem value={WINE_GLASS}>WINE GLASS</MenuItem>
+            </Select>
+        </Grid>
+        <Grid item>
+            <Tooltip
+                placement={ 'top' }
+                title={ 'SELECT DEFAULT MOOD' }
+                aria-label={ 'select default mood' }>
+                <InputLabel id="mood-select">MOOD:</InputLabel>
+            </Tooltip>
+            <Select
+                labelId="mood-select"
+                id="mood-selector"
+                value={ defaultMood }
+                onChange={ ({ target: { value }}) => setDefaultMood( value ) }
+            >
+                <MenuItem value={TENSION}>TENSION</MenuItem>
+                <MenuItem value={RELEASE}>RELEASE</MenuItem>
             </Select>
         </Grid>
     </Grid>;

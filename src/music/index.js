@@ -9,6 +9,7 @@ import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
 } from './presets';
+import { RELEASE } from './segments';
 
 const playNote = (frequency, context, lengthOfNote, synth = SINE) => {
     synth.playNote(context, frequency, lengthOfNote);
@@ -28,7 +29,8 @@ const context = new AudioContext();
 
 const SoundControls = () => {
     const [notes, setNotes] = useState([]);
-    const [synth, setSynth] = useState(BIT_VOICE);
+    const [defaultMood, setDefaultMood] = useState(RELEASE);
+    const [synth, setSynth] = useState(SAWTOOTH);
     const [lockedIndexes, setLocks] = useState([]);
 
     const handlePlay = () => {
@@ -41,7 +43,10 @@ const SoundControls = () => {
                 setNotes={ setNotes }
                 synth={ synth }
                 setSynth={ setSynth }
-                setLocks={ setLocks }/>
+                defaultMood={ defaultMood }
+                setDefaultMood={ setDefaultMood }
+                setLocks={ setLocks }
+                />
         </Grid>
         <Grid item xs={10}>
             <Typography align={'left'}>

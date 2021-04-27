@@ -23,7 +23,7 @@ const generateNotes = (f, mood, rootNote, repeats) => {
 
 const filterIndex = i => prev => prev.filter((_, index) => index !== i);
 
-const SoundElementContainer = ({ setNotes, synth, setSynth }) => {
+const SoundElementContainer = ({ setNotes, synth, setSynth, defaultMood, setDefaultMood }) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
 
@@ -34,7 +34,7 @@ const SoundElementContainer = ({ setNotes, synth, setSynth }) => {
 
     const addSegment = (segmentType) => {
         setSegments(prev => {
-            const segment = {...segmentType, root: 'C3', repeats: 1, mood: RELEASE };
+            const segment = {...segmentType, root: 'C3', repeats: 1, mood: defaultMood };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
@@ -93,7 +93,12 @@ const SoundElementContainer = ({ setNotes, synth, setSynth }) => {
         </Tooltip>
         <Grid item xs={12} >
             {
-                Menu ? <Menu addSegment={ addSegment } synth={ synth } setSynth={ setSynth } /> : ''
+                Menu ? <Menu
+                addSegment={ addSegment }
+                synth={ synth }
+                setSynth={ setSynth }
+                defaultMood={ defaultMood }
+                setDefaultMood={ setDefaultMood }/> : ''
             }
         </Grid>
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>

@@ -190,7 +190,7 @@ const piece = (rootNote, mood, n = 2) => {
 }
 
 const repeatNotes = (notes, n) => {
-    const newNotes = notes;
+    const newNotes = [...notes];
     while(--n) newNotes.push(...notes);
     return newNotes;
 }

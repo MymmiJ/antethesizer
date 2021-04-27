@@ -34,12 +34,12 @@ const SoundElementContainer = ({ setNotes, synth, setSynth }) => {
 
     const addSegment = (segmentType) => {
         setSegments(prev => {
-            const segment = {...segmentType, root: 'C3', mood: RELEASE };
+            const segment = {...segmentType, root: 'C3', repeats: 1, mood: RELEASE };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
             });
-            addNewNotes(segment.action, segment.mood, new Note(segment.root), 1);
+            addNewNotes(segment.action, segment.mood, new Note(segment.root), segment.repeats);
             return next;
         })
     }
@@ -117,7 +117,8 @@ const SoundElementContainer = ({ setNotes, synth, setSynth }) => {
                     segmentType={ segment.segment }
                     setRootNote={ setSegmentField(i, 'root') }
                     setMood={ setSegmentField(i, 'mood') }
-                    regenerateNotes={ (mood, rootNote) => regenerateNotes(segment.segment, i, mood, rootNote) }
+                    setRepeats={ setSegmentField(i, 'repeats') }
+                    regenerateNotes={ (mood, rootNote, repeats = 1) => regenerateNotes(segment.segment, i, mood, rootNote, repeats) }
                     removeSegment={ () => removeSegment(i) } />;
             }) }
         </Grid>

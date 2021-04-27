@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core';
 import { Note } from 'octavian';
 import {
-    repeatNotes,
     piece,
     section,
     passage,
@@ -71,11 +70,12 @@ const SEGMENTS = {
 // Move these into their own component files
 const Segment = ({
     color,
-    segmentType: { name, gridSize, root, mood },
+    segmentType: { name, gridSize, root, repeats, mood },
     removeSegment,
     regenerateNotes,
     setRootNote,
-    setMood
+    setMood,
+    setRepeats
 }) => {
     return <Grid
         container
@@ -123,6 +123,20 @@ const Segment = ({
                 <MenuItem value={TENSION}>TENSION</MenuItem>
                 <MenuItem value={RELEASE}>RELEASE</MenuItem>
             </Select>
+        </Grid>
+        <Grid item>
+            <TextField onChange={ ({ target: { value }}) => {
+                console.log('Changing repeats: ', value);
+                try {
+                    if(value > 0) {
+                        regenerateNotes(mood, new Note(root), value);
+                    }
+                } catch {
+                    console.warn(`Invalid repeat value: ${ value }`)
+                }
+                setRepeats(value);
+                
+             } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } />
         </Grid>
 
         <Grid item>

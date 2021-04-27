@@ -92,7 +92,7 @@ const Segment = ({
                 console.log('Changing value: ', value);
                 try {
                     const rootNote = new Note(value);
-                    regenerateNotes(mood, rootNote);
+                    regenerateNotes(mood, rootNote, repeats);
                 } catch {
                     console.warn(`Invalid root note: ${ value }`)
                 }
@@ -112,7 +112,7 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing value: ', value);
                     try {
-                        regenerateNotes(mood, new Note(root));
+                        regenerateNotes(mood, new Note(root), repeats);
                     } catch {
                         console.warn(`Invalid mood: ${ value }`)
                     }

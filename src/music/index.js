@@ -28,7 +28,7 @@ const context = new AudioContext();
 
 const SoundControls = () => {
     const [notes, setNotes] = useState([]);
-    const [synth, setSynth] = useState(BOWED);
+    const [synth, setSynth] = useState(BIT_VOICE);
     const [lockedIndexes, setLocks] = useState([]);
 
     const handlePlay = () => {

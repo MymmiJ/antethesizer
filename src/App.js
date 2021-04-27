@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import { SoundControls } from './music';
+import { playNotes, SoundControls } from './music';
 import { v4 as uuidv4 } from 'uuid'; 
 
 const theme = createMuiTheme({
@@ -83,22 +83,55 @@ const theme = createMuiTheme({
 
 const App = () => {
   const [additionalSoundControls, setSoundControls] = useState([]);
+
   const addNewSoundControls = () => setSoundControls(prev => [...prev, {
     key: uuidv4(),
     removable: true,
+    notes: [],
+    context: null,
+    synth: null,
     addNewSoundControls
   }]);
+  const addToAdditionalNotes = (key) => (value, context, synth) => {
+    setSoundControls(prev => prev.map(
+      soundControls => soundControls.key !== key ?
+        soundControls :
+        Object.assign(
+          { ...soundControls },
+          {
+            notes: value(soundControls.notes),
+            context,
+            synth
+          }
+        )
+    ))
+  }
+  const playAdditionalNotes = () => {
+    additionalSoundControls.forEach(
+      ({ notes, context, synth }, _, __) => {
+        if(notes && context && synth){
+          playNotes(notes.flat(), context, synth);
+        }
+      }
+    );
+  }
   const removeSelf = (id) => setSoundControls(prev => prev.filter(desc => desc.key !== id ));
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
-      <SoundControls key='alpha-and-omega' addNewSoundControls={ addNewSoundControls } removable={ false } />
+      <SoundControls
+        key='alpha-and-omega'
+        addNewSoundControls={ addNewSoundControls }
+        removable={ false }
+        addToAdditionalNotes={ () => {} }
+        playAdditionalNotes={ playAdditionalNotes } />
       {
         additionalSoundControls.map(
           desc =>
             <SoundControls
               key={ desc.key }
               addNewSoundControls={ desc.addNewSoundControls }
+              addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
               removable={ desc.removable }
               removeSelf={ () => removeSelf(desc.key) } />
         )

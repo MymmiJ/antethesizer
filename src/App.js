@@ -67,7 +67,9 @@ const theme = createMuiTheme({
  *  - Improve generation by remembering _first_ root Note of series
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
  *  - Improve generation by picking different sets of movements that can move to each other
- *  - Improve genenation by allowing 'motion towards' particular notes
+ *  - Improve generation by allowing 'motion towards' particular notes
+ *  - Improve generation by generating in batches of 2 with option for truncated gen (i.e. short phrase returns 4, long phrase returns 8).
+ *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
  * 
  * 
  */

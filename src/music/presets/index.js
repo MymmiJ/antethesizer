@@ -136,19 +136,19 @@ TRIANGLE.waveform.type = 'triangle';
 const BOWED = new Synth(
     1,
     0.3,
-    0.4,
+    0.3,
     LIN,
     EXP,
-    [3, 0.22],
+    [22, 0.22],
     STRING_WAVEFORM
 );
 const PLUCKED = new Synth(
-    1,
+    0.8,
     0.3,
     0.1,
     EXP,
     EXP,
-    null,
+    [22, 0.22],
     STRING_WAVEFORM
 );
 const VAMPIRE_CASTLE = new Synth(
@@ -180,12 +180,14 @@ const BIT_VOICE = new Synth(
     )
 )
 const DRUM = new Synth(
-    0.005,
-    5,
-    0.001
+    0.012,
+    20,
+    0.001,
+    EXP,
+    LIN
 );
 const WINE_GLASS = new Synth(
-    1,
+    0.62,
     0.3,
     0.4,
     LIN,

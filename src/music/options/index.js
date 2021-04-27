@@ -19,6 +19,12 @@ const OptionMenu = ({
 }) => {
     return <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item>
+            <Tooltip
+                placement={ 'top' }
+                title={ 'SELECT A SYNTH TYPE' }
+                aria-label={ 'select a synth type' }>
+                <InputLabel id="synth-select">SYNTHESIZER:</InputLabel>
+            </Tooltip>
             <Select
                 labelId="synth-select"
                 id="synth-selector"
@@ -33,7 +39,7 @@ const OptionMenu = ({
                 <MenuItem value={PLUCKED}>PLUCKED</MenuItem>
                 <MenuItem value={VAMPIRE_CASTLE}>VAMPIRE CASTLE</MenuItem>
                 <MenuItem value={BIT_VOICE}>8 BIT VOICE</MenuItem>
-                <MenuItem value={DRUM}>KICK</MenuItem>
+                <MenuItem value={DRUM}>PERCUSSIVE</MenuItem>
                 <MenuItem value={WINE_GLASS}>WINE GLASS</MenuItem>
             </Select>
         </Grid>

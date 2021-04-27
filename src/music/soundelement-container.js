@@ -23,7 +23,14 @@ const generateNotes = (f, mood, rootNote, repeats) => {
 
 const filterIndex = i => prev => prev.filter((_, index) => index !== i);
 
-const SoundElementContainer = ({ setNotes, synth, setSynth, defaultMood, setDefaultMood }) => {
+const SoundElementContainer = ({
+    setNotes,
+    synth,
+    setSynth,
+    defaultMood,
+    setDefaultMood,
+    addNewSoundControls
+}) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
 
@@ -91,6 +98,20 @@ const SoundElementContainer = ({ setNotes, synth, setSynth, defaultMood, setDefa
             color={'secondary'}
             onClick={ toggleOnClick(OptionMenu) }>OPTIONS</Button>
         </Tooltip>
+        <Grid item xs={1}>
+        <Tooltip placement={ 'left' } title={ 'ADD NEW TRACK' } aria-label={ 'add new track' }>
+            <Button
+                style={{ lineHeight: '100%' }}
+                color={'secondary'}
+                
+                onClick={ addNewSoundControls }>
+{`░░██╗░░
+██████╗
+╚═██░═╝
+░░╚═╝░░`}
+            </Button>
+        </Tooltip>
+        </Grid>
         <Grid item xs={12} >
             {
                 Menu ? <Menu

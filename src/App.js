@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import { SoundControls } from './music';
+import { playNotes, SoundControls } from './music';
+import { v4 as uuidv4 } from 'uuid'; 
 
 const theme = createMuiTheme({
   typography: {
@@ -31,6 +33,7 @@ const theme = createMuiTheme({
  * UI:
  * - accessibility review (aria+contrast-focused)! 1
  * - Display sound as per https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
+ * - Allow adding multiple tracks
  * Options Menu:
  *  - Import/export wavetables as JSON
  *  - Display wavetable - try: https://github.com/indutny/fft.js/
@@ -47,7 +50,8 @@ const theme = createMuiTheme({
  * - Turn bias for picking next shift off
  * - Allow selecting 'EITHER' option
  * - Allow locking of note runs in place 1
- *     (preventing regeneration & changing mood/root note, retaining ability to e.g. repeat notes)
+ *     preventing regeneration & changing mood/root note, retaining ability to e.g. repeat notes
+ *     Essential for allowing insertion of specific runs
  * Ornaments:
  *  - Chords 1
  *  - Arpeggios
@@ -77,11 +81,61 @@ const theme = createMuiTheme({
  * 
  */
 
-function App() {
+const App = () => {
+  const [additionalSoundControls, setSoundControls] = useState([]);
+
+  const addNewSoundControls = () => setSoundControls(prev => [...prev, {
+    key: uuidv4(),
+    removable: true,
+    notes: [],
+    context: null,
+    synth: null,
+    addNewSoundControls
+  }]);
+  const addToAdditionalNotes = (key) => (value, context, synth) => {
+    setSoundControls(prev => prev.map(
+      soundControls => soundControls.key !== key ?
+        soundControls :
+        Object.assign(
+          { ...soundControls },
+          {
+            notes: value(soundControls.notes),
+            context,
+            synth
+          }
+        )
+    ))
+  }
+  const playAdditionalNotes = () => {
+    additionalSoundControls.forEach(
+      ({ notes, context, synth }, _, __) => {
+        if(notes && context && synth){
+          playNotes(notes.flat(), context, synth);
+        }
+      }
+    );
+  }
+  const removeSelf = (id) => setSoundControls(prev => prev.filter(desc => desc.key !== id ));
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
-      <SoundControls />
+      <SoundControls
+        key='alpha-and-omega'
+        addNewSoundControls={ addNewSoundControls }
+        removable={ false }
+        addToAdditionalNotes={ () => {} }
+        playAdditionalNotes={ playAdditionalNotes } />
+      {
+        additionalSoundControls.map(
+          desc =>
+            <SoundControls
+              key={ desc.key }
+              addNewSoundControls={ desc.addNewSoundControls }
+              addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
+              removable={ desc.removable }
+              removeSelf={ () => removeSelf(desc.key) } />
+        )
+      }
     </ThemeProvider>
   );
 }

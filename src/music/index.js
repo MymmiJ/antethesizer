@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
     Button,
+    Box,
     Grid,
     Typography
 } from '@material-ui/core';
@@ -27,7 +28,13 @@ const playNotes = (notes, context, synth) => {
 
 const context = new AudioContext();
 
-const SoundControls = () => {
+const SoundControls = ({
+    addNewSoundControls,
+    removable,
+    removeSelf,
+    addToAdditionalNotes,
+    playAdditionalNotes
+}) => {
     const [notes, setNotes] = useState([]);
     const [defaultMood, setDefaultMood] = useState(RELEASE);
     const [synth, setSynth] = useState(SAWTOOTH);
@@ -37,15 +44,33 @@ const SoundControls = () => {
         playNotes(notes.flat(), context, synth);
     }
 
-    return <Grid container spacing={2} alignContent={'center'} alignItems={'center'} justify={'center'}>
+    const handleSetNotes = value => {
+        addToAdditionalNotes( value, context, synth );
+        setNotes( value );
+    }
+    
+    const handlePlayAll = () => {
+        handlePlay();
+        playAdditionalNotes();
+    }
+
+    return <Box
+        boxShadow={20}
+        border={4}
+        borderTop={0}
+        borderLeft={0}
+        borderRight={0}
+        borderColor="secondary.main">
+    <Grid container spacing={2} alignContent={'center'} alignItems={'center'} justify={'center'} borderbottom={1}>
         <Grid item xs={12} >
             <SoundElementContainer
-                setNotes={ setNotes }
+                setNotes={ handleSetNotes }
                 synth={ synth }
                 setSynth={ setSynth }
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
                 setLocks={ setLocks }
+                addNewSoundControls={ addNewSoundControls }
                 />
         </Grid>
         <Grid item xs={10}>
@@ -73,7 +98,20 @@ const SoundControls = () => {
         <Grid item xs={10}>
             <Button color={'primary'} onClick={ handlePlay }>PLAY ➣</Button>
         </Grid>
-    </Grid>;
+        {
+            removable ||
+            <Grid item xs={10}>
+                <Button color={'primary'} onClick={ handlePlayAll }>PLAY ALL TRACKS ➣</Button>
+            </Grid>
+        }
+        {
+            removable &&
+            <Grid item xs={10}>
+                <Button color={'secondary'} onClick={ removeSelf }>REMOVE TRACK</Button>
+            </Grid>
+        }
+    </Grid>
+    </Box>;
 }
 
-export { SoundControls };
+export { SoundControls, playNotes };

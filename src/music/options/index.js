@@ -20,7 +20,7 @@ const OptionMenu = ({
     defaultMood,
     setDefaultMood
 }) => {
-    return <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
+    return <Grid container spacing={4} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item>
             <Tooltip
                 placement={ 'top' }
@@ -51,7 +51,7 @@ const OptionMenu = ({
                 placement={ 'top' }
                 title={ 'SELECT DEFAULT MOOD' }
                 aria-label={ 'select default mood' }>
-                <InputLabel id="mood-select">MOOD:</InputLabel>
+                <InputLabel id="mood-select">DEFAULT MOOD:</InputLabel>
             </Tooltip>
             <Select
                 labelId="mood-select"

@@ -85,10 +85,9 @@ const light_theme = createMuiTheme({
  *  - Microtonal shifts
  *  - (more) vibrato/tremolo
  * Rhythm:
- *  - bpm 1
  *  - time signature
  *  - accents
- *  - individual note lengths (use American quarter note system)
+ *  - individual note lengths (use American quarter note system) 1
  *  - allow use of hemisemidemiquaver system
  *  - syncopation
  * Dynamics:

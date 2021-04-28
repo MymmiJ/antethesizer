@@ -36,6 +36,11 @@ const playNotes = (notes, context, synth, bpm) => {
 
 // Note helpers ends
 
+//Config to go in own file
+const soundControlsShouldUpdateOn = ['bpm'];
+
+// Config ends
+
 const context = new AudioContext();
 
 const SoundControls = ({
@@ -60,7 +65,7 @@ const SoundControls = ({
       { [key]: value }
     ));
     }
-    const setDeFactoOption = key => ({ target: { value } }) => {
+    const setDeFactoOption = (key, value) => {
         setDeFactoOptions(prev => Object.assign(
       {...prev},
       { [key]: value }
@@ -77,8 +82,30 @@ const SoundControls = ({
         setNotes( value );
     }
 
-    const handleSetDeFactoOptions = key => {
-        addToAdditionalNotes({ value: notes, context, synth, bpm });
+    const handleSetSynth = value => {
+        addToAdditionalNotes({ value: id=>id, context, synth: value, bpm });
+        setSynth( value );
+    }
+
+    const soundControlValues = soundControlsShouldUpdateOn.reduce((acc, curr) => {
+        acc[curr] = deFactoOptions[curr];
+        return acc;
+    },{})
+
+    const handleSetDeFactoOption = key => ({ target: { value } }) => {
+        if(soundControlsShouldUpdateOn.includes(key)) {
+            addToAdditionalNotes(
+                Object.assign({
+                    value: id=>id,
+                    context,
+                    synth,
+                    ...soundControlValues
+                },{
+                    [key]: value
+                }
+            ));
+        }
+        setDeFactoOption(key, value);
     }
     
     const handlePlayAll = () => {
@@ -98,7 +125,7 @@ const SoundControls = ({
             <SoundElementContainer
                 setNotes={ handleSetNotes }
                 synth={ synth }
-                setSynth={ setSynth }
+                setSynth={ handleSetSynth }
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
                 setLocks={ setLocks }
@@ -106,7 +133,7 @@ const SoundControls = ({
                 setGlobalOption={ setGlobalOption }
                 localOptions={ localOptions }
                 setLocalOption={ setLocalOption }
-                setDeFactoOption={ setDeFactoOption }
+                setDeFactoOption={ handleSetDeFactoOption }
                 addNewSoundControls={ addNewSoundControls }
                 />
         </Grid>

@@ -136,7 +136,7 @@ const Segment = ({
                 }
                 setRepeats(value);
                 
-             } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } />
+             } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } type={ 'number' } />
         </Grid>
 
         <Grid item>

@@ -4,6 +4,8 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { playNotes, SoundControls } from './music';
 import { v4 as uuidv4 } from 'uuid'; 
+import Option from './music/options/global';
+import { TextField } from '@material-ui/core';
 
 const dark_theme = createMuiTheme({
   typography: {
@@ -103,9 +105,19 @@ const light_theme = createMuiTheme({
  * 
  * 
  */
+const defaultGlobalOptions = {
+  bpm: 120
+}
 
 const App = () => {
   const [additionalSoundControls, setSoundControls] = useState([]);
+  const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
+  const setGlobalOption = (key) => ({ target: { value } }) => {
+    setGlobalOptions(prev => Object.assign(
+    {...prev},
+    { [key]: value }
+  ));
+  }
 
   const addNewSoundControls = () => setSoundControls(prev => [...prev, {
     key: uuidv4(),
@@ -147,7 +159,10 @@ const App = () => {
         addNewSoundControls={ addNewSoundControls }
         removable={ false }
         addToAdditionalNotes={ () => {} }
-        playAdditionalNotes={ playAdditionalNotes } />
+        playAdditionalNotes={ playAdditionalNotes }
+        setGlobalOption={ setGlobalOption }
+        globalOptions={ globalOptions }
+         />
       {
         additionalSoundControls.map(
           desc =>

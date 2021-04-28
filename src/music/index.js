@@ -33,7 +33,9 @@ const SoundControls = ({
     removable,
     removeSelf,
     addToAdditionalNotes,
-    playAdditionalNotes
+    playAdditionalNotes,
+    setGlobalOption,
+    globalOptions
 }) => {
     const [notes, setNotes] = useState([]);
     const [defaultMood, setDefaultMood] = useState(RELEASE);
@@ -70,6 +72,8 @@ const SoundControls = ({
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
                 setLocks={ setLocks }
+                globalOptions={ globalOptions }
+                setGlobalOption={ setGlobalOption }
                 addNewSoundControls={ addNewSoundControls }
                 />
         </Grid>

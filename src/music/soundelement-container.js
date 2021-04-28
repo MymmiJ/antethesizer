@@ -32,8 +32,24 @@ const SoundElementContainer = ({
     setSynth,
     defaultMood,
     setDefaultMood,
-    addNewSoundControls
+    addNewSoundControls,
+    globalOptions,
+    setGlobalOption
 }) => {
+    const [localOptions, setLocalOptions] = useState(globalOptions);
+    const [deFactoOptions, setDeFactoOptions] = useState(globalOptions);
+    const setLocalOption = (key) => ({ target: { value } }) => {
+        setLocalOptions(prev => Object.assign(
+      {...prev},
+      { [key]: value }
+    ));
+    }
+    const setDeFactoOption = (key) => ({ target: { value } }) => {
+        setDeFactoOptions(prev => Object.assign(
+      {...prev},
+      { [key]: value }
+    ));
+    }
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
 
@@ -126,7 +142,12 @@ const SoundElementContainer = ({
                 synth={ synth }
                 setSynth={ setSynth }
                 defaultMood={ defaultMood }
-                setDefaultMood={ setDefaultMood }/> : ''
+                setDefaultMood={ setDefaultMood }
+                globalOptions={ globalOptions }
+                setGlobalOption={ setGlobalOption }
+                localOptions={ localOptions }
+                setLocalOption={ setLocalOption }
+                setOpt={ setDeFactoOption }/> : ''
             }
         </Grid>
         <Accordion style={{ width: '100%' }} defaultExpanded>

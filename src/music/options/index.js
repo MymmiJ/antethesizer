@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import {
     Button,
     Grid,
@@ -13,13 +14,21 @@ import {
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
 } from '../presets';
 import { RELEASE, TENSION } from '../segments';
+import Option from './global';
 
 const OptionMenu = ({
     synth,
     setSynth,
     defaultMood,
-    setDefaultMood
+    setDefaultMood,
+    globalOptions,
+    setGlobalOption,
+    localOptions,
+    setLocalOption,
+    setOpt
 }) => {
+    const { bpm } = globalOptions;
+    const { bpm: localBPM } = localOptions;
     return <Grid container spacing={4} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item>
             <Tooltip
@@ -62,6 +71,15 @@ const OptionMenu = ({
                 <MenuItem value={TENSION}>TENSION</MenuItem>
                 <MenuItem value={RELEASE}>RELEASE</MenuItem>
             </Select>
+        </Grid>
+        <Grid item xs={ 2 }>
+            <Option
+                Type={ TextField }
+                global={ bpm }
+                setGlobal={ setGlobalOption('bpm') }
+                tooltipDetails={{ placement: 'top', title: 'Beats Per Minute', label: 'BPM:', aria_label: 'beats per minute' }}
+                setLocal={ setLocalOption('bpm') } local={ localBPM } type={ 'number' }
+                setOpt={ setOpt('bpm') }/>
         </Grid>
     </Grid>;
 };

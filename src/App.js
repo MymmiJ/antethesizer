@@ -93,6 +93,7 @@ const light_theme = createMuiTheme({
  *  - syncopation
  * Dynamics:
  *  - vary dynamics based on mood
+ * - vary dynamics based on time signature
  * Motifs:
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with notes specified
  * Generation:
@@ -128,7 +129,7 @@ const App = () => {
     synth: null,
     addNewSoundControls
   }]);
-  const addToAdditionalNotes = (key) => (value, context, synth) => {
+  const addToAdditionalNotes = (key) => ({ value, context, synth, bpm }) => {
     setSoundControls(prev => prev.map(
       soundControls => soundControls.key !== key ?
         soundControls :
@@ -137,16 +138,19 @@ const App = () => {
           {
             notes: value(soundControls.notes),
             context,
-            synth
+            synth,
+            bpm
           }
         )
     ))
   }
+
   const playAdditionalNotes = () => {
+    console.log('playing additional:', additionalSoundControls)
     additionalSoundControls.forEach(
-      ({ notes, context, synth }, _, __) => {
+      ({ notes, context, synth, bpm }, _, __) => {
         if(notes && context && synth){
-          playNotes(notes.flat(), context, synth);
+          playNotes(notes.flat(), context, synth, bpm);
         }
       }
     );
@@ -172,6 +176,8 @@ const App = () => {
               addNewSoundControls={ desc.addNewSoundControls }
               addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
               primary={ desc.primary }
+              setGlobalOption={ setGlobalOption }
+              globalOptions={ globalOptions }
               removeSelf={ () => removeSelf(desc.key) } />
         )
       }

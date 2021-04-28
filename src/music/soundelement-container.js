@@ -34,22 +34,11 @@ const SoundElementContainer = ({
     setDefaultMood,
     addNewSoundControls,
     globalOptions,
-    setGlobalOption
+    setGlobalOption,
+    localOptions,
+    setLocalOption,
+    setDeFactoOption
 }) => {
-    const [localOptions, setLocalOptions] = useState(globalOptions);
-    const [deFactoOptions, setDeFactoOptions] = useState(globalOptions);
-    const setLocalOption = (key) => ({ target: { value } }) => {
-        setLocalOptions(prev => Object.assign(
-      {...prev},
-      { [key]: value }
-    ));
-    }
-    const setDeFactoOption = (key) => ({ target: { value } }) => {
-        setDeFactoOptions(prev => Object.assign(
-      {...prev},
-      { [key]: value }
-    ));
-    }
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
 

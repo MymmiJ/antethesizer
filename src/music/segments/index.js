@@ -82,7 +82,7 @@ const diatom = (root, mood) => {
     } else if(mood === RELEASE) {
         method = pickBiasEarly(releaseMoves);
         if(method === false) {
-            console.log('false',  root);
+            console.log('false; selecting root',  root);
             return [root, root];
         }
         // Falling more likely for release

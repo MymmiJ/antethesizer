@@ -89,7 +89,6 @@ const Segment = ({
         </Grid>
         <Grid item>
             <TextField onChange={ ({ target: { value }}) => {
-                console.log('Changing value: ', value);
                 try {
                     const rootNote = new Note(value);
                     regenerateNotes(mood, rootNote, repeats);

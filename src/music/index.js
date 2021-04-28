@@ -12,19 +12,29 @@ import {
 } from './presets';
 import { RELEASE } from './segments';
 
+// Play helpers - Put these in their own folder
+const getTimes = bpm => {
+    const timeBeforeNewNote = Math.floor(60*1000/bpm)
+    return {
+        timeBeforeNewNote,
+        lengthOfNote: timeBeforeNewNote + (timeBeforeNewNote*0.24)
+    }
+}
+
 const playNote = (frequency, context, lengthOfNote, synth = SINE) => {
     synth.playNote(context, frequency, lengthOfNote);
 }
 
-const playNotes = (notes, context, synth) => {
-    const timeBeforeNewNote = 500;
-    const lengthOfNote = 620;
+const playNotes = (notes, context, synth, bpm) => {
+    const { timeBeforeNewNote, lengthOfNote } = getTimes(bpm);
     notes.map((note, i) => {
         setTimeout(
             () => playNote(note.frequency, context, lengthOfNote, synth),
             i * timeBeforeNewNote
     )});
 }
+
+// Note helpers ends
 
 const context = new AudioContext();
 
@@ -42,13 +52,33 @@ const SoundControls = ({
     const [synth, setSynth] = useState(SAWTOOTH);
     const [lockedIndexes, setLocks] = useState([]);
 
+    const [localOptions, setLocalOptions] = useState(globalOptions);
+    const [deFactoOptions, setDeFactoOptions] = useState(globalOptions);
+    const setLocalOption = (key) => ({ target: { value } }) => {
+        setLocalOptions(prev => Object.assign(
+      {...prev},
+      { [key]: value }
+    ));
+    }
+    const setDeFactoOption = key => ({ target: { value } }) => {
+        setDeFactoOptions(prev => Object.assign(
+      {...prev},
+      { [key]: value }
+    ));
+    }
+
+    const { bpm } = deFactoOptions;
     const handlePlay = () => {
-        playNotes(notes.flat(), context, synth);
+        playNotes(notes.flat(), context, synth, bpm);
     }
 
     const handleSetNotes = value => {
-        addToAdditionalNotes( value, context, synth );
+        addToAdditionalNotes({ value, context, synth, bpm });
         setNotes( value );
+    }
+
+    const handleSetDeFactoOptions = key => {
+        addToAdditionalNotes({ value: notes, context, synth, bpm });
     }
     
     const handlePlayAll = () => {
@@ -74,6 +104,9 @@ const SoundControls = ({
                 setLocks={ setLocks }
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
+                localOptions={ localOptions }
+                setLocalOption={ setLocalOption }
+                setDeFactoOption={ setDeFactoOption }
                 addNewSoundControls={ addNewSoundControls }
                 />
         </Grid>

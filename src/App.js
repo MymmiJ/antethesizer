@@ -129,6 +129,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: null,
+    ...defaultGlobalOptions,
     addNewSoundControls
   }]);
   const addToAdditionalNotes = (key) => ({ value, context, synth, bpm }) => {
@@ -171,17 +172,18 @@ const App = () => {
         globalOptions={ globalOptions }
          />
       {
-        additionalSoundControls.map(
-          desc =>
-            <SoundControls
-              key={ desc.key }
-              addNewSoundControls={ desc.addNewSoundControls }
-              addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
-              primary={ desc.primary }
-              setGlobalOption={ setGlobalOption }
-              globalOptions={ globalOptions }
-              removeSelf={ () => removeSelf(desc.key) } />
-        )
+        additionalSoundControls.length > 0 &&
+          additionalSoundControls.map(
+            desc =>
+              <SoundControls
+                key={ desc.key }
+                addNewSoundControls={ desc.addNewSoundControls }
+                addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
+                primary={ desc.primary }
+                setGlobalOption={ setGlobalOption }
+                globalOptions={ globalOptions }
+                removeSelf={ () => removeSelf(desc.key) } />
+          )
       }
     </ThemeProvider>
   );

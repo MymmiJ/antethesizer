@@ -135,7 +135,7 @@ const SoundElementContainer = ({
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
                 defaultRootNote={ defaultRootNote }
-                setDefaultRootNote={ setDefaultRootNote }
+                setDefaultRootNote={ setDefaultRootNote}
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
                 localOptions={ localOptions }
@@ -152,30 +152,33 @@ const SoundElementContainer = ({
         </AccordionSummary>
         <AccordionDetails>
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
-            { segments.map((segment, i) => {
-                let color;
-                switch(i % 3) {
-                    case 0:
-                        color = '#EFA2A2';
-                        break;
-                    case 1:
-                        color = '#C6C6EF';
-                        break;
-                    case 2:
-                    default:
-                        color = '#C6EFC6';
-                        break;
-                }
-                return <Segment
-                    key={ segment.uuid }
-                    color={ color }
-                    segmentType={ segment.segment }
-                    setRootNote={ setSegmentField(i, 'root') }
-                    setMood={ setSegmentField(i, 'mood') }
-                    setRepeats={ setSegmentField(i, 'repeats') }
-                    regenerateNotes={ (mood, rootNote, repeats = 1) => regenerateNotes(segment.segment, i, mood, rootNote, repeats) }
-                    removeSegment={ () => removeSegment(i) } />;
-            }) }
+            { segments.length > 0 ?
+                segments.map((segment, i) => {
+                    let color;
+                    switch(i % 3) {
+                        case 0:
+                            color = '#EFA2A2';
+                            break;
+                        case 1:
+                            color = '#C6C6EF';
+                            break;
+                        case 2:
+                        default:
+                            color = '#C6EFC6';
+                            break;
+                    }
+                    return <Segment
+                        key={ segment.uuid }
+                        color={ color }
+                        segmentType={ segment.segment }
+                        setRootNote={ setSegmentField(i, 'root') }
+                        setMood={ setSegmentField(i, 'mood') }
+                        setRepeats={ setSegmentField(i, 'repeats') }
+                        regenerateNotes={ (mood, rootNote, repeats = 1) => regenerateNotes(segment.segment, i, mood, rootNote, repeats) }
+                        removeSegment={ () => removeSegment(i) } />;
+                }) :
+                ''
+            }
         </Grid>
         </AccordionDetails>
         </Accordion>

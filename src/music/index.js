@@ -172,7 +172,8 @@ const SoundControls = ({
             </Grid>
         }
         {
-            primary ||
+            primary ?
+            <div id='remove-track-placeholde'></div> :
             <Grid item xs={10}>
                 <Button color={'secondary'} onClick={ removeSelf }>REMOVE TRACK</Button>
             </Grid>

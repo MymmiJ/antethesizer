@@ -4,8 +4,10 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { playNotes, SoundControls } from './music';
 import { v4 as uuidv4 } from 'uuid'; 
+import Option from './music/options/global';
+import { TextField } from '@material-ui/core';
 
-const theme = createMuiTheme({
+const dark_theme = createMuiTheme({
   typography: {
     fontFamily: 'Monospace',
     lineHeight: '100%'
@@ -24,25 +26,47 @@ const theme = createMuiTheme({
   },
 });
 
+const light_theme = createMuiTheme({
+  typography: {
+    fontFamily: 'Monospace',
+    lineHeight: '100%'
+  },
+  palette: {
+    type: "light",
+    primary: {
+      main: '#EF1010',
+    },
+    secondary: {
+      main: '#4646EF',
+    },
+    background: {
+      default: "#DFDFDF"
+    },
+  },
+});
+
 /**
  * TODO:
- * ! - Essential before release
+ * ! - Essential before beta release
  * * - Large or surprisingly large task
  * 1 - Highest priority per section
  * # - in progress
  * UI:
  * - accessibility review (aria+contrast-focused)! 1
  * - Display sound as per https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
- * - Allow adding multiple tracks
+ * - Explore 'new track' button to _below_ each track, to give more contextual clues for use
+ * - Make light theme look better (Note, passage colors)
+ * - Light/dark theme toggle
  * Options Menu:
- *  - Import/export wavetables as JSON
- *  - Display wavetable - try: https://github.com/indutny/fft.js/
- *  - Use display to input back into wavetable
- *  - default root note for all segments 1
- *  - Overall direction (determine root note by increasing/decreasing from source)
- *  - Allow/add multiple generators per pattern
- *  - Allow custom synths
- *  - Allow composing synths together
+ * - Custom synths via. wavetable
+ * - Import/export wavetables as JSON
+ * - Display wavetable - try: https://github.com/indutny/fft.js/
+ * - Use display to input back into wavetable
+ * - default root note for all segments 1
+ * - Overall direction (determine root note by increasing/decreasing from source)
+ * - Allow/add multiple generators per pattern
+ * - Allow custom synths
+ * - Allow composing synths together
  * Sections:
  * - Allow specifying the mood of subsections*
  * - Allow inserting specfic runs of notes
@@ -52,6 +76,8 @@ const theme = createMuiTheme({
  * - Allow locking of note runs in place 1
  *     preventing regeneration & changing mood/root note, retaining ability to e.g. repeat notes
  *     Essential for allowing insertion of specific runs
+ * - Allow starting section after delay of x notes
+ * - Allow sections to be played backwards
  * Ornaments:
  *  - Chords 1
  *  - Arpeggios
@@ -67,6 +93,7 @@ const theme = createMuiTheme({
  *  - syncopation
  * Dynamics:
  *  - vary dynamics based on mood
+ * - vary dynamics based on time signature
  * Motifs:
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with notes specified
  * Generation:
@@ -80,19 +107,29 @@ const theme = createMuiTheme({
  * 
  * 
  */
+const defaultGlobalOptions = {
+  bpm: 120
+}
 
 const App = () => {
   const [additionalSoundControls, setSoundControls] = useState([]);
+  const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
+  const setGlobalOption = (key) => ({ target: { value } }) => {
+    setGlobalOptions(prev => Object.assign(
+    {...prev},
+    { [key]: value }
+  ));
+  }
 
   const addNewSoundControls = () => setSoundControls(prev => [...prev, {
     key: uuidv4(),
-    removable: true,
+    primary: false,
     notes: [],
     context: null,
     synth: null,
     addNewSoundControls
   }]);
-  const addToAdditionalNotes = (key) => (value, context, synth) => {
+  const addToAdditionalNotes = (key) => ({ value, context, synth, bpm }) => {
     setSoundControls(prev => prev.map(
       soundControls => soundControls.key !== key ?
         soundControls :
@@ -101,30 +138,36 @@ const App = () => {
           {
             notes: value(soundControls.notes),
             context,
-            synth
+            synth,
+            bpm
           }
         )
     ))
   }
+
   const playAdditionalNotes = () => {
+    console.log('playing additional:', additionalSoundControls)
     additionalSoundControls.forEach(
-      ({ notes, context, synth }, _, __) => {
+      ({ notes, context, synth, bpm }, _, __) => {
         if(notes && context && synth){
-          playNotes(notes.flat(), context, synth);
+          playNotes(notes.flat(), context, synth, bpm);
         }
       }
     );
   }
   const removeSelf = (id) => setSoundControls(prev => prev.filter(desc => desc.key !== id ));
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={dark_theme}>
       <CssBaseline/>
       <SoundControls
         key='alpha-and-omega'
         addNewSoundControls={ addNewSoundControls }
-        removable={ false }
+        primary={ true }
         addToAdditionalNotes={ () => {} }
-        playAdditionalNotes={ playAdditionalNotes } />
+        playAdditionalNotes={ playAdditionalNotes }
+        setGlobalOption={ setGlobalOption }
+        globalOptions={ globalOptions }
+         />
       {
         additionalSoundControls.map(
           desc =>
@@ -132,7 +175,9 @@ const App = () => {
               key={ desc.key }
               addNewSoundControls={ desc.addNewSoundControls }
               addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
-              removable={ desc.removable }
+              primary={ desc.primary }
+              setGlobalOption={ setGlobalOption }
+              globalOptions={ globalOptions }
               removeSelf={ () => removeSelf(desc.key) } />
         )
       }

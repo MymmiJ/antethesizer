@@ -4,9 +4,12 @@ import {
     Button,
     Grid,
     Tooltip,
-    TextField,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
     Typography
 } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SoundElements, { Segment, SEGMENTS } from './sound-elements';
 import { v4 as uuidv4 } from 'uuid'; 
 import {
@@ -29,7 +32,12 @@ const SoundElementContainer = ({
     setSynth,
     defaultMood,
     setDefaultMood,
-    addNewSoundControls
+    addNewSoundControls,
+    globalOptions,
+    setGlobalOption,
+    localOptions,
+    setLocalOption,
+    setDeFactoOption
 }) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
@@ -77,17 +85,34 @@ const SoundElementContainer = ({
         setMenu(prevMenu =>  prevMenu === Menu ? false : Menu);
     }
 
-    return <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-between'}>
+    return <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-evenly'}>
         <Grid item xs={1}>
-        <Tooltip placement={ 'right' } title={ 'ADD MUSIC COMPONENT' } aria-label={ 'add music component' }>
+        <Tooltip placement={ 'bottom' } title={ 'ADD TRACK COMPONENT' } aria-label={ 'add track component' }>
             <Button
+                id={'add-component'}
                 style={{ lineHeight: '100%' }}
                 color={'primary'}
-                
+                variant={'outlined'}
                 onClick={ toggleOnClick(SoundElements) }>
-{`░░██╗░░
-██████╗
-╚═██░═╝
+            <label htmlFor={'add-component'}>ADD TO TRACK</label>
+{`░░██╗░░\n
+██████╗\n
+╚═██░═╝\n
+░░╚═╝░░`}
+            </Button>
+        </Tooltip>
+        </Grid>
+        <Grid item xs={1}>
+        <Tooltip placement={ 'bottom' } title={ 'ADD NEW TRACK' } aria-label={ 'add new track' }>
+            <Button
+                style={{ lineHeight: '100%' }}
+                color={'secondary'}
+                variant={'outlined'}
+                onClick={ addNewSoundControls }>
+            <label htmlFor={'add-component'}>ADD NEW TRACK</label>
+{`░░██╗░░\n
+██████╗\n
+╚═██░═╝\n
 ░░╚═╝░░`}
             </Button>
         </Tooltip>
@@ -96,22 +121,9 @@ const SoundElementContainer = ({
             <Button
             style={{ lineHeight: '100%', height: '4em' }}
             color={'secondary'}
+            variant={'outlined'}
             onClick={ toggleOnClick(OptionMenu) }>OPTIONS</Button>
         </Tooltip>
-        <Grid item xs={1}>
-        <Tooltip placement={ 'left' } title={ 'ADD NEW TRACK' } aria-label={ 'add new track' }>
-            <Button
-                style={{ lineHeight: '100%' }}
-                color={'secondary'}
-                
-                onClick={ addNewSoundControls }>
-{`░░██╗░░
-██████╗
-╚═██░═╝
-░░╚═╝░░`}
-            </Button>
-        </Tooltip>
-        </Grid>
         <Grid item xs={12} >
             {
                 Menu ? <Menu
@@ -119,9 +131,22 @@ const SoundElementContainer = ({
                 synth={ synth }
                 setSynth={ setSynth }
                 defaultMood={ defaultMood }
-                setDefaultMood={ setDefaultMood }/> : ''
+                setDefaultMood={ setDefaultMood }
+                globalOptions={ globalOptions }
+                setGlobalOption={ setGlobalOption }
+                localOptions={ localOptions }
+                setLocalOption={ setLocalOption }
+                setOpt={ setDeFactoOption }/> : ''
             }
         </Grid>
+        <Accordion style={{ width: '100%' }} defaultExpanded>
+        <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1c-content"
+            id="panel1c-header">
+            <Typography>Track Details</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
             { segments.map((segment, i) => {
                 let color;
@@ -148,6 +173,8 @@ const SoundElementContainer = ({
                     removeSegment={ () => removeSegment(i) } />;
             }) }
         </Grid>
+        </AccordionDetails>
+        </Accordion>
     </Grid>;
 };
 

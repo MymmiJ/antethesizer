@@ -4,9 +4,12 @@ import {
     Button,
     Grid,
     Tooltip,
-    TextField,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
     Typography
 } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SoundElements, { Segment, SEGMENTS } from './sound-elements';
 import { v4 as uuidv4 } from 'uuid'; 
 import {
@@ -126,6 +129,14 @@ const SoundElementContainer = ({
                 setDefaultMood={ setDefaultMood }/> : ''
             }
         </Grid>
+        <Accordion style={{ width: '100%' }} defaultExpanded>
+        <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1c-content"
+            id="panel1c-header">
+            <Typography>Track Details</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
             { segments.map((segment, i) => {
                 let color;
@@ -152,6 +163,8 @@ const SoundElementContainer = ({
                     removeSegment={ () => removeSegment(i) } />;
             }) }
         </Grid>
+        </AccordionDetails>
+        </Accordion>
     </Grid>;
 };
 

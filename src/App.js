@@ -5,7 +5,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { playNotes, SoundControls } from './music';
 import { v4 as uuidv4 } from 'uuid'; 
 
-const theme = createMuiTheme({
+const dark_theme = createMuiTheme({
   typography: {
     fontFamily: 'Monospace',
     lineHeight: '100%'
@@ -24,6 +24,25 @@ const theme = createMuiTheme({
   },
 });
 
+const light_theme = createMuiTheme({
+  typography: {
+    fontFamily: 'Monospace',
+    lineHeight: '100%'
+  },
+  palette: {
+    type: "light",
+    primary: {
+      main: '#EF1010',
+    },
+    secondary: {
+      main: '#4646EF',
+    },
+    background: {
+      default: "#DFDFDF"
+    },
+  },
+});
+
 /**
  * TODO:
  * ! - Essential before beta release
@@ -34,6 +53,8 @@ const theme = createMuiTheme({
  * - accessibility review (aria+contrast-focused)! 1
  * - Display sound as per https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
  * - Explore 'new track' button to _below_ each track, to give more contextual clues for use
+ * - Make light theme look better (Note, passage colors)
+ * - Light/dark theme toggle
  * Options Menu:
  * - Custom synths via. wavetable
  * - Import/export wavetables as JSON
@@ -53,6 +74,7 @@ const theme = createMuiTheme({
  * - Allow locking of note runs in place 1
  *     preventing regeneration & changing mood/root note, retaining ability to e.g. repeat notes
  *     Essential for allowing insertion of specific runs
+ *  - Allow starting section after delay of x notes
  * Ornaments:
  *  - Chords 1
  *  - Arpeggios
@@ -118,7 +140,7 @@ const App = () => {
   }
   const removeSelf = (id) => setSoundControls(prev => prev.filter(desc => desc.key !== id ));
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={dark_theme}>
       <CssBaseline/>
       <SoundControls
         key='alpha-and-omega'

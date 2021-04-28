@@ -76,7 +76,8 @@ const light_theme = createMuiTheme({
  * - Allow locking of note runs in place 1
  *     preventing regeneration & changing mood/root note, retaining ability to e.g. repeat notes
  *     Essential for allowing insertion of specific runs
- *  - Allow starting section after delay of x notes
+ * - Allow starting section after delay of x notes
+ * - Allow sections to be played backwards
  * Ornaments:
  *  - Chords 1
  *  - Arpeggios
@@ -121,7 +122,7 @@ const App = () => {
 
   const addNewSoundControls = () => setSoundControls(prev => [...prev, {
     key: uuidv4(),
-    removable: true,
+    primary: false,
     notes: [],
     context: null,
     synth: null,
@@ -157,7 +158,7 @@ const App = () => {
       <SoundControls
         key='alpha-and-omega'
         addNewSoundControls={ addNewSoundControls }
-        removable={ false }
+        primary={ true }
         addToAdditionalNotes={ () => {} }
         playAdditionalNotes={ playAdditionalNotes }
         setGlobalOption={ setGlobalOption }
@@ -170,7 +171,7 @@ const App = () => {
               key={ desc.key }
               addNewSoundControls={ desc.addNewSoundControls }
               addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
-              removable={ desc.removable }
+              primary={ desc.primary }
               removeSelf={ () => removeSelf(desc.key) } />
         )
       }

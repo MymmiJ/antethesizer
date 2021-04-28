@@ -30,7 +30,7 @@ const context = new AudioContext();
 
 const SoundControls = ({
     addNewSoundControls,
-    removable,
+    primary,
     removeSelf,
     addToAdditionalNotes,
     playAdditionalNotes,
@@ -103,13 +103,13 @@ const SoundControls = ({
             <Button color={'primary'} onClick={ handlePlay }>PLAY ➣</Button>
         </Grid>
         {
-            removable ||
+            primary &&
             <Grid item xs={10}>
                 <Button color={'primary'} onClick={ handlePlayAll }>PLAY ALL TRACKS ➣</Button>
             </Grid>
         }
         {
-            removable &&
+            primary ||
             <Grid item xs={10}>
                 <Button color={'secondary'} onClick={ removeSelf }>REMOVE TRACK</Button>
             </Grid>

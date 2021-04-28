@@ -54,6 +54,7 @@ const SoundControls = ({
 }) => {
     const [notes, setNotes] = useState([]);
     const [defaultMood, setDefaultMood] = useState(RELEASE);
+    const [defaultRootNote, setDefaultRootNote] = useState('C3');
     const [synth, setSynth] = useState(SAWTOOTH);
     const [lockedIndexes, setLocks] = useState([]);
 
@@ -73,6 +74,11 @@ const SoundControls = ({
     }
 
     const { bpm } = deFactoOptions;
+    const soundControlValues = soundControlsShouldUpdateOn.reduce((acc, curr) => {
+        acc[curr] = deFactoOptions[curr];
+        return acc;
+    },{})
+
     const handlePlay = () => {
         playNotes(notes.flat(), context, synth, bpm);
     }
@@ -86,11 +92,6 @@ const SoundControls = ({
         addToAdditionalNotes({ value: id=>id, context, synth: value, bpm });
         setSynth( value );
     }
-
-    const soundControlValues = soundControlsShouldUpdateOn.reduce((acc, curr) => {
-        acc[curr] = deFactoOptions[curr];
-        return acc;
-    },{})
 
     const handleSetDeFactoOption = key => ({ target: { value } }) => {
         if(soundControlsShouldUpdateOn.includes(key)) {
@@ -128,6 +129,8 @@ const SoundControls = ({
                 setSynth={ handleSetSynth }
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
+                defaultRootNote={ defaultRootNote }
+                setDefaultRootNote={ setDefaultRootNote }
                 setLocks={ setLocks }
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }

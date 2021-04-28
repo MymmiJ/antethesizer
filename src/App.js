@@ -58,14 +58,13 @@ const light_theme = createMuiTheme({
  * - Make light theme look better (Note, passage colors)
  * - Light/dark theme toggle
  * Options Menu:
- * - Custom synths via. wavetable
+ * - Custom synths via. wavetable 1
  * - Import/export wavetables as JSON
  * - Display wavetable - try: https://github.com/indutny/fft.js/
  * - Use display to input back into wavetable
- * - default root note for all segments 1
  * - Overall direction (determine root note by increasing/decreasing from source)
+ *    - just generally keep track of things rather than trying to do things hierarchically!
  * - Allow/add multiple generators per pattern
- * - Allow custom synths
  * - Allow composing synths together
  * Sections:
  * - Allow specifying the mood of subsections*
@@ -80,6 +79,7 @@ const light_theme = createMuiTheme({
  * - Allow sections to be played backwards
  * Ornaments:
  *  - Chords 1
+ *  - Allow 'skipped' notes
  *  - Arpeggios
  *  - Acciaccatura/trills etc.
  *  - Microtonal shifts
@@ -87,9 +87,10 @@ const light_theme = createMuiTheme({
  * Rhythm:
  *  - time signature
  *  - accents
- *  - individual note lengths (use American quarter note system) 1
+ *  - change individual note lengths (use American quarter note system) 1
  *  - allow use of hemisemidemiquaver system
  *  - syncopation
+ * - Update global 
  * Dynamics:
  *  - vary dynamics based on mood
  * - vary dynamics based on time signature
@@ -103,6 +104,8 @@ const light_theme = createMuiTheme({
  *  - Improve generation by allowing 'motion towards' particular notes
  *  - Improve generation by generating in batches of 2 with option for truncated gen (i.e. short phrase returns 4, long phrase returns 8).
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
+ * Code:
+ * - Refactor to generate sound controls from just one array
  * 
  * 
  */

@@ -32,6 +32,8 @@ const SoundElementContainer = ({
     setSynth,
     defaultMood,
     setDefaultMood,
+    defaultRootNote,
+    setDefaultRootNote,
     addNewSoundControls,
     globalOptions,
     setGlobalOption,
@@ -49,7 +51,7 @@ const SoundElementContainer = ({
 
     const addSegment = (segmentType) => {
         setSegments(prev => {
-            const segment = {...segmentType, root: 'C3', repeats: 1, mood: defaultMood };
+            const segment = {...segmentType, root: defaultRootNote, repeats: 1, mood: defaultMood };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
@@ -132,6 +134,8 @@ const SoundElementContainer = ({
                 setSynth={ setSynth }
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
+                defaultRootNote={ defaultRootNote }
+                setDefaultRootNote={ setDefaultRootNote }
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
                 localOptions={ localOptions }

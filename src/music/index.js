@@ -29,7 +29,9 @@ const playNotes = (notes, context, synth, bpm, useOscillator=()=>{}) => {
     const { timeBeforeNewNote, lengthOfNote } = getTimes(bpm);
     return notes.map((chord, i) => chord.frequencies.map(
             frequency => setTimeout(
-                () => playNote(frequency, context, lengthOfNote, synth, useOscillator),
+                () => {
+                    playNote(frequency, context, lengthOfNote, synth, useOscillator)
+                },
                 i * timeBeforeNewNote
         )));
 }
@@ -43,6 +45,7 @@ const soundControlsShouldUpdateOn = ['bpm'];
 
 const SoundControls = ({
     context,
+    clearOscillators,
     useOscillator,
     addNewSoundControls,
     primary,
@@ -80,6 +83,7 @@ const SoundControls = ({
     },{})
 
     const handlePlay = () => {
+        clearOscillators();
         playNotes(notes.flat(), context, synth, bpm, useOscillator);
     }
 

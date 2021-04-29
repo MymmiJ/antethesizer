@@ -69,7 +69,7 @@ const Oscilloscope = ({ context, source }) => {
     }
 
     return <div>
-        <Button onClick={toggleOpen}>OSCILLOSCOPE</Button>
+        <Button color={'secondary'} variant="outlined" onClick={toggleOpen}>OSCILLOSCOPE</Button>
         <Drawer anchor={'bottom'} variant="persistent" open={isOpen}>
                 <Button onClick={() => setIsOpen(false)}>CLICK TO CLOSE</Button>
                 <Canvas height={'20%'}width={'100%'} draw={ draw }/>

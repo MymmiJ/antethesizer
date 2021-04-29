@@ -85,6 +85,7 @@ const light_theme = createMuiTheme({
  *  - (more) vibrato/tremolo
  *  - Allow 'skipped' notes
  * Rhythm:
+ * - drop in replacement for 'setTimeout' with greater accuracy https://stackoverflow.com/questions/196027/is-there-a-more-accurate-way-to-create-a-javascript-timer-than-settimeout
  *  - time signature
  *  - accents
  *  - change individual note lengths (use American quarter note system) 1
@@ -114,9 +115,8 @@ const defaultGlobalOptions = {
   bpm: 120
 }
 
-const context = new AudioContext();
-
 const App = () => {
+  const [context, _] = useState(new AudioContext());
   const [oscillators, setOscillators] = useState([]);
   const [additionalSoundControls, setSoundControls] = useState([]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
@@ -154,7 +154,9 @@ const App = () => {
   const replaceOscillator = oscillator => {
     setOscillators(prev => [...prev, oscillator]);
   }
+  const clearOscillators = () => setOscillators([]);
   const playAdditionalNotes = () => {
+    clearOscillators();
     console.log('playing additional:', additionalSoundControls)
     additionalSoundControls.forEach(
       ({ notes, context, synth, bpm }, _, __) => {
@@ -173,6 +175,7 @@ const App = () => {
         context={ context }
         addNewSoundControls={ addNewSoundControls }
         primary={ true }
+        clearOscillators={ clearOscillators }
         useOscillator={ replaceOscillator }
         addToAdditionalNotes={ () => {} }
         playAdditionalNotes={ playAdditionalNotes }
@@ -187,6 +190,7 @@ const App = () => {
                 key={ desc.key }
                 context={ context }
                 addNewSoundControls={ desc.addNewSoundControls }
+                clearOscillators={ clearOscillators }
                 useOscillator={ replaceOscillator }
                 addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
                 primary={ desc.primary }

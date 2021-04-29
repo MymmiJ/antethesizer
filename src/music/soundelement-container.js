@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import {Note} from 'octavian';
+import { Chord } from 'octavian';
 import {
     Button,
     Grid,
@@ -56,7 +56,7 @@ const SoundElementContainer = ({
                 segment,
                 uuid: uuidv4()
             });
-            addNewNotes(segment.action, segment.mood, new Note(segment.root), segment.repeats);
+            addNewNotes(segment.action, segment.mood, new Chord(segment.root), segment.repeats);
             return next;
         })
     }

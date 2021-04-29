@@ -8,7 +8,7 @@ import {
     TextField,
     Typography
 } from '@material-ui/core';
-import { Note } from 'octavian';
+import { Chord } from 'octavian';
 import {
     piece,
     section,
@@ -90,7 +90,7 @@ const Segment = ({
         <Grid item>
             <TextField onChange={ ({ target: { value }}) => {
                 try {
-                    const rootNote = new Note(value);
+                    const rootNote = new Chord(value);
                     regenerateNotes(mood, rootNote, repeats);
                 } catch {
                     console.warn(`Invalid root note: ${ value }`)
@@ -111,7 +111,7 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing value: ', value);
                     try {
-                        regenerateNotes(mood, new Note(root), repeats);
+                        regenerateNotes(mood, new Chord(root), repeats);
                     } catch {
                         console.warn(`Invalid mood: ${ value }`)
                     }
@@ -128,7 +128,7 @@ const Segment = ({
                 console.log('Changing repeats: ', value);
                 try {
                     if(value > 0) {
-                        regenerateNotes(mood, new Note(root), value);
+                        regenerateNotes(mood, new Chord(root), value);
                     }
                 } catch {
                     console.warn(`Invalid repeat value: ${ value }`)

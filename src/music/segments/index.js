@@ -1,4 +1,4 @@
-import {Note} from 'octavian';
+import { Chord } from 'octavian';
 
 // Move to constants folder
 const TENSION = 'tension';
@@ -95,10 +95,10 @@ const diatom = (root, mood) => {
     let next;
     const alteredRoot = alterMethod ? root[alterMethod]() : root;
     try {
-        next = alteredRoot[method]();
+        next = alteredRoot[method]().toChord();
     } catch (error) {
         console.log('error, method:', method, alteredRoot);
-        const safeNote = new Note(pick(startingNotes));
+        const safeNote = new Chord(pick(startingNotes));
         return [safeNote, safeNote];
     }
     return [root,next];
@@ -107,7 +107,7 @@ const diatom = (root, mood) => {
 const createDiatoms = (rootNote, moods = []) => {
     const notes = moods.reduce(
         (accumulator, mood) => {
-            const next = diatom(accumulator[accumulator.length-1], mood);
+            const next = diatom(accumulator[accumulator.length-1].notes[0], mood);
             return [...accumulator, next[1]];
         },
         [rootNote]

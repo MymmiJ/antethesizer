@@ -27,11 +27,11 @@ const playNote = (frequency, context, lengthOfNote, synth = SINE) => {
 
 const playNotes = (notes, context, synth, bpm) => {
     const { timeBeforeNewNote, lengthOfNote } = getTimes(bpm);
-    notes.map((note, i) => {
-        setTimeout(
-            () => playNote(note.frequency, context, lengthOfNote, synth),
-            i * timeBeforeNewNote
-    )});
+    notes.map((chord, i) => chord.frequencies.map(
+            frequency => setTimeout(
+                () => playNote(frequency, context, lengthOfNote, synth),
+                i * timeBeforeNewNote
+        )));
 }
 
 // Note helpers ends
@@ -157,7 +157,13 @@ const SoundControls = ({
                             break;
                     }
                     return <span key={ `text-${i}` } style={{ color }}>
-                    { noteSegment.map(note =>`${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`).join(' ') }&nbsp;
+                    { noteSegment.map(chord => {
+                        if(chord.notes.length > 1) {
+                            return `[${ chord.notes.map(note => `${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`) }] `
+                        }
+                        const note = chord.notes[0];
+                        return `${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`
+                    }).join(' ') }&nbsp;
                 </span>
                 }) }
             </Typography>

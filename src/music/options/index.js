@@ -14,7 +14,7 @@ import {
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
 } from '../presets';
 import { RELEASE, TENSION } from '../segments';
-import { Note } from 'octavian';
+import { Chord } from 'octavian';
 import Option from './global';
 
 const OptionMenu = ({
@@ -69,7 +69,7 @@ const OptionMenu = ({
                 onChange={ ({ target: { value }}) => setDefaultRootNote(value) }
                 onBlur={ ({ target: { value }}) => {
                     try {
-                        const test = new Note(value);
+                        const test = new Chord(value);
                     } catch {
                         console.warn('Invalid value for default note, resetting to C3', value);
                         setDefaultRootNote('C3');

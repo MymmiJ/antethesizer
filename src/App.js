@@ -52,7 +52,6 @@ const light_theme = createMuiTheme({
  * # - in progress
  * UI:
  * - accessibility review (aria+contrast-focused)! 1
- * - Display sound as per https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
  * - Explore 'new track' button to _below_ each track, to give more contextual clues for use
  * - Make light theme look better (Note, passage colors)
  * - Light/dark theme toggle
@@ -105,6 +104,8 @@ const light_theme = createMuiTheme({
  *  - Improve generation by allowing 'motion towards' particular notes
  *  - Improve generation by generating in batches of 2 with option for truncated gen (i.e. short phrase returns 4, long phrase returns 8).
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
+ * Visualization:
+ * - Add more options to viz, (flame, bar?) using https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode as guide
  * Code:
  * - Refactor to generate sound controls from just one array
  * 
@@ -194,7 +195,6 @@ const App = () => {
                 removeSelf={ () => removeSelf(desc.key) } />
           )
       }
-      {/* Currently only displaying the most recent note! */}
       <Oscilloscope context={ context } source={ oscillators[oscillators.length-1] }/>
     </ThemeProvider>
   );

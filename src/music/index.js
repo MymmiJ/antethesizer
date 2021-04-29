@@ -8,7 +8,7 @@ import {
 import SoundElementContainer from './soundelement-container';
 import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
-    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
+    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS
 } from './presets';
 import { RELEASE } from './segments/constants';
 

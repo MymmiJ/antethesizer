@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
-    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
+    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS
 } from '../presets';
 import { RELEASE, TENSION } from '../segments/constants';
 import { Chord } from 'octavian';
@@ -54,7 +54,6 @@ const OptionMenu = ({
                 <MenuItem value={PLUCKED}>PLUCKED</MenuItem>
                 <MenuItem value={VAMPIRE_CASTLE}>VAMPIRE CASTLE</MenuItem>
                 <MenuItem value={BIT_VOICE}>8 BIT VOICE</MenuItem>
-                <MenuItem value={DRUM}>PERCUSSIVE</MenuItem>
                 <MenuItem value={WINE_GLASS}>WINE GLASS</MenuItem>
             </Select>
         </Grid>

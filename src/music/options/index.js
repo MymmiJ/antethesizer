@@ -13,7 +13,7 @@ import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
 } from '../presets';
-import { RELEASE, TENSION } from '../segments';
+import { RELEASE, TENSION } from '../segments/constants';
 import { Chord } from 'octavian';
 import Option from './global';
 

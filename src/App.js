@@ -57,6 +57,7 @@ const light_theme = createMuiTheme({
  * - Explore 'new track' button to _below_ each track, to give more contextual clues for use
  * - Make light theme look better (Note, passage colors)
  * - Light/dark theme toggle
+ * - 'Regenerate all' button to force all notes to regenerate in a track
  * Options Menu:
  * - Custom synths via. wavetable 1
  * - Import/export wavetables as JSON
@@ -66,6 +67,7 @@ const light_theme = createMuiTheme({
  *    - just generally keep track of things rather than trying to do things hierarchically!
  * - Allow/add multiple generators per pattern
  * - Allow composing synths together
+ * - Allow specifying chord bias
  * Sections:
  * - Allow specifying the mood of subsections*
  * - Allow inserting specfic runs of notes
@@ -78,12 +80,11 @@ const light_theme = createMuiTheme({
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
  * Ornaments:
- *  - Chords 1
- *  - Allow 'skipped' notes
- *  - Arpeggios
+ *  - Arpeggios 1
  *  - Acciaccatura/trills etc.
  *  - Microtonal shifts
  *  - (more) vibrato/tremolo
+ *  - Allow 'skipped' notes
  * Rhythm:
  *  - time signature
  *  - accents
@@ -95,7 +96,7 @@ const light_theme = createMuiTheme({
  *  - vary dynamics based on mood
  * - vary dynamics based on time signature
  * Motifs:
- *  - Enable inserting motifs to be repeated, consisting of smaller sections with notes specified
+ *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
  * Generation:
  *  - Improve generation by using pickBiasLate to descend slowly 1
  *  - Improve generation by remembering _first_ root Note of series
@@ -106,7 +107,6 @@ const light_theme = createMuiTheme({
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
  * Code:
  * - Refactor to generate sound controls from just one array
- * 
  * 
  */
 const defaultGlobalOptions = {

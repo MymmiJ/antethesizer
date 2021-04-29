@@ -12,10 +12,8 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SoundElements, { Segment, SEGMENTS } from './sound-elements';
 import { v4 as uuidv4 } from 'uuid'; 
-import {
-    RELEASE,
-    repeatNotes,
-} from './segments';
+import { repeatNotes } from './segments';
+import { RELEASE } from './segments/constants';
 import OptionMenu from './options';
 
 const generateNotes = (f, mood, rootNote, repeats) => {

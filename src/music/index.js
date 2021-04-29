@@ -10,7 +10,7 @@ import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
 } from './presets';
-import { RELEASE } from './segments';
+import { RELEASE } from './segments/constants';
 
 // Play helpers - Put these in their own folder
 const getTimes = bpm => {

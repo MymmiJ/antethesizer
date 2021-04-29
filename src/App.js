@@ -6,6 +6,14 @@ import { playNotes, SoundControls } from './music';
 import Oscilloscope from './visualize/oscilloscope';
 import { v4 as uuidv4 } from 'uuid';
 
+const sharedOverrides = {
+  MuiButton: {
+    root: {
+      borderRadius: 2,
+    }, 
+  }, 
+}
+
 const dark_theme = createMuiTheme({
   typography: {
     fontFamily: 'Monospace',
@@ -23,13 +31,7 @@ const dark_theme = createMuiTheme({
       default: "#303030"
     },
   },
-  overrides: {
-    MuiButton: {
-      root: {
-        borderRadius: 0,
-      }, 
-    }, 
-  },
+  overrides: sharedOverrides,
 });
 
 const light_theme = createMuiTheme({
@@ -49,13 +51,7 @@ const light_theme = createMuiTheme({
       default: "#DFDFDF"
     },
   },
-  overrides: {
-    MuiButton: {
-      root: {
-        borderRadius: 0,
-      }, 
-    }, 
-  },
+  overrides: sharedOverrides,
 });
 
 /**

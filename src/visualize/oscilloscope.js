@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Button, Drawer, Grid, Typography } from "@material-ui/core";
+import { Box, Button, Drawer, Grid } from "@material-ui/core";
 import Canvas from './Canvas';
 
 const Oscilloscope = ({ context, source }) => {
@@ -71,7 +71,7 @@ const Oscilloscope = ({ context, source }) => {
         }
     }
 
-    return <div>
+    return <Box boxShadow={3}>
         <Button color={'secondary'} variant="outlined" onClick={toggleOpen}>OSCILLOSCOPE</Button>
         <Drawer anchor={'bottom'} variant="persistent" open={isOpen}>
                 <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-between'}>
@@ -89,7 +89,7 @@ const Oscilloscope = ({ context, source }) => {
                 </Grid>
                 <Canvas height={'18%'}width={'100%'} draw={ draw }/>
         </Drawer>
-    </div>
+    </Box>
 }
 
 export default Oscilloscope;

@@ -52,7 +52,6 @@ const light_theme = createMuiTheme({
  * # - in progress
  * UI:
  * - accessibility review (aria+contrast-focused)! 1
- * - Explore 'new track' button to _below_ each track, to give more contextual clues for use
  * - Make light theme look better (Note, passage colors)
  * - Light/dark theme toggle
  * - 'Regenerate all' button to force all notes to regenerate in a track
@@ -107,6 +106,9 @@ const light_theme = createMuiTheme({
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
  * Visualization:
  * - Add more options to viz, (flame, bar?) using https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode as guide
+ * - Color picker
+ * - Manually handle scale
+ * - Improve appearance of sine viz
  * Code:
  * - Refactor to generate sound controls from just one array
  * 
@@ -116,7 +118,7 @@ const defaultGlobalOptions = {
 }
 
 const App = () => {
-  const [context, _] = useState(new AudioContext());
+  const [context,] = useState(new AudioContext());
   const [oscillators, setOscillators] = useState([]);
   const [additionalSoundControls, setSoundControls] = useState([]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);

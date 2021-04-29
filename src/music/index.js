@@ -6,10 +6,7 @@ import {
     Typography
 } from '@material-ui/core';
 import SoundElementContainer from './soundelement-container';
-import {
-    SINE, SAWTOOTH, SQUARE, TRIANGLE,
-    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS
-} from './presets';
+import { SINE, BOWED } from './presets';
 import { RELEASE } from './segments/constants';
 
 // Play helpers - Put these in their own folder
@@ -58,7 +55,7 @@ const SoundControls = ({
     const [notes, setNotes] = useState([]);
     const [defaultMood, setDefaultMood] = useState(RELEASE);
     const [defaultRootNote, setDefaultRootNote] = useState('C3');
-    const [synth, setSynth] = useState(SAWTOOTH);
+    const [synth, setSynth] = useState(BOWED);
     const [lockedIndexes, setLocks] = useState([]);
 
     const [localOptions, setLocalOptions] = useState(globalOptions);
@@ -183,7 +180,7 @@ const SoundControls = ({
         }
         {
             primary ?
-            <div id='remove-track-placeholde'></div> :
+            <div id='remove-track-placeholder'></div> :
             <Grid item xs={10}>
                 <Button color={'secondary'} onClick={ removeSelf }>REMOVE TRACK</Button>
             </Grid>

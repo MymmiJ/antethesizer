@@ -1,8 +1,8 @@
 import { Chord } from 'octavian';
 import {
-    TENSION, RELEASE, EITHER,
+    TENSION, RELEASE,
     startingNotes,
-    tenseMoves, releaseMoves, octaveMoves } from './constants';
+    tenseMoves, releaseMoves } from './constants';
 import chordStrategies from './chords';
 
 // Move to utilities folder

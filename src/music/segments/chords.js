@@ -1,4 +1,4 @@
-import { TENSION, RELEASE, EITHER, tenseMoves, releaseMoves, octaveMoves} from './constants';
+import { TENSION, RELEASE, EITHER, tenseMoves, releaseMoves } from './constants';
 import { pick } from './index';
 
 const chordStrategies = {

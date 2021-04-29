@@ -1,13 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
-    Button,
     Grid,
     Tooltip,
     Select,
     MenuItem,
     InputLabel,
-    TextField,
-    Typography
+    TextField
 } from '@material-ui/core';
 import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
@@ -68,7 +66,8 @@ const OptionMenu = ({
                 onChange={ ({ target: { value }}) => setDefaultRootNote(value) }
                 onBlur={ ({ target: { value }}) => {
                     try {
-                        const test = new Chord(value);
+                        // eslint-disable-next-line no-unused-vars
+                        new Chord(value);
                     } catch {
                         console.warn('Invalid value for default note, resetting to C3', value);
                         setDefaultRootNote('C3');

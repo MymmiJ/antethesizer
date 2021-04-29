@@ -3,9 +3,8 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { playNotes, SoundControls } from './music';
-import { v4 as uuidv4 } from 'uuid'; 
-import Option from './music/options/global';
-import { TextField } from '@material-ui/core';
+import Oscilloscope from './visualize/oscilloscope';
+import { v4 as uuidv4 } from 'uuid';
 
 const dark_theme = createMuiTheme({
   typography: {
@@ -68,6 +67,7 @@ const light_theme = createMuiTheme({
  * - Allow/add multiple generators per pattern
  * - Allow composing synths together
  * - Allow specifying chord bias
+ * - Allow distortion
  * Sections:
  * - Allow specifying the mood of subsections*
  * - Allow inserting specfic runs of notes
@@ -93,7 +93,7 @@ const light_theme = createMuiTheme({
  *  - syncopation
  * - Update global 
  * Dynamics:
- *  - vary dynamics based on mood
+ * - vary dynamics based on mood 1
  * - vary dynamics based on time signature
  * Motifs:
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
@@ -113,7 +113,10 @@ const defaultGlobalOptions = {
   bpm: 120
 }
 
+const context = new AudioContext();
+
 const App = () => {
+  const [oscillators, setOscillators] = useState([]);
   const [additionalSoundControls, setSoundControls] = useState([]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
   const setGlobalOption = (key) => ({ target: { value } }) => {
@@ -147,13 +150,15 @@ const App = () => {
         )
     ))
   }
-
+  const replaceOscillator = oscillator => {
+    setOscillators(prev => [...prev, oscillator]);
+  }
   const playAdditionalNotes = () => {
     console.log('playing additional:', additionalSoundControls)
     additionalSoundControls.forEach(
       ({ notes, context, synth, bpm }, _, __) => {
         if(notes && context && synth){
-          playNotes(notes.flat(), context, synth, bpm);
+          playNotes(notes.flat(), context, synth, bpm, replaceOscillator);
         }
       }
     );
@@ -164,8 +169,10 @@ const App = () => {
       <CssBaseline/>
       <SoundControls
         key='alpha-and-omega'
+        context={ context }
         addNewSoundControls={ addNewSoundControls }
         primary={ true }
+        useOscillator={ replaceOscillator }
         addToAdditionalNotes={ () => {} }
         playAdditionalNotes={ playAdditionalNotes }
         setGlobalOption={ setGlobalOption }
@@ -177,7 +184,9 @@ const App = () => {
             desc =>
               <SoundControls
                 key={ desc.key }
+                context={ context }
                 addNewSoundControls={ desc.addNewSoundControls }
+                useOscillator={ replaceOscillator }
                 addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
                 primary={ desc.primary }
                 setGlobalOption={ setGlobalOption }
@@ -185,6 +194,8 @@ const App = () => {
                 removeSelf={ () => removeSelf(desc.key) } />
           )
       }
+      {/* Currently only displaying the most recent note! */}
+      <Oscilloscope context={ context } source={ oscillators[oscillators.length-1] }/>
     </ThemeProvider>
   );
 }

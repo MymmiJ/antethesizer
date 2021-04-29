@@ -54,7 +54,7 @@ class Synth {
         this.waveform = waveform;
     }
 
-    playNote(context, frequency, noteLength) {
+    playNote(context, frequency, noteLength, useOscillator=()=>{}) {
         const oscillator = this.getOscillator(context, frequency);
         if(this.vibratoFacts) {
             this.vibrato(
@@ -64,6 +64,8 @@ class Synth {
                 this.vibratoFacts[1],
                 (noteLength/2));
         }
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useOscillator(oscillator);
         oscillator.start(context.currentTime);
     
         setTimeout(() => oscillator.stop(context.currentTime), noteLength);

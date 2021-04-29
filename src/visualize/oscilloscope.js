@@ -65,7 +65,7 @@ const Oscilloscope = ({ context, source }) => {
     }
 
     return <Box boxShadow={3}>
-        <Button color={'secondary'} variant="outlined" onClick={toggleOpen}>OSCILLOSCOPE</Button>
+        <Button color={'secondary'} variant="contained" onClick={toggleOpen}>OSCILLOSCOPE</Button>
         <Drawer anchor={'bottom'} variant="persistent" open={isOpen}>
             <Box boxShadow={3}>
                 <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-between'}>
@@ -74,7 +74,7 @@ const Oscilloscope = ({ context, source }) => {
                     </Grid>
                     <Grid item xs={2}>
                         <Button
-                            variant="outlined"
+                            variant="contained"
                             color={'primary'}
                             onClick={() => setIsOpen(false)}>
                                 CLOSE

@@ -23,6 +23,13 @@ const dark_theme = createMuiTheme({
       default: "#303030"
     },
   },
+  overrides: {
+    MuiButton: {
+      root: {
+        borderRadius: 0,
+      }, 
+    }, 
+  },
 });
 
 const light_theme = createMuiTheme({
@@ -41,6 +48,13 @@ const light_theme = createMuiTheme({
     background: {
       default: "#DFDFDF"
     },
+  },
+  overrides: {
+    MuiButton: {
+      root: {
+        borderRadius: 0,
+      }, 
+    }, 
   },
 });
 

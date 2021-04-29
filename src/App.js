@@ -57,16 +57,17 @@ const light_theme = createMuiTheme({
  * - Explore 'new track' button to _below_ each track, to give more contextual clues for use
  * - Make light theme look better (Note, passage colors)
  * - Light/dark theme toggle
+ * - 'Regenerate all' button to force all notes to regenerate in a track
  * Options Menu:
- * - Custom synths via. wavetable
+ * - Custom synths via. wavetable 1
  * - Import/export wavetables as JSON
  * - Display wavetable - try: https://github.com/indutny/fft.js/
  * - Use display to input back into wavetable
- * - default root note for all segments 1
  * - Overall direction (determine root note by increasing/decreasing from source)
+ *    - just generally keep track of things rather than trying to do things hierarchically!
  * - Allow/add multiple generators per pattern
- * - Allow custom synths
  * - Allow composing synths together
+ * - Allow specifying chord bias
  * Sections:
  * - Allow specifying the mood of subsections*
  * - Allow inserting specfic runs of notes
@@ -79,23 +80,23 @@ const light_theme = createMuiTheme({
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
  * Ornaments:
- *  - Chords 1
- *  - Arpeggios
+ *  - Arpeggios 1
  *  - Acciaccatura/trills etc.
  *  - Microtonal shifts
  *  - (more) vibrato/tremolo
+ *  - Allow 'skipped' notes
  * Rhythm:
- *  - bpm 1
  *  - time signature
  *  - accents
- *  - individual note lengths (use American quarter note system)
+ *  - change individual note lengths (use American quarter note system) 1
  *  - allow use of hemisemidemiquaver system
  *  - syncopation
+ * - Update global 
  * Dynamics:
  *  - vary dynamics based on mood
  * - vary dynamics based on time signature
  * Motifs:
- *  - Enable inserting motifs to be repeated, consisting of smaller sections with notes specified
+ *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
  * Generation:
  *  - Improve generation by using pickBiasLate to descend slowly 1
  *  - Improve generation by remembering _first_ root Note of series
@@ -104,7 +105,8 @@ const light_theme = createMuiTheme({
  *  - Improve generation by allowing 'motion towards' particular notes
  *  - Improve generation by generating in batches of 2 with option for truncated gen (i.e. short phrase returns 4, long phrase returns 8).
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
- * 
+ * Code:
+ * - Refactor to generate sound controls from just one array
  * 
  */
 const defaultGlobalOptions = {
@@ -127,6 +129,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: null,
+    ...defaultGlobalOptions,
     addNewSoundControls
   }]);
   const addToAdditionalNotes = (key) => ({ value, context, synth, bpm }) => {
@@ -169,17 +172,18 @@ const App = () => {
         globalOptions={ globalOptions }
          />
       {
-        additionalSoundControls.map(
-          desc =>
-            <SoundControls
-              key={ desc.key }
-              addNewSoundControls={ desc.addNewSoundControls }
-              addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
-              primary={ desc.primary }
-              setGlobalOption={ setGlobalOption }
-              globalOptions={ globalOptions }
-              removeSelf={ () => removeSelf(desc.key) } />
-        )
+        additionalSoundControls.length > 0 &&
+          additionalSoundControls.map(
+            desc =>
+              <SoundControls
+                key={ desc.key }
+                addNewSoundControls={ desc.addNewSoundControls }
+                addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
+                primary={ desc.primary }
+                setGlobalOption={ setGlobalOption }
+                globalOptions={ globalOptions }
+                removeSelf={ () => removeSelf(desc.key) } />
+          )
       }
     </ThemeProvider>
   );

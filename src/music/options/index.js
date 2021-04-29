@@ -13,7 +13,8 @@ import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, DRUM, WINE_GLASS
 } from '../presets';
-import { RELEASE, TENSION } from '../segments';
+import { RELEASE, TENSION } from '../segments/constants';
+import { Chord } from 'octavian';
 import Option from './global';
 
 const OptionMenu = ({
@@ -21,6 +22,8 @@ const OptionMenu = ({
     setSynth,
     defaultMood,
     setDefaultMood,
+    defaultRootNote,
+    setDefaultRootNote,
     globalOptions,
     setGlobalOption,
     localOptions,
@@ -54,6 +57,28 @@ const OptionMenu = ({
                 <MenuItem value={DRUM}>PERCUSSIVE</MenuItem>
                 <MenuItem value={WINE_GLASS}>WINE GLASS</MenuItem>
             </Select>
+        </Grid>
+        <Grid item>
+            <Tooltip
+                placement={ 'top' }
+                title={ 'SELECT DEFAULT ROOT NOTE' }
+                aria-label={ 'select default root note' }>
+                <InputLabel id="root-note-set">DEFAULT ROOT NOTE:</InputLabel>
+            </Tooltip>
+            <TextField
+                onChange={ ({ target: { value }}) => setDefaultRootNote(value) }
+                onBlur={ ({ target: { value }}) => {
+                    try {
+                        const test = new Chord(value);
+                    } catch {
+                        console.warn('Invalid value for default note, resetting to C3', value);
+                        setDefaultRootNote('C3');
+                    }
+                }}
+                label={'Root Note'}
+                id={'root-note-set'}
+                placeholder={'A#1, Bb8, C3'}
+                value={ defaultRootNote } />
         </Grid>
         <Grid item>
             <Tooltip

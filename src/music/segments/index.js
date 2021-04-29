@@ -1,37 +1,9 @@
-import {Note} from 'octavian';
-
-// Move to constants folder
-const TENSION = 'tension';
-const RELEASE = 'release';
-const EITHER = 'either';
-
-const startingNotes = ['C3','D3','E3','F3','G3','A3','B3','C4'];
-
-const tenseMoves = [
-    'minorSecond',
-    'majorSecond',
-    'minorThird',
-    'perfectFourth',
-    'diminishedFifth',
-    'minorSixth',
-    'majorSixth',
-    'minorSeventh',
-    'majorSeventh'
-];
-
-const releaseMoves = [
-    'majorThird',
-    'perfectFifth',
-    'downOctave',
-    // 'perfectOctave',
-    false
-];
-
-const octaveMoves = [
-    'downOctave',
-    'perfectOctave'
-]
-// constants
+import { Chord } from 'octavian';
+import {
+    TENSION, RELEASE, EITHER,
+    startingNotes,
+    tenseMoves, releaseMoves, octaveMoves } from './constants';
+import chordStrategies from './chords';
 
 // Move to utilities folder
 const pick = (array) => array[Math.floor(Math.random()*array.length)];
@@ -83,7 +55,9 @@ const diatom = (root, mood) => {
         method = pickBiasEarly(releaseMoves);
         if(method === false) {
             console.log('false; selecting root',  root);
-            return [root, root];
+            let next = root.toChord();
+            next = chordStrategies.random.withMood({ chord: next, mood });
+            return [root, next];
         }
         // Falling more likely for release
         if(!method.includes('Octave')
@@ -95,10 +69,11 @@ const diatom = (root, mood) => {
     let next;
     const alteredRoot = alterMethod ? root[alterMethod]() : root;
     try {
-        next = alteredRoot[method]();
+        next = alteredRoot[method]().toChord();
+        next = chordStrategies.random.withMood({ chord: next, mood });
     } catch (error) {
-        console.log('error, method:', method, alteredRoot);
-        const safeNote = new Note(pick(startingNotes));
+        console.log('error, method:', method, alteredRoot, error);
+        const safeNote = new Chord(pick(startingNotes));
         return [safeNote, safeNote];
     }
     return [root,next];
@@ -107,7 +82,7 @@ const diatom = (root, mood) => {
 const createDiatoms = (rootNote, moods = []) => {
     const notes = moods.reduce(
         (accumulator, mood) => {
-            const next = diatom(accumulator[accumulator.length-1], mood);
+            const next = diatom(accumulator[accumulator.length-1].notes[0], mood);
             return [...accumulator, next[1]];
         },
         [rootNote]
@@ -144,6 +119,10 @@ const moodsFromMood = (mood, n = 2) => {
         }
     }
     return moods;
+}
+
+const noteChange = (rootNote, mood) => {
+    return createDiatoms(rootNote, [mood]);
 }
 
 const shortPhrase = (rootNote, mood) => {
@@ -202,10 +181,7 @@ export {
     passage,
     longPhrase,
     shortPhrase,
-    diatom,
-    TENSION,
-    RELEASE,
-    EITHER,
+    noteChange,
     pick,
     startingNotes
 };

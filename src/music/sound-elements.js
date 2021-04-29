@@ -8,17 +8,16 @@ import {
     TextField,
     Typography
 } from '@material-ui/core';
-import { Note } from 'octavian';
+import { Chord } from 'octavian';
 import {
     piece,
     section,
     passage,
     longPhrase,
     shortPhrase,
-    diatom,
-    RELEASE,
-    TENSION
+    noteChange
 } from './segments';
+import { RELEASE, TENSION } from './segments/constants';
 
 // Move this into a config file
 const SEGMENTS = {
@@ -53,13 +52,13 @@ const SEGMENTS = {
     SHORT_PHRASE: {
         name: 'SHORT PHRASE',
         action: shortPhrase,
-        subsection: 'DIATOM', // TODO: Better name for this!
+        subsection: 'NOTE_CHANGE',
         defaultSubsections: 2,
         gridSize: 10
     },
-    DIATOM: {
+    NOTE_CHANGE: {
         name: 'NOTE CHANGE',
-        action: diatom,
+        action: noteChange,
         subsection: null,
         defaultSubsections: 2,
         gridSize: 10
@@ -90,14 +89,14 @@ const Segment = ({
         <Grid item>
             <TextField onChange={ ({ target: { value }}) => {
                 try {
-                    const rootNote = new Note(value);
+                    const rootNote = new Chord(value);
                     regenerateNotes(mood, rootNote, repeats);
                 } catch {
                     console.warn(`Invalid root note: ${ value }`)
                 }
                 setRootNote(value);
                 
-             } } label={'Root Note'} id={`root-note-${ name }-${ root }`} placeholder={'A#1, Bb8, C3'} value={ root } />
+             } } label={'Root Note'} placeholder={'A#1, Bb8, C3'} value={ root } />
         </Grid>
         <Grid>
             <Tooltip placement={ 'top' } title={ 'SELECT MOOD TO RESOLVE TO' } aria-label={ 'select a mood to resolve the music segment towards' }>
@@ -111,7 +110,7 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing value: ', value);
                     try {
-                        regenerateNotes(mood, new Note(root), repeats);
+                        regenerateNotes(mood, new Chord(root), repeats);
                     } catch {
                         console.warn(`Invalid mood: ${ value }`)
                     }
@@ -128,7 +127,7 @@ const Segment = ({
                 console.log('Changing repeats: ', value);
                 try {
                     if(value > 0) {
-                        regenerateNotes(mood, new Note(root), value);
+                        regenerateNotes(mood, new Chord(root), value);
                     }
                 } catch {
                     console.warn(`Invalid repeat value: ${ value }`)
@@ -195,7 +194,7 @@ const SoundElements = ({addSegment}) => {
         <Grid item>
             <Button
                 id={'note_change'}
-                onClick={ () => addSegment(SEGMENTS.DIATOM) }
+                onClick={ () => addSegment(SEGMENTS.NOTE_CHANGE) }
             >
                 Note Change
                 ♬

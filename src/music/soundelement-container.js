@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import {Note} from 'octavian';
+import { Chord } from 'octavian';
 import {
     Button,
     Grid,
@@ -12,10 +12,8 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SoundElements, { Segment, SEGMENTS } from './sound-elements';
 import { v4 as uuidv4 } from 'uuid'; 
-import {
-    RELEASE,
-    repeatNotes,
-} from './segments';
+import { repeatNotes } from './segments';
+import { RELEASE } from './segments/constants';
 import OptionMenu from './options';
 
 const generateNotes = (f, mood, rootNote, repeats) => {
@@ -32,6 +30,8 @@ const SoundElementContainer = ({
     setSynth,
     defaultMood,
     setDefaultMood,
+    defaultRootNote,
+    setDefaultRootNote,
     addNewSoundControls,
     globalOptions,
     setGlobalOption,
@@ -49,12 +49,12 @@ const SoundElementContainer = ({
 
     const addSegment = (segmentType) => {
         setSegments(prev => {
-            const segment = {...segmentType, root: 'C3', repeats: 1, mood: defaultMood };
+            const segment = {...segmentType, root: defaultRootNote, repeats: 1, mood: defaultMood };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
             });
-            addNewNotes(segment.action, segment.mood, new Note(segment.root), segment.repeats);
+            addNewNotes(segment.action, segment.mood, new Chord(segment.root), segment.repeats);
             return next;
         })
     }
@@ -132,6 +132,8 @@ const SoundElementContainer = ({
                 setSynth={ setSynth }
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
+                defaultRootNote={ defaultRootNote }
+                setDefaultRootNote={ setDefaultRootNote}
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
                 localOptions={ localOptions }
@@ -148,30 +150,33 @@ const SoundElementContainer = ({
         </AccordionSummary>
         <AccordionDetails>
         <Grid container spacing={1} alignContent={'center'} alignItems={'center'} justify={'center'}>
-            { segments.map((segment, i) => {
-                let color;
-                switch(i % 3) {
-                    case 0:
-                        color = '#EFA2A2';
-                        break;
-                    case 1:
-                        color = '#C6C6EF';
-                        break;
-                    case 2:
-                    default:
-                        color = '#C6EFC6';
-                        break;
-                }
-                return <Segment
-                    key={ segment.uuid }
-                    color={ color }
-                    segmentType={ segment.segment }
-                    setRootNote={ setSegmentField(i, 'root') }
-                    setMood={ setSegmentField(i, 'mood') }
-                    setRepeats={ setSegmentField(i, 'repeats') }
-                    regenerateNotes={ (mood, rootNote, repeats = 1) => regenerateNotes(segment.segment, i, mood, rootNote, repeats) }
-                    removeSegment={ () => removeSegment(i) } />;
-            }) }
+            { segments.length > 0 ?
+                segments.map((segment, i) => {
+                    let color;
+                    switch(i % 3) {
+                        case 0:
+                            color = '#EFA2A2';
+                            break;
+                        case 1:
+                            color = '#C6C6EF';
+                            break;
+                        case 2:
+                        default:
+                            color = '#C6EFC6';
+                            break;
+                    }
+                    return <Segment
+                        key={ segment.uuid }
+                        color={ color }
+                        segmentType={ segment.segment }
+                        setRootNote={ setSegmentField(i, 'root') }
+                        setMood={ setSegmentField(i, 'mood') }
+                        setRepeats={ setSegmentField(i, 'repeats') }
+                        regenerateNotes={ (mood, rootNote, repeats = 1) => regenerateNotes(segment.segment, i, mood, rootNote, repeats) }
+                        removeSegment={ () => removeSegment(i) } />;
+                }) :
+                ''
+            }
         </Grid>
         </AccordionDetails>
         </Accordion>

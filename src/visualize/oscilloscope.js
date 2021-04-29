@@ -41,9 +41,6 @@ const Oscilloscope = ({ context, source }) => {
         
             ctx.lineWidth = 1;
             ctx.strokeStyle = "rgb(0, 255, 0)";
-
-            ctx.font = "30px Monospace";
-            ctx.strokeText(`Scale: ${ scale }`, 10, 50);
         
             ctx.beginPath();
         
@@ -56,14 +53,10 @@ const Oscilloscope = ({ context, source }) => {
                 if (i === 0) {
                     ctx.moveTo(x, y);
                 } else {
-                    // Lessen impact of antialiasing artefacts
-                    if(y % 1 === 0){
-                        y += 0.5
-                    }
                     ctx.lineTo(x, y);
                 }
             
-                x += Math.floor(sliceWidth)+0.5;
+                x += sliceWidth;
             }
         
             ctx.lineTo(canvas.width, canvas.height / 2);
@@ -74,6 +67,7 @@ const Oscilloscope = ({ context, source }) => {
     return <Box boxShadow={3}>
         <Button color={'secondary'} variant="outlined" onClick={toggleOpen}>OSCILLOSCOPE</Button>
         <Drawer anchor={'bottom'} variant="persistent" open={isOpen}>
+            <Box boxShadow={3}>
                 <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-between'}>
                     <Grid item xs={2}>
                         <Button disabled={true}>SCALE: { scale }x</Button>
@@ -83,11 +77,12 @@ const Oscilloscope = ({ context, source }) => {
                             variant="outlined"
                             color={'primary'}
                             onClick={() => setIsOpen(false)}>
-                                CLOSE OSCILLOSCOPE
+                                CLOSE
                         </Button>
                     </Grid>
                 </Grid>
-                <Canvas height={'18%'}width={'100%'} draw={ draw }/>
+            </Box>
+            <Canvas height={'50px'} draw={ draw }/>
         </Drawer>
     </Box>
 }

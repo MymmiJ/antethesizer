@@ -10,7 +10,7 @@ import {
     Typography
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import SoundElements, { Segment, SEGMENTS } from './sound-elements';
+import SoundElements, { Segment } from './sound-elements';
 import { v4 as uuidv4 } from 'uuid'; 
 import { repeatNotes } from './segments';
 import { RELEASE } from './segments/constants';
@@ -59,6 +59,15 @@ const SoundElementContainer = ({
         })
     }
 
+    const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='C3', repeats=1) => {
+        const nextNotes = generateNotes(segmentType.action, mood, rootNote, repeats);
+        setNotes(prev => {
+            const next = [...prev];
+            next[i] = nextNotes;
+            return next;
+        });
+    }
+
     const setSegmentField = (index, field) => (value) => {
         setSegments(prev => prev.map((seg, i) => {
             const result = seg;
@@ -66,15 +75,7 @@ const SoundElementContainer = ({
                 result.segment[field] = value;
             }
             return result;
-        }))
-    }
-
-    const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='C3', repeats=1) => {
-        setNotes(prev => {
-            const next = [...prev];
-            next[i] = generateNotes(segmentType.action, mood, rootNote, repeats);
-            return next;
-        });
+        }));
     }
     const removeSegment = (i) => {
         setSegments(filterIndex(i));

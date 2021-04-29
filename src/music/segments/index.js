@@ -1,8 +1,8 @@
 import { Chord } from 'octavian';
 import {
-    TENSION, RELEASE, EITHER,
+    TENSION, RELEASE,
     startingNotes,
-    tenseMoves, releaseMoves, octaveMoves } from './constants';
+    tenseMoves, releaseMoves } from './constants';
 import chordStrategies from './chords';
 
 // Move to utilities folder
@@ -72,7 +72,7 @@ const diatom = (root, mood) => {
         next = alteredRoot[method]().toChord();
         next = chordStrategies.random.withMood({ chord: next, mood });
     } catch (error) {
-        console.log('error, method:', method, alteredRoot, error);
+        console.log('error, method:', method, alteredRoot);
         const safeNote = new Chord(pick(startingNotes));
         return [safeNote, safeNote];
     }

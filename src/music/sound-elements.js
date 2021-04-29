@@ -93,8 +93,9 @@ const Segment = ({
                     regenerateNotes(mood, rootNote, repeats);
                 } catch {
                     console.warn(`Invalid root note: ${ value }`)
+                } finally {
+                    setRootNote(value);
                 }
-                setRootNote(value);
                 
              } } label={'Root Note'} placeholder={'A#1, Bb8, C3'} value={ root } />
         </Grid>
@@ -110,12 +111,11 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing value: ', value);
                     try {
-                        regenerateNotes(mood, new Chord(root), repeats);
+                        regenerateNotes(value, new Chord(root), repeats);
+                        setMood(value);
                     } catch {
                         console.warn(`Invalid mood: ${ value }`)
                     }
-                    setMood(value);
-                    
                  } }
             >
                 <MenuItem value={TENSION}>TENSION</MenuItem>
@@ -131,9 +131,9 @@ const Segment = ({
                     }
                 } catch {
                     console.warn(`Invalid repeat value: ${ value }`)
+                } finally {
+                    setRepeats(value);
                 }
-                setRepeats(value);
-                
              } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } type={ 'number' } />
         </Grid>
 

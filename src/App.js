@@ -3,9 +3,8 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { playNotes, SoundControls } from './music';
-import { v4 as uuidv4 } from 'uuid'; 
-import Option from './music/options/global';
-import { TextField } from '@material-ui/core';
+import Oscilloscope from './visualize/oscilloscope';
+import { v4 as uuidv4 } from 'uuid';
 
 const dark_theme = createMuiTheme({
   typography: {
@@ -53,8 +52,6 @@ const light_theme = createMuiTheme({
  * # - in progress
  * UI:
  * - accessibility review (aria+contrast-focused)! 1
- * - Display sound as per https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
- * - Explore 'new track' button to _below_ each track, to give more contextual clues for use
  * - Make light theme look better (Note, passage colors)
  * - Light/dark theme toggle
  * - 'Regenerate all' button to force all notes to regenerate in a track
@@ -68,6 +65,7 @@ const light_theme = createMuiTheme({
  * - Allow/add multiple generators per pattern
  * - Allow composing synths together
  * - Allow specifying chord bias
+ * - Allow distortion
  * Sections:
  * - Allow specifying the mood of subsections*
  * - Allow inserting specfic runs of notes
@@ -86,6 +84,7 @@ const light_theme = createMuiTheme({
  *  - (more) vibrato/tremolo
  *  - Allow 'skipped' notes
  * Rhythm:
+ * - drop in replacement for 'setTimeout' with greater accuracy https://stackoverflow.com/questions/196027/is-there-a-more-accurate-way-to-create-a-javascript-timer-than-settimeout
  *  - time signature
  *  - accents
  *  - change individual note lengths (use American quarter note system) 1
@@ -93,7 +92,7 @@ const light_theme = createMuiTheme({
  *  - syncopation
  * - Update global 
  * Dynamics:
- *  - vary dynamics based on mood
+ * - vary dynamics based on mood 1
  * - vary dynamics based on time signature
  * Motifs:
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
@@ -105,6 +104,11 @@ const light_theme = createMuiTheme({
  *  - Improve generation by allowing 'motion towards' particular notes
  *  - Improve generation by generating in batches of 2 with option for truncated gen (i.e. short phrase returns 4, long phrase returns 8).
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
+ * Visualization:
+ * - Add more options to viz, (flame, bar?) using https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode as guide
+ * - Color picker
+ * - Manually handle scale
+ * - Improve appearance of sine viz
  * Code:
  * - Refactor to generate sound controls from just one array
  * 
@@ -114,6 +118,8 @@ const defaultGlobalOptions = {
 }
 
 const App = () => {
+  const [context,] = useState(new AudioContext());
+  const [oscillators, setOscillators] = useState([]);
   const [additionalSoundControls, setSoundControls] = useState([]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
   const setGlobalOption = (key) => ({ target: { value } }) => {
@@ -147,13 +153,17 @@ const App = () => {
         )
     ))
   }
-
+  const replaceOscillator = oscillator => {
+    setOscillators(prev => [...prev, oscillator]);
+  }
+  const clearOscillators = () => setOscillators([]);
   const playAdditionalNotes = () => {
+    clearOscillators();
     console.log('playing additional:', additionalSoundControls)
     additionalSoundControls.forEach(
       ({ notes, context, synth, bpm }, _, __) => {
         if(notes && context && synth){
-          playNotes(notes.flat(), context, synth, bpm);
+          playNotes(notes.flat(), context, synth, bpm, replaceOscillator);
         }
       }
     );
@@ -164,8 +174,11 @@ const App = () => {
       <CssBaseline/>
       <SoundControls
         key='alpha-and-omega'
+        context={ context }
         addNewSoundControls={ addNewSoundControls }
         primary={ true }
+        clearOscillators={ clearOscillators }
+        useOscillator={ replaceOscillator }
         addToAdditionalNotes={ () => {} }
         playAdditionalNotes={ playAdditionalNotes }
         setGlobalOption={ setGlobalOption }
@@ -177,7 +190,10 @@ const App = () => {
             desc =>
               <SoundControls
                 key={ desc.key }
+                context={ context }
                 addNewSoundControls={ desc.addNewSoundControls }
+                clearOscillators={ clearOscillators }
+                useOscillator={ replaceOscillator }
                 addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
                 primary={ desc.primary }
                 setGlobalOption={ setGlobalOption }
@@ -185,6 +201,7 @@ const App = () => {
                 removeSelf={ () => removeSelf(desc.key) } />
           )
       }
+      <Oscilloscope context={ context } source={ oscillators[oscillators.length-1] }/>
     </ThemeProvider>
   );
 }

@@ -14,7 +14,7 @@ import {
     Button,
     Typography,
 } from '@material-ui/core';
-import { EXP, LIN } from '../presets';
+import { BUILT_IN, CUSTOM, EXP, LIN } from '../presets';
 
 const CustomSynthMenu = ({
     customSynthOpen,
@@ -102,15 +102,26 @@ const CustomSynthMenu = ({
                 labelId="simple-waveform"
                 id="simple-waveform-selector"
                 value={ synthValues.waveform.type }
-                onChange={ ()=>{} }>
+                onChange={ event => {
+                    setCurrentSynth(['synthValues', 'waveform', 'superType'])({ target: { value: BUILT_IN } });
+                    setCurrentSynth(['synthValues', 'waveform', 'type'])(event);
+                } }>
                 <MenuItem value={'sine'}>SINE</MenuItem>
                 <MenuItem value={'sawtooth'}>SAWTOOTH</MenuItem>
                 <MenuItem value={'square'}>SQUARE</MenuItem>
                 <MenuItem value={'triangle'}>TRIANGLE</MenuItem>
             </Select>
             <Typography>WAVEFORM FROM WAVETABLE:</Typography>
-            <TextField fullWidth value={synthValues.waveform.real || ''} placeholder={'0,1,0,0.5,0,0.25...'} id="real-waves" label="REALS" />
-            <TextField fullWidth value={synthValues.waveform.iimag || ''} placeholder={'0,0,0,0,0,0...'} id="imag-waves" label="IMAGINARIES" />
+            <TextField fullWidth value={synthValues.waveform.real || ''} placeholder={'0,1,0,0.5,0,0.25...'} id="real-waves" label="REALS"
+                onChange={ event => {
+                    setCurrentSynth(['synthValues', 'waveform', 'superType'])({ target: { value: CUSTOM } });
+                    setCurrentSynth(['synthValues', 'waveform', 'real'])(event);
+                }}/>
+            <TextField fullWidth value={synthValues.waveform.imag || ''} placeholder={'0,0,0,0,0,0...'} id="imag-waves" label="IMAGINARIES"
+                onChange={ event => {
+                    setCurrentSynth(['synthValues', 'waveform', 'superType'])({ target: { value: CUSTOM } });
+                    setCurrentSynth(['synthValues', 'waveform', 'imag'])(event);
+                }}/>
         </DialogContent>
         <DialogActions>
             <Button onClick={closeCustomSynthDialogue} color="primary">

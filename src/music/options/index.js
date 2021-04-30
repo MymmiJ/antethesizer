@@ -83,10 +83,46 @@ const OptionMenu = ({
     const closeCustomSynthDialogue = () => setCustomSynthOpen(false);
     const confirmCustomSynthDialogue = (name, values, synthMethod) => {
         const { superType, type, real, imag } = values.waveform;
+        const nextReals = real.split(',');
+        const realReals = nextReals.map(real => {
+            let nextFloat;
+            try {
+                nextFloat = parseFloat(real);
+            } catch {
+                nextFloat = 0;
+            }
+            return nextFloat;
+        })
+        let realImaginaries;
+        if(imag) {
+            realImaginaries = new Array(realReals.length).fill(0)
+        } else {
+            const nextImaginaries = imag.split(',');
+            realImaginaries = nextImaginaries.map(im => {
+                let nextFloat;
+                try {
+                    nextFloat = parseFloat(im);
+                } catch {
+                    nextFloat = 0;
+                }
+                return nextFloat;
+            });
+            if(realImaginaries.length > realReals.length) {
+                console.warn('Too many imaginaries!', 'reals:', realReals.length, 'imaginaries:', realImaginaries.length);
+                console.log('Correcting length');
+                realImaginaries = realImaginaries.slice(0, realReals.length);
+            } else if(realImaginaries.length < realReals.length) {
+                console.warn('Too few imaginaries!', 'reals:', realReals.length, 'imaginaries:', realImaginaries.length);
+                console.log('Correcting length');
+                const extraImaginaries = new Array(realReals.length - realImaginaries.length).fill(0);
+                realImaginaries = [...realImaginaries, ...extraImaginaries];
+            }
+        }
+       
         const waveform = new Waveform(
             superType,
             type,
-            real,
+            realReals,
             imag
         );
         const nextSynth = {

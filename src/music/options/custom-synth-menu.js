@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -35,6 +35,11 @@ const CustomSynthMenu = ({
 }) => {
     const updateMethod = synthMethodReplace ? replaceCustomSynth(currentKey) : addCustomSynth(currentKey);
 
+    const validate = () => {
+        return name.length < 1;
+    }
+    const failed = validate();
+
     return <Dialog open={customSynthOpen} onClose={closeCustomSynthDialogue} aria-labelledby="custom-synthesizer-form">
         <DialogTitle id="custom-synthesizer-form">CUSTOM SYNTHESIZER</DialogTitle>
         <DialogContent dividers>
@@ -42,7 +47,7 @@ const CustomSynthMenu = ({
                 Use the form below to implement a custom synthesizer.
             </DialogContentText>
         <Typography>CORE DETAILS:</Typography>
-        <TextField value={name} id="name" label="NAME" fullWidth
+        <TextField value={name} id="name" label="NAME (*)" fullWidth
             onChange={setCurrentSynth(['name'])}/>
         <TextField value={synthValues.gain} type={ 'number' } placeholder={'0.3'} id="gain" label="GAIN"
             onChange={ setCurrentSynth(['synthValues', 'gain']) } />
@@ -111,7 +116,12 @@ const CustomSynthMenu = ({
                 <MenuItem value={'square'}>SQUARE</MenuItem>
                 <MenuItem value={'triangle'}>TRIANGLE</MenuItem>
             </Select>
-            <Typography>WAVEFORM FROM WAVETABLE:</Typography>
+            <Tooltip
+                placement={ 'top' }
+                title={ 'CONSTRUCT A WAVEFORM USING WAVETABLE FIELDS' }
+                aria-label={ 'construct a waveform using wavetable fields' }>
+                <InputLabel>WAVEFORM FROM WAVETABLE:</InputLabel>
+            </Tooltip>
             <TextField fullWidth value={synthValues.waveform.real || ''} placeholder={'0,1,0,0.5,0,0.25...'} id="real-waves" label="REALS"
                 onChange={ event => {
                     setCurrentSynth(['synthValues', 'waveform', 'superType'])({ target: { value: CUSTOM } });
@@ -124,10 +134,15 @@ const CustomSynthMenu = ({
                 }}/>
         </DialogContent>
         <DialogActions>
+            { failed && <Typography style={{ fontSize: '12px' }} color={'primary'}>
+                Cannot save: check all necessary fields(*) are filled in
+            </Typography>}
             <Button onClick={closeCustomSynthDialogue} color="primary">
                 Cancel
             </Button>
-            <Button onClick={() => confirmCustomSynthDialogue(name, synthValues, updateMethod)} color="primary">
+            <Button
+                disabled={ failed }
+                onClick={() => confirmCustomSynthDialogue(name, synthValues, updateMethod)} color="primary">
                 Confirm
             </Button>
         </DialogActions>

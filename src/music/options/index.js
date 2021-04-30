@@ -105,6 +105,9 @@ const OptionMenu = ({
                 } catch {
                     nextFloat = 0;
                 }
+                if(!nextFloat) {
+                    nextFloat = 0;
+                }
                 return nextFloat;
             });
             if(realImaginaries.length > realReals.length) {
@@ -123,7 +126,7 @@ const OptionMenu = ({
             superType,
             type,
             realReals,
-            imag
+            realImaginaries
         );
         const nextSynth = {
             name: name,
@@ -153,7 +156,7 @@ const OptionMenu = ({
     const { bpm } = globalOptions;
     const { bpm: localBPM } = localOptions;
     return <Grid container spacing={4} alignContent={'center'} alignItems={'center'} justify={'center'}>
-        <Grid item>
+        <Grid item xs={2}>
             <Tooltip
                 placement={ 'top' }
                 title={ 'SELECT A SYNTH TYPE' }
@@ -161,6 +164,7 @@ const OptionMenu = ({
                 <InputLabel id="synth-select">SYNTHESIZER:</InputLabel>
             </Tooltip>
             <Select
+                fullWidth
                 labelId="synth-select"
                 id="synth-selector"
                 value={ synth }
@@ -179,7 +183,6 @@ const OptionMenu = ({
                         ({ name, synth, synthValues }, i) => {
                             return <MenuItem key={ `${name}-${i}` } value={synth}>
                                 { name }: <Button
-                                    value={synth}
                                     onClick={openCustomSynthDialogue(name, synth, synthValues, i)}>
                                         EDIT
                                     </Button>
@@ -189,7 +192,6 @@ const OptionMenu = ({
                 }
                 <MenuItem value={SINE_TWO}>
                     CUSTOM: <Button
-                        value={SINE_TWO}
                         onClick={openCustomSynthDialogue()}>
                             CREATE
                         </Button>

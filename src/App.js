@@ -67,6 +67,7 @@ const light_theme = createMuiTheme({
  * - 'Regenerate all' button to force all notes to regenerate in a track
  * Options Menu:
  * - Custom synths via. wavetable 1
+ * - Make attack/sustain/decay/release more formalized (& ensure that the values scale to the length of time)!
  * - Import/export wavetables as JSON
  * - Display wavetable - try: https://github.com/indutny/fft.js/
  * - Use display to input back into wavetable

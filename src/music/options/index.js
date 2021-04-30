@@ -13,7 +13,8 @@ import {
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS,
     DEFAULT_SYNTH_SETTINGS,
-    Waveform
+    Waveform,
+    SINE_TWO
 } from '../presets';
 import { RELEASE, TENSION } from '../segments/constants';
 import { Chord } from 'octavian';
@@ -150,9 +151,9 @@ const OptionMenu = ({
                         }
                     )
                 }
-                <MenuItem value={SINE}>
+                <MenuItem value={SINE_TWO}>
                     CUSTOM: <Button
-                        value={SINE}
+                        value={SINE_TWO}
                         onClick={openCustomSynthDialogue()}>
                             CREATE
                         </Button>

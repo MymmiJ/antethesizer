@@ -56,7 +56,7 @@ class Synth {
 
     playNote(context, frequency, noteLength, useOscillator=()=>{}) {
         const oscillator = this.getOscillator(context, frequency);
-        if(this.vibratoFacts) {
+        if(this.vibratoFacts && this.vibratoFacts.rate && this.vibratoFacts.gain) {
             this.vibrato(
                 context, 
                 oscillator.frequency,
@@ -129,6 +129,7 @@ const STRING_WAVEFORM = new Waveform(
 
 // Built-ins
 const SINE = new Synth(2, 1);
+const SINE_TWO = new Synth(2, 1); // To allow usage in menu multiple times
 const SAWTOOTH = new Synth(2, 1);
 SAWTOOTH.waveform.type = 'sawtooth';
 const SQUARE = new Synth(2, 1);
@@ -210,7 +211,7 @@ const DEFAULT_SYNTH_SETTINGS = {
 export {
     EXP, LIN, BUILT_IN, CUSTOM,
     Waveform, Synth,
-    SINE, SAWTOOTH, SQUARE, TRIANGLE,
+    SINE, SINE_TWO, SAWTOOTH, SQUARE, TRIANGLE,
     BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS,
     DEFAULT_SYNTH_SETTINGS
 };

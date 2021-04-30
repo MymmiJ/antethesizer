@@ -133,8 +133,20 @@ const defaultGlobalOptions = {
 const App = () => {
   const [context,] = useState(new AudioContext());
   const [oscillators, setOscillators] = useState([]);
+  const [customSynths, setCustomSynths] = useState([]);
   const [additionalSoundControls, setSoundControls] = useState([]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
+  const synthControls = {
+    addCustomSynth: () => synth => setCustomSynths(prev => [...prev, synth]),
+    removeCustomSynth: key => () => setCustomSynths(prev => prev.filter((_, aKey) => aKey !== key)),
+    replaceCustomSynth: key => synth => setCustomSynths(prev => prev.map((curr, i) => {
+      if(i === key) {
+        return synth;
+      }
+      return curr;
+    })),
+  }
+
   const setGlobalOption = (key) => ({ target: { value } }) => {
     setGlobalOptions(prev => Object.assign(
     {...prev},
@@ -189,6 +201,8 @@ const App = () => {
         key='alpha-and-omega'
         context={ context }
         addNewSoundControls={ addNewSoundControls }
+        customSynths={ customSynths }
+        synthControls={ synthControls }
         primary={ true }
         clearOscillators={ clearOscillators }
         useOscillator={ replaceOscillator }
@@ -204,6 +218,8 @@ const App = () => {
               <SoundControls
                 key={ desc.key }
                 context={ context }
+                customSynths={ customSynths }
+                synthControls={ synthControls }
                 addNewSoundControls={ desc.addNewSoundControls }
                 clearOscillators={ clearOscillators }
                 useOscillator={ replaceOscillator }

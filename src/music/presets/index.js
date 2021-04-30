@@ -189,10 +189,26 @@ const WINE_GLASS = new Synth(
     EXP,
 );
 
+const DEFAULT_SYNTH_SETTINGS = {
+    decay: 2,
+    gain: 1,
+    gainRampTime: 0.01,
+    gainMethod: EXP,
+    decayMethod: EXP,
+    vibratoFacts: ['',''],
+    waveform: {
+        superType: BUILT_IN,
+        type: 'sine',
+        real: '',
+        imag: ''
+    }
+};
+
 export {
     EXP, LIN, BUILT_IN, CUSTOM,
     Waveform, Synth,
     SINE, SAWTOOTH, SQUARE, TRIANGLE,
-    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS
+    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS,
+    DEFAULT_SYNTH_SETTINGS
 };
     

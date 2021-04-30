@@ -42,6 +42,8 @@ const soundControlsShouldUpdateOn = ['bpm'];
 
 const SoundControls = ({
     context,
+    customSynths,
+    synthControls,
     clearOscillators,
     useOscillator,
     addNewSoundControls,
@@ -133,6 +135,8 @@ const SoundControls = ({
                 defaultRootNote={ defaultRootNote }
                 setDefaultRootNote={ setDefaultRootNote }
                 setLocks={ setLocks }
+                customSynths={ customSynths }
+                synthControls={ synthControls }
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
                 localOptions={ localOptions }

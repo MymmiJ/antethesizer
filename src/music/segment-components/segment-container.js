@@ -10,11 +10,11 @@ import {
     Typography
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import SoundElements, { Segment } from './sound-elements';
+import SegmentMenu, { Segment } from './segment-component/index.js';
 import { v4 as uuidv4 } from 'uuid'; 
-import { repeatNotes } from './segments';
-import { RELEASE } from './segments/constants';
-import OptionMenu from './options';
+import { repeatNotes } from '../segments';
+import { RELEASE } from '../segments/constants';
+import OptionMenu from '../options';
 
 const generateNotes = (f, mood, rootNote, repeats) => {
     const notes = f(rootNote, mood);
@@ -24,7 +24,7 @@ const generateNotes = (f, mood, rootNote, repeats) => {
 
 const filterIndex = i => prev => prev.filter((_, index) => index !== i);
 
-const SoundElementContainer = ({
+const SegmentContainer = ({
     setNotes,
     synth,
     setSynth,
@@ -94,7 +94,7 @@ const SoundElementContainer = ({
                 style={{ lineHeight: '100%' }}
                 color={'primary'}
                 variant={'outlined'}
-                onClick={ toggleOnClick(SoundElements) }>
+                onClick={ toggleOnClick(SegmentMenu) }>
             <label htmlFor={'add-component'}>ADD TO TRACK</label>
 {`░░██╗░░\n
 ██████╗\n
@@ -184,4 +184,4 @@ const SoundElementContainer = ({
     </Grid>;
 };
 
-export default SoundElementContainer;
+export default SegmentContainer;

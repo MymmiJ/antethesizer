@@ -88,11 +88,12 @@ const light_theme = createMuiTheme({
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
  * Ornaments:
- *  - Arpeggios 1
- *  - Acciaccatura/trills etc.
- *  - Microtonal shifts
- *  - (more) vibrato/tremolo
- *  - Allow 'skipped' notes
+ * - Chord control (max depth, depth probability/lock, etc.) 1
+ * - Arpeggios
+ * - Acciaccatura/trills etc.
+ * - Microtonal shifts
+ * - (more) vibrato/tremolo
+ * - Allow 'skipped' notes
  * Rhythm:
  * - drop in replacement for 'setTimeout' with greater accuracy https://stackoverflow.com/questions/196027/is-there-a-more-accurate-way-to-create-a-javascript-timer-than-settimeout
  *  - time signature
@@ -121,6 +122,7 @@ const light_theme = createMuiTheme({
  * - Improve appearance of sine viz
  * Code:
  * - Refactor to generate sound controls from just one array
+ * - Bugfix: keep track of global state/BPM better - or remove global and just use default/local?
  * 
  */
 const defaultGlobalOptions = {

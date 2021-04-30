@@ -131,9 +131,9 @@ const OptionMenu = ({
         const nextSynth = {
             name: name,
             synth: new Synth(
-                parseInt(values.decay),
-                parseInt(values.gain),
-                parseInt(values.gainRampTime),
+                parseFloat(values.decay),
+                parseFloat(values.gain),
+                parseFloat(values.gainRampTime),
                 values.gainMethod,
                 values.decayMethod,
                 {

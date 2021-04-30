@@ -85,8 +85,10 @@ const CustomSynthMenu = ({
         </DialogContent>
         <DialogContent dividers>
             <Typography>VIBRATO:</Typography>
-            <TextField value={synthValues.vibratoFacts[0] || ''} type={ 'number' } placeholder={'4'} id="vibrato-rate" label="VIBRATO RATE"/>
-            <TextField value={synthValues.vibratoFacts[1] || ''} type={ 'number' } placeholder={'0.20'} id="vibrato-depth" label="VIBRATO DEPTH" />
+            <TextField value={synthValues.vibratoFacts.rate || ''} type={ 'number' } placeholder={'4'} id="vibrato-rate" label="VIBRATO RATE"
+                onChange={ setCurrentSynth(['synthValues', 'vibratoFacts', 'rate']) }/>
+            <TextField value={synthValues.vibratoFacts.gain || ''} type={ 'number' } placeholder={'0.20'} id="vibrato-depth" label="VIBRATO DEPTH"
+                onChange={ setCurrentSynth(['synthValues', 'vibratoFacts', 'gain']) }/>
         </DialogContent>
         <DialogContent dividers>
             <Typography>WAVEFORM:</Typography>

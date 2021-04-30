@@ -96,7 +96,10 @@ const OptionMenu = ({
                 parseInt(values.gainRampTime),
                 values.gainMethod,
                 values.decayMethod,
-                values.vibratoFacts,
+                {
+                    rate: values.vibratoFacts.rate,
+                    gain: values.vibratoFacts.gain
+                },
                 waveform
             ),
             synthValues: values

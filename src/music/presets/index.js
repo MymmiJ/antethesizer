@@ -60,8 +60,8 @@ class Synth {
             this.vibrato(
                 context, 
                 oscillator.frequency,
-                this.vibratoFacts[0],
-                this.vibratoFacts[1],
+                this.vibratoFacts.rate,
+                this.vibratoFacts.gain,
                 (noteLength/2));
         }
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -195,7 +195,10 @@ const DEFAULT_SYNTH_SETTINGS = {
     gainRampTime: 0.01,
     gainMethod: EXP,
     decayMethod: EXP,
-    vibratoFacts: ['',''],
+    vibratoFacts: {
+        rate: '',
+        gain: ''
+    },
     waveform: {
         superType: BUILT_IN,
         type: 'sine',

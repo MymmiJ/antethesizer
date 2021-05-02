@@ -156,7 +156,7 @@ const OptionMenu = ({
     const { bpm } = globalOptions;
     const { bpm: localBPM } = localOptions;
     return <Grid container spacing={4} alignContent={'center'} alignItems={'center'} justify={'center'}>
-        <Grid item xs={2}>
+        <Grid item xs={3}>
             <Tooltip
                 placement={ 'top' }
                 title={ 'SELECT A SYNTH TYPE' }

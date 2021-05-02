@@ -110,6 +110,7 @@ const light_theme = createMuiTheme({
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
  * Generation:
  *  - Improve generation by using pickBiasLate to descend slowly 1
+ *  - Allow user to force ending the passage on the root note
  *  - Improve generation by remembering _first_ root Note of series
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
  *  - Improve generation by picking different sets of movements that can move to each other
@@ -118,12 +119,14 @@ const light_theme = createMuiTheme({
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
  * Visualization:
  * - Add more options to viz, (flame, bar?) using https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode as guide
- * - Color picker
+ * - Color picker 1
  * - Manually handle scale
- * - Improve appearance of sine viz
+ * Reverse Engineering:
+ * - POST-BETA FEATURE
+ * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
- * - Refactor to generate sound controls from just one array
- * - Bugfix: keep track of global state/BPM better - or remove global and just use default/local?
+ * - Refactor to generate sound controls from just one array 1
+ * - Bugfix: keep track of global state/BPM better
  * 
  */
 const defaultGlobalOptions = {

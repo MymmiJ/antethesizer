@@ -56,12 +56,12 @@ class Synth {
 
     playNote(context, frequency, noteLength, useOscillator=()=>{}) {
         const oscillator = this.getOscillator(context, frequency);
-        if(this.vibratoFacts) {
+        if(this.vibratoFacts && this.vibratoFacts.rate && this.vibratoFacts.gain) {
             this.vibrato(
                 context, 
                 oscillator.frequency,
-                this.vibratoFacts[0],
-                this.vibratoFacts[1],
+                this.vibratoFacts.rate,
+                this.vibratoFacts.gain,
                 (noteLength/2));
         }
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -129,6 +129,7 @@ const STRING_WAVEFORM = new Waveform(
 
 // Built-ins
 const SINE = new Synth(2, 1);
+const SINE_TWO = new Synth(2, 1); // To allow usage in menu multiple times
 const SAWTOOTH = new Synth(2, 1);
 SAWTOOTH.waveform.type = 'sawtooth';
 const SQUARE = new Synth(2, 1);
@@ -189,10 +190,29 @@ const WINE_GLASS = new Synth(
     EXP,
 );
 
+const DEFAULT_SYNTH_SETTINGS = {
+    decay: 2,
+    gain: 1,
+    gainRampTime: 0.01,
+    gainMethod: EXP,
+    decayMethod: EXP,
+    vibratoFacts: {
+        rate: '',
+        gain: ''
+    },
+    waveform: {
+        superType: BUILT_IN,
+        type: 'sine',
+        real: '',
+        imag: ''
+    }
+};
+
 export {
     EXP, LIN, BUILT_IN, CUSTOM,
     Waveform, Synth,
-    SINE, SAWTOOTH, SQUARE, TRIANGLE,
-    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS
+    SINE, SINE_TWO, SAWTOOTH, SQUARE, TRIANGLE,
+    BOWED, PLUCKED, VAMPIRE_CASTLE, BIT_VOICE, WINE_GLASS,
+    DEFAULT_SYNTH_SETTINGS
 };
     

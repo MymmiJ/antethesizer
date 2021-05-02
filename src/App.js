@@ -6,6 +6,14 @@ import { playNotes, SoundControls } from './music';
 import Oscilloscope from './visualize/oscilloscope';
 import { v4 as uuidv4 } from 'uuid';
 
+const sharedOverrides = {
+  MuiButton: {
+    root: {
+      borderRadius: 2,
+    }, 
+  }, 
+}
+
 const dark_theme = createMuiTheme({
   typography: {
     fontFamily: 'Monospace',
@@ -23,6 +31,7 @@ const dark_theme = createMuiTheme({
       default: "#303030"
     },
   },
+  overrides: sharedOverrides,
 });
 
 const light_theme = createMuiTheme({
@@ -42,6 +51,7 @@ const light_theme = createMuiTheme({
       default: "#DFDFDF"
     },
   },
+  overrides: sharedOverrides,
 });
 
 /**
@@ -55,11 +65,12 @@ const light_theme = createMuiTheme({
  * - Make light theme look better (Note, passage colors)
  * - Light/dark theme toggle
  * - 'Regenerate all' button to force all notes to regenerate in a track
+ * - Add help system to assist with all parts of the app
  * Options Menu:
- * - Custom synths via. wavetable 1
- * - Import/export wavetables as JSON
- * - Display wavetable - try: https://github.com/indutny/fft.js/
- * - Use display to input back into wavetable
+ * - Make attack/decay/sustain/release more formalized (i.e. specify sustain!) (& ensure that the values _are able to_ scale to the length of time)!
+ * - Import/export wavetables as JSON 1
+ * - Allow converting from ifft form to wavetable*
+ * - Use display to input back into wavetable*
  * - Overall direction (determine root note by increasing/decreasing from source)
  *    - just generally keep track of things rather than trying to do things hierarchically!
  * - Allow/add multiple generators per pattern
@@ -78,11 +89,12 @@ const light_theme = createMuiTheme({
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
  * Ornaments:
- *  - Arpeggios 1
- *  - Acciaccatura/trills etc.
- *  - Microtonal shifts
- *  - (more) vibrato/tremolo
- *  - Allow 'skipped' notes
+ * - Chord control (max depth, depth probability/lock, etc.) 1
+ * - Arpeggios
+ * - Acciaccatura/trills etc.
+ * - Microtonal shifts
+ * - (more) vibrato/tremolo
+ * - Allow 'skipped' notes
  * Rhythm:
  * - drop in replacement for 'setTimeout' with greater accuracy https://stackoverflow.com/questions/196027/is-there-a-more-accurate-way-to-create-a-javascript-timer-than-settimeout
  *  - time signature
@@ -98,6 +110,7 @@ const light_theme = createMuiTheme({
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
  * Generation:
  *  - Improve generation by using pickBiasLate to descend slowly 1
+ *  - Allow user to force ending the passage on the root note
  *  - Improve generation by remembering _first_ root Note of series
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
  *  - Improve generation by picking different sets of movements that can move to each other
@@ -106,11 +119,14 @@ const light_theme = createMuiTheme({
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
  * Visualization:
  * - Add more options to viz, (flame, bar?) using https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode as guide
- * - Color picker
+ * - Color picker 1
  * - Manually handle scale
- * - Improve appearance of sine viz
+ * Reverse Engineering:
+ * - POST-BETA FEATURE
+ * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
- * - Refactor to generate sound controls from just one array
+ * - Refactor to generate sound controls from just one array 1
+ * - Bugfix: keep track of global state/BPM better
  * 
  */
 const defaultGlobalOptions = {
@@ -120,8 +136,20 @@ const defaultGlobalOptions = {
 const App = () => {
   const [context,] = useState(new AudioContext());
   const [oscillators, setOscillators] = useState([]);
+  const [customSynths, setCustomSynths] = useState([]);
   const [additionalSoundControls, setSoundControls] = useState([]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
+  const synthControls = {
+    addCustomSynth: () => synth => setCustomSynths(prev => [...prev, synth]),
+    removeCustomSynth: key => () => setCustomSynths(prev => prev.filter((_, aKey) => aKey !== key)),
+    replaceCustomSynth: key => synth => setCustomSynths(prev => prev.map((curr, i) => {
+      if(i === key) {
+        return synth;
+      }
+      return curr;
+    })),
+  }
+
   const setGlobalOption = (key) => ({ target: { value } }) => {
     setGlobalOptions(prev => Object.assign(
     {...prev},
@@ -176,6 +204,8 @@ const App = () => {
         key='alpha-and-omega'
         context={ context }
         addNewSoundControls={ addNewSoundControls }
+        customSynths={ customSynths }
+        synthControls={ synthControls }
         primary={ true }
         clearOscillators={ clearOscillators }
         useOscillator={ replaceOscillator }
@@ -191,6 +221,8 @@ const App = () => {
               <SoundControls
                 key={ desc.key }
                 context={ context }
+                customSynths={ customSynths }
+                synthControls={ synthControls }
                 addNewSoundControls={ desc.addNewSoundControls }
                 clearOscillators={ clearOscillators }
                 useOscillator={ replaceOscillator }

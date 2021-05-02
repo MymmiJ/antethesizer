@@ -5,8 +5,8 @@ import {
     Grid,
     Typography
 } from '@material-ui/core';
-import SoundElementContainer from './soundelement-container';
-import { SINE, BOWED } from './presets';
+import SegmentContainer from './segment-components/segment-container';
+import { SINE, TRIANGLE } from './presets';
 import { RELEASE } from './segments/constants';
 
 // Play helpers - Put these in their own folder
@@ -42,6 +42,8 @@ const soundControlsShouldUpdateOn = ['bpm'];
 
 const SoundControls = ({
     context,
+    customSynths,
+    synthControls,
     clearOscillators,
     useOscillator,
     addNewSoundControls,
@@ -55,7 +57,7 @@ const SoundControls = ({
     const [notes, setNotes] = useState([]);
     const [defaultMood, setDefaultMood] = useState(RELEASE);
     const [defaultRootNote, setDefaultRootNote] = useState('C3');
-    const [synth, setSynth] = useState(BOWED);
+    const [synth, setSynth] = useState(TRIANGLE);
     const [lockedIndexes, setLocks] = useState([]);
 
     const [localOptions, setLocalOptions] = useState(globalOptions);
@@ -124,7 +126,7 @@ const SoundControls = ({
         borderColor="secondary.main">
     <Grid container spacing={2} alignContent={'center'} alignItems={'center'} justify={'center'} borderbottom={1}>
         <Grid item xs={12} >
-            <SoundElementContainer
+            <SegmentContainer
                 setNotes={ handleSetNotes }
                 synth={ synth }
                 setSynth={ handleSetSynth }
@@ -133,6 +135,8 @@ const SoundControls = ({
                 defaultRootNote={ defaultRootNote }
                 setDefaultRootNote={ setDefaultRootNote }
                 setLocks={ setLocks }
+                customSynths={ customSynths }
+                synthControls={ synthControls }
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
                 localOptions={ localOptions }

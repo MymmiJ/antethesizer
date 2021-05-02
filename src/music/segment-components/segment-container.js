@@ -28,6 +28,8 @@ const SegmentContainer = ({
     setNotes,
     synth,
     setSynth,
+    customSynths,
+    synthControls,
     defaultMood,
     setDefaultMood,
     defaultRootNote,
@@ -131,6 +133,8 @@ const SegmentContainer = ({
                 addSegment={ addSegment }
                 synth={ synth }
                 setSynth={ setSynth }
+                customSynths={ customSynths }
+                synthControls={ synthControls }
                 defaultMood={ defaultMood }
                 setDefaultMood={ setDefaultMood }
                 defaultRootNote={ defaultRootNote }

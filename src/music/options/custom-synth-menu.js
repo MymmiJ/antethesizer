@@ -83,14 +83,14 @@ const CustomSynthMenu = ({
             <DialogContentText>
                 Use the form below to implement a custom synthesizer.
             </DialogContentText>
-            <Typography>CORE DETAILS:</Typography>
             <Box padding={'0 8px 24px 8px'} border={'1px solid #303030'}>
-            <TextField value={name} id="name" label="NAME (*)" fullWidth
-                onChange={setCurrentSynth(['name'])}/>
-            <TextField value={synthValues.gain} type={ 'number' } placeholder={'0.3'} id="gain" label="GAIN"
-                onChange={ setCurrentSynth(['synthValues', 'gain']) } />
-            <TextField value={synthValues.gainRampTime} type={ 'number' } placeholder={'0.01'} id="attack" label="ATTACK"
-                onChange={ setCurrentSynth(['synthValues', 'gainRampTime']) }/>
+                <Typography>CORE DETAILS:</Typography>
+                <TextField value={name} id="name" label="NAME (*)" fullWidth
+                    onChange={setCurrentSynth(['name'])}/>
+                <TextField value={synthValues.gain} type={ 'number' } placeholder={'0.3'} id="gain" label="GAIN"
+                    onChange={ setCurrentSynth(['synthValues', 'gain']) } />
+                <TextField value={synthValues.gainRampTime} type={ 'number' } placeholder={'0.01'} id="attack" label="ATTACK"
+                    onChange={ setCurrentSynth(['synthValues', 'gainRampTime']) }/>
                 <Tooltip
                     placement={ 'top' }
                     title={ 'SELECT HOW EACH NOTE SHOULD RAMP UP' }

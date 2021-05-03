@@ -56,7 +56,7 @@ const diatom = (root, mood) => {
         if(method === false) {
             console.log('false; selecting root',  root);
             let next = root.toChord();
-            next = chordStrategies.random.withMood({ chord: next, mood });
+            next = chordStrategies.random['with mood']({ chord: next, mood });
             return [root, next];
         }
         // Falling more likely for release
@@ -70,7 +70,7 @@ const diatom = (root, mood) => {
     const alteredRoot = alterMethod ? root[alterMethod]() : root;
     try {
         next = alteredRoot[method]().toChord();
-        next = chordStrategies.random.withMood({ chord: next, mood });
+        next = chordStrategies.random['with mood']({ chord: next, mood });
     } catch (error) {
         console.log('error, method:', method, alteredRoot);
         const safeNote = new Chord(pick(startingNotes));

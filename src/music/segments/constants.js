@@ -12,13 +12,13 @@ const tenseMoves = [
     'diminishedFifth',
     'minorSixth',
     'majorSixth',
-    'minorSeventh',
-    'majorSeventh'
+    'minorSeventh'
 ];
 
 const releaseMoves = [
     'majorThird',
     'perfectFifth',
+    'majorSeventh',
     'downOctave',
     // 'perfectOctave',
     false

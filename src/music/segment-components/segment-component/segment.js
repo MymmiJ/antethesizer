@@ -82,11 +82,12 @@ const Segment = ({
                 }
              } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } type={ 'number' } />
         </Grid>
-        {/* <Grid item>
+        <Grid item>
             <Tooltip placement={ 'top' } title={ 'SELECT CHORD STRATEGY' } aria-label={ 'select a strategy for creating chords' }>
                 <InputLabel style={{ color }} id="chord-strategy-select">Chord Strategy</InputLabel>
             </Tooltip>
             <Select
+                value={`none,default`}
                 style={{ color }}
                 labelId="chord-strategy-select"
                 id="chord-strategy-selector">
@@ -95,8 +96,7 @@ const Segment = ({
                         ([chordStrategyGroupName, chordStrategyGroup])  => 
                             Object.keys(chordStrategyGroup).map(
                                 chordStrategyName => {
-                                    console.log(chordStrategyGroupName, chordStrategyName);
-                                    return <MenuItem value={[chordStrategyGroupName,chordStrategyName]}>
+                                    return <MenuItem value={`${chordStrategyGroupName},${chordStrategyName}`}>
                                         <small>{ `${ chordStrategyGroupName.toUpperCase() }:` }&nbsp;</small>
                                         { chordStrategyName.toUpperCase() }
                                     </MenuItem>
@@ -105,7 +105,7 @@ const Segment = ({
                             ))
                 }
             </Select>
-        </Grid> */}
+        </Grid>
         <Grid item>
             <Button style={{ color }} onClick={ removeSegment }>REMOVE {name}</Button>
         </Grid>

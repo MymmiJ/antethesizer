@@ -1,12 +1,25 @@
 import { TENSION, RELEASE, EITHER, tenseMoves, releaseMoves } from './constants';
+import { Note, Chord } from 'octavian';
 import { pick } from './index';
+
+const gospel9 = chord => {
+    // Move 'root' down to major Seventh below
+    const chordRoot = new Note(chord.signatures[0]);
+    const seventhBase = chordRoot.downOctave().majorSeventh().toChord();
+    // From the major, so this is just 1-3-5-7-9 voiced dramatically
+    return seventhBase // 7
+        .addInterval('minorSecond') // 1
+        .addInterval('minorThird') // 9
+        .addInterval('perfectFourth') // 3
+        .addInterval('minorSixth') // 5
+}
 
 const chordStrategies = {
     none: {
         default: chord => chord
     },
     random: {
-        withMood: ({ chord, mood, threshold = 0.5 }) => {
+        "with mood": ({ chord, mood, threshold = 0.5 }) => {
             let interval;
             switch(mood) {
                 case TENSION:

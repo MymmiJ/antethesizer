@@ -16,7 +16,7 @@ const gospel9 = chord => {
 
 const chordStrategies = {
     none: {
-        default: chord => chord
+        default: ({ chord }) => chord
     },
     random: {
         "with mood": ({ chord, mood, threshold = 0.5 }) => {
@@ -49,4 +49,19 @@ const chordStrategies = {
     }
 }
 
+const getStrategy = strategy => {
+    if(typeof strategy === 'string') {
+        strategy = strategy.split(',');
+    }
+    if(Array.isArray(strategy)) {
+        let objectPath = chordStrategies;
+        strategy.forEach(path => {
+            objectPath = objectPath[path];
+        })
+        strategy = objectPath;
+    }
+    return strategy;
+}
+
+export { getStrategy };
 export default chordStrategies;

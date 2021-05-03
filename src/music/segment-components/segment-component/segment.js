@@ -6,8 +6,7 @@ import {
     MenuItem,
     InputLabel,
     TextField,
-    Typography,
-    ListSubheader
+    Typography
 } from '@material-ui/core';
 import chordStrategies from '../../segments/chords';
 import { Chord } from 'octavian';
@@ -15,12 +14,13 @@ import { RELEASE, TENSION } from '../../segments/constants';
 
 const Segment = ({
     color,
-    segmentType: { name, gridSize, root, repeats, mood },
+    segmentType: { name, gridSize, root, repeats, mood, chordStrategy },
     removeSegment,
     regenerateNotes,
     setRootNote,
     setMood,
-    setRepeats
+    setRepeats,
+    setChordStrategy
 }) => {
     return <Grid
         container
@@ -36,7 +36,7 @@ const Segment = ({
             <TextField onChange={ ({ target: { value }}) => {
                 try {
                     const rootNote = new Chord(value);
-                    regenerateNotes(mood, rootNote, repeats);
+                    regenerateNotes(mood, rootNote, repeats, chordStrategy);
                 } catch {
                     console.warn(`Invalid root note: ${ value }`)
                 } finally {
@@ -57,7 +57,7 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing value: ', value);
                     try {
-                        regenerateNotes(value, new Chord(root), repeats);
+                        regenerateNotes(value, new Chord(root), repeats, chordStrategy);
                         setMood(value);
                     } catch {
                         console.warn(`Invalid mood: ${ value }`)
@@ -73,7 +73,7 @@ const Segment = ({
                 console.log('Changing repeats: ', value);
                 try {
                     if(value > 0) {
-                        regenerateNotes(mood, new Chord(root), value);
+                        regenerateNotes(mood, new Chord(root), value, chordStrategy);
                     }
                 } catch {
                     console.warn(`Invalid repeat value: ${ value }`)
@@ -87,7 +87,17 @@ const Segment = ({
                 <InputLabel style={{ color }} id="chord-strategy-select">Chord Strategy</InputLabel>
             </Tooltip>
             <Select
-                value={`none,default`}
+                value={chordStrategy}
+                onChange={ ({ target: { value }}) => {
+                    console.log('Changing chord strategy: ', value);
+                    try {
+                        regenerateNotes(mood, new Chord(root), repeats, value);
+                    } catch {
+                        console.warn(`Invalid chord strategy value: ${ value }`)
+                    } finally {
+                        setChordStrategy(value);
+                    }
+                 }  }
                 style={{ color }}
                 labelId="chord-strategy-select"
                 id="chord-strategy-selector">

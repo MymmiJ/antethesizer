@@ -16,8 +16,8 @@ import { repeatNotes } from '../segments';
 import { RELEASE } from '../segments/constants';
 import OptionMenu from '../options';
 
-const generateNotes = (f, mood, rootNote, repeats) => {
-    const notes = f(rootNote, mood);
+const generateNotes = (f, mood, rootNote, repeats, chordStrategy) => {
+    const notes = f(rootNote, mood, chordStrategy);
 
     return repeatNotes(notes, repeats);
 }
@@ -46,25 +46,39 @@ const SegmentContainer = ({
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
 
-    const addNewNotes = (f, mood, rootNote, repeats) => {
-        const notes = generateNotes(f, mood, rootNote, repeats);
+    const addNewNotes = (f, mood, rootNote, repeats, chordStrategy) => {
+        const notes = generateNotes(f, mood, rootNote, repeats, chordStrategy);
         setNotes(prev => prev.concat([notes]));
     }
 
     const addSegment = (segmentType) => {
         setSegments(prev => {
-            const segment = {...segmentType, root: defaultRootNote, repeats: 1, mood: defaultMood };
+            const segment = {...segmentType, root: defaultRootNote, repeats: 1, mood: defaultMood,
+                chordStrategy: 'none,default' };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
             });
-            addNewNotes(segment.action, segment.mood, new Chord(segment.root), segment.repeats);
+            addNewNotes(segment.action, segment.mood, new Chord(segment.root), segment.repeats, segment.chordStrategy);
             return next;
         })
     }
 
-    const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='C3', repeats=1) => {
-        const nextNotes = generateNotes(segmentType.action, mood, rootNote, repeats);
+    const regenerateNotes = (
+            segmentType,
+            i,
+            mood = RELEASE,
+            rootNote='C3',
+            repeats=1,
+            chordStrategy='none,default'
+        ) => {
+        const nextNotes = generateNotes(
+            segmentType.action,
+            mood,
+            rootNote,
+            repeats,
+            chordStrategy
+        );
         setNotes(prev => {
             const next = [...prev];
             next[i] = nextNotes;
@@ -153,8 +167,8 @@ const SegmentContainer = ({
         <Accordion style={{ width: '100%' }} defaultExpanded>
         <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1c-content"
-            id="panel1c-header">
+            aria-controls="track-details"
+            id="track-details-header">
             <Typography>Track Details</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -181,7 +195,11 @@ const SegmentContainer = ({
                         setRootNote={ setSegmentField(i, 'root') }
                         setMood={ setSegmentField(i, 'mood') }
                         setRepeats={ setSegmentField(i, 'repeats') }
-                        regenerateNotes={ (mood, rootNote, repeats = 1) => regenerateNotes(segment.segment, i, mood, rootNote, repeats) }
+                        setChordStrategy={ setSegmentField(i, 'chordStrategy') }
+                        regenerateNotes={
+                            (mood, rootNote, repeats, chordStrategy) =>
+                                regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy)
+                        }
                         removeSegment={ () => removeSegment(i) } />;
                 }) :
                 ''

@@ -3,7 +3,7 @@ import {
     TENSION, RELEASE,
     startingNotes,
     tenseMoves, releaseMoves } from './constants';
-import chordStrategies from './chords';
+import chordStrategies, { getStrategy } from './chords';
 
 // Move to utilities folder
 const pick = (array) => array[Math.floor(Math.random()*array.length)];
@@ -38,7 +38,7 @@ const pickBiasLate = (array) => {
 }
 // utilities
 
-const diatom = (root, mood) => {
+const diatom = (root, mood, chordStrategy='none,default') => {
     let method, alterMethod;
     // Determine this with a max octave setting
     const aboveMiddle = root.octave > 5 ? root.octave - 2 : 0;
@@ -56,7 +56,7 @@ const diatom = (root, mood) => {
         if(method === false) {
             console.log('false; selecting root',  root);
             let next = root.toChord();
-            next = chordStrategies.random['with mood']({ chord: next, mood });
+            next = getStrategy(chordStrategy)({ chord: next, mood });
             return [root, next];
         }
         // Falling more likely for release
@@ -70,7 +70,7 @@ const diatom = (root, mood) => {
     const alteredRoot = alterMethod ? root[alterMethod]() : root;
     try {
         next = alteredRoot[method]().toChord();
-        next = chordStrategies.random['with mood']({ chord: next, mood });
+        next = getStrategy(chordStrategy)({ chord: next, mood });
     } catch (error) {
         console.log('error, method:', method, alteredRoot);
         const safeNote = new Chord(pick(startingNotes));
@@ -79,10 +79,10 @@ const diatom = (root, mood) => {
     return [root,next];
 }
 
-const createDiatoms = (rootNote, moods = []) => {
+const createDiatoms = (rootNote, moods = [], chordStrategy) => {
     const notes = moods.reduce(
         (accumulator, mood) => {
-            const next = diatom(accumulator[accumulator.length-1].notes[0], mood);
+            const next = diatom(accumulator[accumulator.length-1].notes[0], mood, chordStrategy);
             return [...accumulator, next[1]];
         },
         [rootNote]
@@ -121,25 +121,25 @@ const moodsFromMood = (mood, n = 2) => {
     return moods;
 }
 
-const noteChange = (rootNote, mood) => {
-    return createDiatoms(rootNote, [mood]);
+const noteChange = (rootNote, mood, chordStrategy) => {
+    return createDiatoms(rootNote, [mood], chordStrategy);
 }
 
-const shortPhrase = (rootNote, mood) => {
+const shortPhrase = (rootNote, mood, chordStrategy) => {
     const moods = moodsFromMood(mood);
-    return createDiatoms(rootNote, moods);
+    return createDiatoms(rootNote, moods, chordStrategy);
 }
 
-const createComplex = (rootNote, moods, f) => {
+const createComplex = (rootNote, moods, chordStrategy, f) => {
     const notes = moods.reduce(
         (accumulator, mood) => {
             let next;
             if(mood === TENSION) {
                 // Allow moving away from root for sake of tension
-                next = f(accumulator[accumulator.length-1], mood);
+                next = f(accumulator[accumulator.length-1], mood, chordStrategy);
             } else {
                 // Check with both these; else revert to using rootNote
-                next = f(accumulator[accumulator.length-1], mood);
+                next = f(accumulator[accumulator.length-1], mood, chordStrategy);
             }
             return [...accumulator, ...next.slice(1)];
         },
@@ -148,24 +148,24 @@ const createComplex = (rootNote, moods, f) => {
     return notes;
 }
 
-const longPhrase = (rootNote, mood) => {
+const longPhrase = (rootNote, mood, chordStrategy) => {
     const moods = moodsFromMood(mood);
-    return createComplex(rootNote, moods, shortPhrase);
+    return createComplex(rootNote, moods, chordStrategy, shortPhrase);
 }
 
-const passage = (rootNote, mood, n = 4) => {
+const passage = (rootNote, mood, chordStrategy, n = 4) => {
     const moods = moodsFromMood(mood, n);
-    return createComplex(rootNote, moods, longPhrase);
+    return createComplex(rootNote, moods, chordStrategy, longPhrase);
 }
 
-const section = (rootNote, mood, n = 2) => {
+const section = (rootNote, mood, chordStrategy, n = 2) => {
     const moods = moodsFromMood(mood, n);
-    return createComplex(rootNote, moods, passage);
+    return createComplex(rootNote, moods, chordStrategy, passage);
 }
 
-const piece = (rootNote, mood, n = 2) => {
+const piece = (rootNote, mood, chordStrategy, n = 2) => {
     const moods = moodsFromMood(mood, n);
-    return createComplex(rootNote, moods, section);
+    return createComplex(rootNote, moods, chordStrategy, section);
 }
 
 const repeatNotes = (notes, n) => {

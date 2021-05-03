@@ -15,10 +15,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { repeatNotes } from '../segments';
 import { RELEASE } from '../segments/constants';
 import OptionMenu from '../options';
+import { defaultChordOptions } from '../segments/chords.js';
 
 const generateNotes = (f, mood, rootNote, repeats, chordStrategy) => {
     const notes = f(rootNote, mood, chordStrategy);
-
     return repeatNotes(notes, repeats);
 }
 
@@ -46,20 +46,27 @@ const SegmentContainer = ({
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
 
-    const addNewNotes = (f, mood, rootNote, repeats, chordStrategy) => {
-        const notes = generateNotes(f, mood, rootNote, repeats, chordStrategy);
+    const addNewNotes = (f, mood, rootNote, repeats, chordStrategy,chordOptions=defaultChordOptions) => {
+        const notes = generateNotes(f, mood, rootNote, repeats, chordStrategy, chordOptions);
         setNotes(prev => prev.concat([notes]));
     }
 
     const addSegment = (segmentType) => {
         setSegments(prev => {
             const segment = {...segmentType, root: defaultRootNote, repeats: 1, mood: defaultMood,
-                chordStrategy: 'none,default' };
+                chordStrategy: 'none,default', chordOptions: defaultChordOptions };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
             });
-            addNewNotes(segment.action, segment.mood, new Chord(segment.root), segment.repeats, segment.chordStrategy);
+            addNewNotes(
+                segment.action,
+                segment.mood,
+                new Chord(segment.root),
+                segment.repeats,
+                segment.chordStrategy,    
+                segment.chordOptions
+            );
             return next;
         })
     }
@@ -70,7 +77,8 @@ const SegmentContainer = ({
             mood = RELEASE,
             rootNote='C3',
             repeats=1,
-            chordStrategy='none,default'
+            chordStrategy='none,default',
+            chordOptions=defaultChordOptions
         ) => {
         const nextNotes = generateNotes(
             segmentType.action,
@@ -95,6 +103,15 @@ const SegmentContainer = ({
             return result;
         }));
     }
+    const setChordOption = (index, field) => (value) => {
+        setSegments(prev => prev.map((seg, i) => {
+            const result = seg;
+            if(i === index) {
+                result.segment.chordOptions[field] = value;
+            }
+            return result;
+        }));
+    }
     const removeSegment = (i) => {
         setSegments(filterIndex(i));
         setNotes(filterIndex(i));
@@ -103,7 +120,6 @@ const SegmentContainer = ({
     const toggleOnClick = (Menu) => () => {
         setMenu(prevMenu =>  prevMenu === Menu ? false : Menu);
     }
-
     return <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-evenly'}>
         <Grid item xs={1}>
         <Tooltip placement={ 'bottom' } title={ 'ADD TRACK COMPONENT' } aria-label={ 'add track component' }>
@@ -196,9 +212,12 @@ const SegmentContainer = ({
                         setMood={ setSegmentField(i, 'mood') }
                         setRepeats={ setSegmentField(i, 'repeats') }
                         setChordStrategy={ setSegmentField(i, 'chordStrategy') }
+                        setChordThreshold={ setChordOption(i, 'threshold') }
+                        setChordMaxStack={ setChordOption(i, 'maxStack') }
+                        setChordMinStack={ setChordOption(i, 'minStack') }
                         regenerateNotes={
-                            (mood, rootNote, repeats, chordStrategy) =>
-                                regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy)
+                            (mood, rootNote, repeats, chordStrategy, chordOptions) =>
+                                regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)
                         }
                         removeSegment={ () => removeSegment(i) } />;
                 }) :

@@ -16,10 +16,10 @@ const gospel9 = chord => {
 
 const chordStrategies = {
     none: {
-        default: ({ chord }) => chord
+        default: () => chord => chord
     },
     random: {
-        "with mood": ({ chord, mood, threshold = 0.5 }) => {
+        "with mood": ({ mood, threshold = 0.5 }) => chord => {
             let interval;
             switch(mood) {
                 case TENSION:
@@ -38,7 +38,7 @@ const chordStrategies = {
             chord.addInterval(interval);
             return chord;
         },
-        default: ({ chord, threshold = 0.5 }) => {
+        default: ({ threshold = 0.5 }) => chord => {
             if(Math.random() < threshold) {
                 return chord;
             }
@@ -63,5 +63,11 @@ const getStrategy = strategy => {
     return strategy;
 }
 
-export { getStrategy };
+const defaultChordOptions = {
+    threshold: 0.5,
+    maxStack: 3,
+    minStack: 0
+}
+
+export { getStrategy, defaultChordOptions };
 export default chordStrategies;

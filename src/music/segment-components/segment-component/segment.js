@@ -14,13 +14,29 @@ import { RELEASE, TENSION } from '../../segments/constants';
 
 const Segment = ({
     color,
-    segmentType: { name, gridSize, root, repeats, mood, chordStrategy },
+    segmentType: {
+        name,
+        gridSize,
+        root,
+        repeats,
+        mood,
+        chordStrategy,
+        chordOptions,
+        chordOptions: {
+            threshold,
+            maxStack,
+            minStack
+        }
+    },
     removeSegment,
     regenerateNotes,
     setRootNote,
     setMood,
     setRepeats,
-    setChordStrategy
+    setChordStrategy,
+    setChordThreshold,
+    setChordMaxStack,
+    setChordMinStack
 }) => {
     return <Grid
         container
@@ -116,6 +132,75 @@ const Segment = ({
                 }
             </Select>
         </Grid>
+        {
+        chordStrategy.startsWith('none') ? '' :
+        <Grid>
+            <Grid item>
+                <TextField
+                    type={ 'number' }
+                    onChange={ ({ target: { value }}) => {
+                        try {
+                            if(value > 0) {
+                                regenerateNotes(mood, new Chord(root), repeats, chordStrategy, {
+                                    ...chordOptions,
+                                    threshold: value
+                                });
+                            }
+                        } catch {
+                            console.warn(`Invalid chord threshold value: ${ value }`)
+                        } finally {
+                            setChordThreshold(parseFloat(value));
+                        }
+                        } }
+                    label={'Chord Threshold'} id={`chord-threshold-${ name }-${ threshold }`}
+                    placeholder={'0.5'} value={ threshold }  />
+            </Grid>
+            <Grid item>
+                <TextField
+                    type={ 'number' }
+                    onChange={ ({ target: { value }}) => {
+                        const val = parseInt(value);
+                        try {
+                            regenerateNotes(mood, new Chord(root), repeats, chordStrategy, {
+                                ...chordOptions,
+                                maxStack: value
+                            });
+                        } catch {
+                            console.warn(`Invalid chord threshold value: ${ value }`)
+                        } finally {
+                            setChordMaxStack(value);
+                            if(val < minStack) {
+                                setChordMinStack(value);
+                            }
+                        }
+                        } }
+                    label={'Max Chord Stack'} id={`chord-max-stack-${ name }-${ maxStack }`}
+                    placeholder={'3'} value={ maxStack }  />
+            </Grid>
+            <Grid item>
+                <TextField
+                    type={ 'number' }
+                    onChange={ ({ target: { value }}) => {
+                        const val = parseInt(value);
+                        try {
+                            regenerateNotes(mood, new Chord(root), repeats, chordStrategy, {
+                                ...chordOptions,
+                                minStack: value
+                            });
+                        } catch {
+                            console.warn(`Invalid chord threshold value: ${ value }`)
+                        } finally {
+                            setChordMinStack(value);
+                            if(val > maxStack) {
+                                setChordMaxStack(value);
+                            }
+                        }
+                        } }
+                    label={'Min Chord Stack'} id={`chord-min-stack-${ name }-${ minStack }`}
+                    placeholder={'0'} value={ minStack }  />
+            </Grid>
+        </Grid>
+        }
         <Grid item>
             <Button style={{ color }} onClick={ removeSegment }>REMOVE {name}</Button>
         </Grid>

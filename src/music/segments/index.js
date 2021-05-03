@@ -3,7 +3,7 @@ import {
     TENSION, RELEASE,
     startingNotes,
     tenseMoves, releaseMoves } from './constants';
-import chordStrategies, { getStrategy } from './chords';
+import { getStrategy } from './chords';
 
 // Move to utilities folder
 const pick = (array) => array[Math.floor(Math.random()*array.length)];
@@ -56,7 +56,7 @@ const diatom = (root, mood, chordStrategy='none,default') => {
         if(method === false) {
             console.log('false; selecting root',  root);
             let next = root.toChord();
-            next = getStrategy(chordStrategy)({ chord: next, mood });
+            next = getStrategy(chordStrategy)({ mood })( next );
             return [root, next];
         }
         // Falling more likely for release
@@ -70,7 +70,7 @@ const diatom = (root, mood, chordStrategy='none,default') => {
     const alteredRoot = alterMethod ? root[alterMethod]() : root;
     try {
         next = alteredRoot[method]().toChord();
-        next = getStrategy(chordStrategy)({ chord: next, mood });
+        next = getStrategy(chordStrategy)({ mood })(next);
     } catch (error) {
         console.log('error, method:', method, alteredRoot);
         const safeNote = new Chord(pick(startingNotes));
@@ -170,7 +170,7 @@ const piece = (rootNote, mood, chordStrategy, n = 2) => {
 
 const repeatNotes = (notes, n) => {
     const newNotes = [...notes];
-    while(--n) newNotes.push(...notes);
+    while(--n > 0) newNotes.push(...notes);
     return newNotes;
 }
 

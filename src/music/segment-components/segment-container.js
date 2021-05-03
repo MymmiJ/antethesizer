@@ -37,9 +37,11 @@ const SegmentContainer = ({
     addNewSoundControls,
     globalOptions,
     setGlobalOption,
+    useGlobalBPM,
     localOptions,
     setLocalOption,
-    setDeFactoOption
+    setDeFactoOption,
+    setDeFactoOptions
 }) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
@@ -141,9 +143,11 @@ const SegmentContainer = ({
                 setDefaultRootNote={ setDefaultRootNote}
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
+                useGlobalBPM={ useGlobalBPM }
                 localOptions={ localOptions }
                 setLocalOption={ setLocalOption }
-                setOpt={ setDeFactoOption }/> : ''
+                setOpt={ setDeFactoOption }
+                setOpts={ setDeFactoOptions }/> : ''
             }
         </Grid>
         <Accordion style={{ width: '100%' }} defaultExpanded>

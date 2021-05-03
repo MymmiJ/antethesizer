@@ -126,12 +126,18 @@ const light_theme = createMuiTheme({
  * - POST-BETA FEATURE
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
- * - Bugfix: keep track of global state/BPM better
+ * - Refactor: global and local state.
  * 
  */
+
+/**
+ * Move to own config file
+ */
 const defaultGlobalOptions = {
-  bpm: 120
+  bpm: 120,
+  useGlobalBPM: true
 }
+// Config ends
 
 const App = () => {
   const [context,] = useState(new AudioContext());
@@ -172,17 +178,20 @@ const App = () => {
     synth: null,
     ...defaultGlobalOptions
   }]);
-  const addToAdditionalNotes = (key) => ({ value, context, synth, bpm }) => {
+  const addToAdditionalNotes = (key) => ({ value, context, synth, bpm, useGlobalBPM }) => {
     setSoundControls(prev => prev.map(
       soundControls => soundControls.key !== key ?
-        soundControls :
+        soundControls.useGlobalBPM && useGlobalBPM ? 
+          { ...soundControls, bpm } :
+          soundControls :
         Object.assign(
           { ...soundControls },
           {
             notes: value(soundControls.notes),
             context,
             synth,
-            bpm
+            bpm,
+            useGlobalBPM
           }
         )
     ))
@@ -220,6 +229,7 @@ const App = () => {
               addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
               playAdditionalNotes={ playAdditionalNotes }
               primary={ desc.primary }
+              useGlobalBPM={ desc.useGlobalBPM }
               setGlobalOption={ setGlobalOption }
               globalOptions={ globalOptions }
               removeSelf={ () => removeSelf(desc.key) } />

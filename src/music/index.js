@@ -36,8 +36,7 @@ const playNotes = (notes, context, synth, bpm, useOscillator=()=>{}) => {
 // Note helpers ends
 
 //Config to go in own file
-const soundControlsShouldUpdateOn = ['bpm'];
-
+const soundControlsShouldUpdateOn = ['bpm', 'useGlobalBPM'];
 // Config ends
 
 const SoundControls = ({
@@ -75,7 +74,7 @@ const SoundControls = ({
     ));
     }
 
-    const { bpm } = deFactoOptions;
+    const { bpm, useGlobalBPM } = deFactoOptions;
     const soundControlValues = soundControlsShouldUpdateOn.reduce((acc, curr) => {
         acc[curr] = deFactoOptions[curr];
         return acc;
@@ -87,12 +86,12 @@ const SoundControls = ({
     }
 
     const handleSetNotes = value => {
-        addToAdditionalNotes({ value, context, synth, bpm });
+        addToAdditionalNotes({ value, context, synth, bpm, useGlobalBPM });
         setNotes( value );
     }
 
     const handleSetSynth = value => {
-        addToAdditionalNotes({ value: id=>id, context, synth: value, bpm });
+        addToAdditionalNotes({ value: id=>id, context, synth: value, bpm, useGlobalBPM });
         setSynth( value );
     }
 
@@ -111,9 +110,23 @@ const SoundControls = ({
         }
         setDeFactoOption(key, value);
     }
+    const setDefactoOptions = (opts) => {
+        const updateObject = Object.entries(opts).reduce((acc, [key, value]) => {
+            setDeFactoOption(key, value);
+            if(soundControlsShouldUpdateOn.includes(key)) {
+                return Object.assign(acc, { [key]: value });
+            }
+            return acc;
+        }, {
+            value: id=>id,
+            context,
+            synth,
+            ...soundControlValues
+        });
+        addToAdditionalNotes(updateObject);
+    }
     
     const handlePlayAll = () => {
-        handlePlay();
         playAdditionalNotes();
     }
 
@@ -139,9 +152,11 @@ const SoundControls = ({
                 synthControls={ synthControls }
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
+                useGlobalBPM={ useGlobalBPM }
                 localOptions={ localOptions }
                 setLocalOption={ setLocalOption }
                 setDeFactoOption={ handleSetDeFactoOption }
+                setDeFactoOptions={ setDefactoOptions }
                 addNewSoundControls={ addNewSoundControls }
                 />
         </Grid>

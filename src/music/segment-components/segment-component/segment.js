@@ -6,8 +6,10 @@ import {
     MenuItem,
     InputLabel,
     TextField,
-    Typography
+    Typography,
+    ListSubheader
 } from '@material-ui/core';
+import chordStrategies from '../../segments/chords';
 import { Chord } from 'octavian';
 import { RELEASE, TENSION } from '../../segments/constants';
 
@@ -80,7 +82,30 @@ const Segment = ({
                 }
              } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } type={ 'number' } />
         </Grid>
-
+        {/* <Grid item>
+            <Tooltip placement={ 'top' } title={ 'SELECT CHORD STRATEGY' } aria-label={ 'select a strategy for creating chords' }>
+                <InputLabel style={{ color }} id="chord-strategy-select">Chord Strategy</InputLabel>
+            </Tooltip>
+            <Select
+                style={{ color }}
+                labelId="chord-strategy-select"
+                id="chord-strategy-selector">
+                {
+                    Object.entries(chordStrategies).map(
+                        ([chordStrategyGroupName, chordStrategyGroup])  => 
+                            Object.keys(chordStrategyGroup).map(
+                                chordStrategyName => {
+                                    console.log(chordStrategyGroupName, chordStrategyName);
+                                    return <MenuItem value={[chordStrategyGroupName,chordStrategyName]}>
+                                        <small>{ `${ chordStrategyGroupName.toUpperCase() }:` }&nbsp;</small>
+                                        { chordStrategyName.toUpperCase() }
+                                    </MenuItem>
+                                    
+                                }
+                            ))
+                }
+            </Select>
+        </Grid> */}
         <Grid item>
             <Button style={{ color }} onClick={ removeSegment }>REMOVE {name}</Button>
         </Grid>

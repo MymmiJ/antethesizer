@@ -67,16 +67,17 @@ const light_theme = createMuiTheme({
  * - 'Regenerate all' button to force all notes to regenerate in a track
  * - Add help system to assist with all parts of the app
  * Options Menu:
+ * - Overall direction (determine root note by increasing/decreasing from source)
+ *    - just generally keep track of lower down things from higher up rather than trying to do things strictly hierarchically!
+ * - Allow/add multiple generators per pattern
+ * Synths:
  * - Make attack/decay/sustain/release more formalized (i.e. specify sustain!) (& ensure that the values _are able to_ scale to the length of time)!
  * - Import/export wavetables as JSON 1
+ * - Import wavetables as mathematical formulae* - can't be free text entry to be eval'ed!
  * - Allow converting from ifft form to wavetable*
  * - Use display to input back into wavetable*
- * - Overall direction (determine root note by increasing/decreasing from source)
- *    - just generally keep track of things rather than trying to do things hierarchically!
- * - Allow/add multiple generators per pattern
  * - Allow composing synths together
- * - Allow specifying chord bias
- * - Allow distortion
+ * - Allow distortion in synths
  * Sections:
  * - Allow specifying the mood of subsections*
  * - Allow inserting specfic runs of notes
@@ -125,7 +126,6 @@ const light_theme = createMuiTheme({
  * - POST-BETA FEATURE
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
- * - Refactor to generate sound controls from just one array 1
  * - Bugfix: keep track of global state/BPM better
  * 
  */
@@ -137,7 +137,14 @@ const App = () => {
   const [context,] = useState(new AudioContext());
   const [oscillators, setOscillators] = useState([]);
   const [customSynths, setCustomSynths] = useState([]);
-  const [additionalSoundControls, setSoundControls] = useState([]);
+  const [soundControls, setSoundControls] = useState([{
+    key: uuidv4(),
+    primary: true,
+    notes: [],
+    context: null,
+    synth: null,
+    ...defaultGlobalOptions
+  }]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
   const synthControls = {
     addCustomSynth: () => synth => setCustomSynths(prev => [...prev, synth]),
@@ -163,8 +170,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: null,
-    ...defaultGlobalOptions,
-    addNewSoundControls
+    ...defaultGlobalOptions
   }]);
   const addToAdditionalNotes = (key) => ({ value, context, synth, bpm }) => {
     setSoundControls(prev => prev.map(
@@ -187,8 +193,8 @@ const App = () => {
   const clearOscillators = () => setOscillators([]);
   const playAdditionalNotes = () => {
     clearOscillators();
-    console.log('playing additional:', additionalSoundControls)
-    additionalSoundControls.forEach(
+    console.log('playing additional:', soundControls)
+    soundControls.forEach(
       ({ notes, context, synth, bpm }, _, __) => {
         if(notes && context && synth){
           playNotes(notes.flat(), context, synth, bpm, replaceOscillator);
@@ -200,38 +206,24 @@ const App = () => {
   return (
     <ThemeProvider theme={dark_theme}>
       <CssBaseline/>
-      <SoundControls
-        key='alpha-and-omega'
-        context={ context }
-        addNewSoundControls={ addNewSoundControls }
-        customSynths={ customSynths }
-        synthControls={ synthControls }
-        primary={ true }
-        clearOscillators={ clearOscillators }
-        useOscillator={ replaceOscillator }
-        addToAdditionalNotes={ () => {} }
-        playAdditionalNotes={ playAdditionalNotes }
-        setGlobalOption={ setGlobalOption }
-        globalOptions={ globalOptions }
-         />
       {
-        additionalSoundControls.length > 0 &&
-          additionalSoundControls.map(
-            desc =>
-              <SoundControls
-                key={ desc.key }
-                context={ context }
-                customSynths={ customSynths }
-                synthControls={ synthControls }
-                addNewSoundControls={ desc.addNewSoundControls }
-                clearOscillators={ clearOscillators }
-                useOscillator={ replaceOscillator }
-                addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
-                primary={ desc.primary }
-                setGlobalOption={ setGlobalOption }
-                globalOptions={ globalOptions }
-                removeSelf={ () => removeSelf(desc.key) } />
-          )
+        soundControls.map(
+          desc =>
+            <SoundControls
+              key={ desc.key }
+              context={ context }
+              customSynths={ customSynths }
+              synthControls={ synthControls }
+              addNewSoundControls={ addNewSoundControls }
+              clearOscillators={ clearOscillators }
+              useOscillator={ replaceOscillator }
+              addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
+              playAdditionalNotes={ playAdditionalNotes }
+              primary={ desc.primary }
+              setGlobalOption={ setGlobalOption }
+              globalOptions={ globalOptions }
+              removeSelf={ () => removeSelf(desc.key) } />
+        )
       }
       <Oscilloscope context={ context } source={ oscillators[oscillators.length-1] }/>
     </ThemeProvider>

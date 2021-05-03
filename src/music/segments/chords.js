@@ -2,6 +2,9 @@ import { TENSION, RELEASE, EITHER, tenseMoves, releaseMoves } from './constants'
 import { pick } from './index';
 
 const chordStrategies = {
+    none: {
+        default: chord => chord
+    },
     random: {
         withMood: ({ chord, mood, threshold = 0.5 }) => {
             let interval;

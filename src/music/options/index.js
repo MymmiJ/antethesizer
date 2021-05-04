@@ -48,9 +48,11 @@ const OptionMenu = ({
     setDefaultRootNote,
     globalOptions,
     setGlobalOption,
+    useGlobalBPM,
     localOptions,
     setLocalOption,
-    setOpt
+    setOpt,
+    setOpts
 }) => {
     const [ customSynthOpen, setCustomSynthOpen ] = useState(false);
     const [ synthMethodReplace, setSynthMethodReplace ] = useState(false);
@@ -252,6 +254,11 @@ const OptionMenu = ({
                 Type={ TextField }
                 global={ bpm }
                 setGlobal={ setGlobalOption('bpm') }
+                useGlobal={ useGlobalBPM }
+                setUseGlobal={ (next, useGlobalBPM) => () => setOpts({
+                    bpm: next,
+                    useGlobalBPM
+                }) }
                 tooltipDetails={{ placement: 'top', title: 'Beats Per Minute', label: 'BPM:', aria_label: 'beats per minute' }}
                 setLocal={ setLocalOption('bpm') } local={ localBPM } type={ 'number' }
                 setOpt={ setOpt('bpm') }/>

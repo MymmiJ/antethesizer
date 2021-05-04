@@ -15,10 +15,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { repeatNotes } from '../segments';
 import { RELEASE } from '../segments/constants';
 import OptionMenu from '../options';
+import { defaultChordOptions } from '../segments/chords.js';
 
-const generateNotes = (f, mood, rootNote, repeats) => {
-    const notes = f(rootNote, mood);
-
+const generateNotes = (f, mood, rootNote, repeats, chordStrategy, chordOptions) => {
+    const notes = f(rootNote, mood, chordStrategy, chordOptions);
     return repeatNotes(notes, repeats);
 }
 
@@ -37,32 +37,57 @@ const SegmentContainer = ({
     addNewSoundControls,
     globalOptions,
     setGlobalOption,
+    useGlobalBPM,
     localOptions,
     setLocalOption,
-    setDeFactoOption
+    setDeFactoOption,
+    setDeFactoOptions
 }) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
 
-    const addNewNotes = (f, mood, rootNote, repeats) => {
-        const notes = generateNotes(f, mood, rootNote, repeats);
+    const addNewNotes = (f, mood, rootNote, repeats, chordStrategy,chordOptions=defaultChordOptions) => {
+        const notes = generateNotes(f, mood, rootNote, repeats, chordStrategy, chordOptions);
         setNotes(prev => prev.concat([notes]));
     }
 
     const addSegment = (segmentType) => {
         setSegments(prev => {
-            const segment = {...segmentType, root: defaultRootNote, repeats: 1, mood: defaultMood };
+            const segment = {...segmentType, root: defaultRootNote, repeats: 1, mood: defaultMood,
+                chordStrategy: 'none,default', chordOptions: defaultChordOptions };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
             });
-            addNewNotes(segment.action, segment.mood, new Chord(segment.root), segment.repeats);
+            addNewNotes(
+                segment.action,
+                segment.mood,
+                new Chord(segment.root),
+                segment.repeats,
+                segment.chordStrategy,    
+                segment.chordOptions
+            );
             return next;
         })
     }
 
-    const regenerateNotes = (segmentType, i, mood = RELEASE, rootNote='C3', repeats=1) => {
-        const nextNotes = generateNotes(segmentType.action, mood, rootNote, repeats);
+    const regenerateNotes = (
+            segmentType,
+            i,
+            mood = RELEASE,
+            rootNote='C3',
+            repeats=1,
+            chordStrategy='none,default',
+            chordOptions=defaultChordOptions
+        ) => {
+        const nextNotes = generateNotes(
+            segmentType.action,
+            mood,
+            rootNote,
+            repeats,
+            chordStrategy,
+            chordOptions
+        );
         setNotes(prev => {
             const next = [...prev];
             next[i] = nextNotes;
@@ -79,6 +104,15 @@ const SegmentContainer = ({
             return result;
         }));
     }
+    const setChordOption = (index, field) => (value) => {
+        setSegments(prev => prev.map((seg, i) => {
+            const result = seg;
+            if(i === index) {
+                result.segment.chordOptions[field] = value;
+            }
+            return result;
+        }));
+    }
     const removeSegment = (i) => {
         setSegments(filterIndex(i));
         setNotes(filterIndex(i));
@@ -87,7 +121,6 @@ const SegmentContainer = ({
     const toggleOnClick = (Menu) => () => {
         setMenu(prevMenu =>  prevMenu === Menu ? false : Menu);
     }
-
     return <Grid container spacing={1} alignContent={'flex-start'} alignItems={'flex-start'} justify={'space-evenly'}>
         <Grid item xs={1}>
         <Tooltip placement={ 'bottom' } title={ 'ADD TRACK COMPONENT' } aria-label={ 'add track component' }>
@@ -141,16 +174,18 @@ const SegmentContainer = ({
                 setDefaultRootNote={ setDefaultRootNote}
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
+                useGlobalBPM={ useGlobalBPM }
                 localOptions={ localOptions }
                 setLocalOption={ setLocalOption }
-                setOpt={ setDeFactoOption }/> : ''
+                setOpt={ setDeFactoOption }
+                setOpts={ setDeFactoOptions }/> : ''
             }
         </Grid>
         <Accordion style={{ width: '100%' }} defaultExpanded>
         <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1c-content"
-            id="panel1c-header">
+            aria-controls="track-details"
+            id="track-details-header">
             <Typography>Track Details</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -177,7 +212,15 @@ const SegmentContainer = ({
                         setRootNote={ setSegmentField(i, 'root') }
                         setMood={ setSegmentField(i, 'mood') }
                         setRepeats={ setSegmentField(i, 'repeats') }
-                        regenerateNotes={ (mood, rootNote, repeats = 1) => regenerateNotes(segment.segment, i, mood, rootNote, repeats) }
+                        setChordStrategy={ setSegmentField(i, 'chordStrategy') }
+                        setChordThreshold={ setChordOption(i, 'threshold') }
+                        setChordMaxStack={ setChordOption(i, 'maxStack') }
+                        setChordMinStack={ setChordOption(i, 'minStack') }
+                        setChordChanceFalloff={ setChordOption(i, 'chanceFalloff') }
+                        regenerateNotes={
+                            (mood, rootNote, repeats, chordStrategy, chordOptions) =>
+                                regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)
+                        }
                         removeSegment={ () => removeSegment(i) } />;
                 }) :
                 ''

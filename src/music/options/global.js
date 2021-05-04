@@ -5,10 +5,15 @@ import {
     FormControlLabel,
     Switch
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React from 'react';
 
-const Option = ({ global, setGlobal, setOpt, Type, tooltipDetails, options=false, setLocal, local, ...props }) => {
-    const [useGlobal, setUseGlobal] = useState(true);
+const Option = ({
+    global, setGlobal,
+    useGlobal, setUseGlobal,
+    setLocal, local,
+    setOpt,
+    Type, tooltipDetails, options=false,
+    ...props }) => {
     const value = useGlobal ? global : local;
     const nextValue = useGlobal ? local : global;
     const setValue = useGlobal ? setGlobal : setLocal;
@@ -42,10 +47,7 @@ const Option = ({ global, setGlobal, setOpt, Type, tooltipDetails, options=false
             control={
             <Switch
                 checked={useGlobal}
-                onChange={() => {
-                    setUseGlobal(prev => !prev)
-                    setOpt({ target: { value: nextValue }});
-                }}
+                onChange={setUseGlobal(nextValue, !useGlobal)}
                 name="useGlobal"
                 color="primary"
             />

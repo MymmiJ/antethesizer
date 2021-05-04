@@ -64,19 +64,20 @@ const light_theme = createMuiTheme({
  * - accessibility review (aria+contrast-focused)! 1
  * - Make light theme look better (Note, passage colors)
  * - Light/dark theme toggle
- * - 'Regenerate all' button to force all notes to regenerate in a track
+ * - 'Regenerate all' button to force all notes to regenerate
  * - Add help system to assist with all parts of the app
  * Options Menu:
+ * - Overall direction (determine root note by increasing/decreasing from source)
+ *    - just generally keep track of lower down things from higher up rather than trying to do things strictly hierarchically!
+ * - Allow/add multiple generators per pattern
+ * Synths:
  * - Make attack/decay/sustain/release more formalized (i.e. specify sustain!) (& ensure that the values _are able to_ scale to the length of time)!
  * - Import/export wavetables as JSON 1
+ * - Import wavetables as mathematical formulae* - can't be free text entry to be eval'ed!
  * - Allow converting from ifft form to wavetable*
  * - Use display to input back into wavetable*
- * - Overall direction (determine root note by increasing/decreasing from source)
- *    - just generally keep track of things rather than trying to do things hierarchically!
- * - Allow/add multiple generators per pattern
  * - Allow composing synths together
- * - Allow specifying chord bias
- * - Allow distortion
+ * - Allow distortion in synths
  * Sections:
  * - Allow specifying the mood of subsections*
  * - Allow inserting specfic runs of notes
@@ -89,7 +90,6 @@ const light_theme = createMuiTheme({
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
  * Ornaments:
- * - Chord control (max depth, depth probability/lock, etc.) 1
  * - Arpeggios
  * - Acciaccatura/trills etc.
  * - Microtonal shifts
@@ -97,19 +97,19 @@ const light_theme = createMuiTheme({
  * - Allow 'skipped' notes
  * Rhythm:
  * - drop in replacement for 'setTimeout' with greater accuracy https://stackoverflow.com/questions/196027/is-there-a-more-accurate-way-to-create-a-javascript-timer-than-settimeout
- *  - time signature
- *  - accents
- *  - change individual note lengths (use American quarter note system) 1
- *  - allow use of hemisemidemiquaver system
- *  - syncopation
- * - Update global 
+ * - time signature
+ * - accents
+ * - change individual note lengths (use American quarter note system) 1
+ * - allow use of hemisemidemiquaver system
+ * - syncopation
  * Dynamics:
  * - vary dynamics based on mood 1
  * - vary dynamics based on time signature
  * Motifs:
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
  * Generation:
- *  - Improve generation by using pickBiasLate to descend slowly 1
+ *  - Improve generation by using pickBiasLate to descend slowly
+ *  - Ensure that generation is always valid by checking octave against octavian 1
  *  - Allow user to force ending the passage on the root note
  *  - Improve generation by remembering _first_ root Note of series
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
@@ -125,19 +125,31 @@ const light_theme = createMuiTheme({
  * - POST-BETA FEATURE
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
- * - Refactor to generate sound controls from just one array 1
- * - Bugfix: keep track of global state/BPM better
+ * - Refactor: global and local state, remove unnecessary local state in segments wherever possible
  * 
  */
+
+/**
+ * Move to own config file
+ */
 const defaultGlobalOptions = {
-  bpm: 120
+  bpm: 120,
+  useGlobalBPM: true
 }
+// Config ends
 
 const App = () => {
   const [context,] = useState(new AudioContext());
   const [oscillators, setOscillators] = useState([]);
   const [customSynths, setCustomSynths] = useState([]);
-  const [additionalSoundControls, setSoundControls] = useState([]);
+  const [soundControls, setSoundControls] = useState([{
+    key: uuidv4(),
+    primary: true,
+    notes: [],
+    context: null,
+    synth: null,
+    ...defaultGlobalOptions
+  }]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
   const synthControls = {
     addCustomSynth: () => synth => setCustomSynths(prev => [...prev, synth]),
@@ -163,20 +175,22 @@ const App = () => {
     notes: [],
     context: null,
     synth: null,
-    ...defaultGlobalOptions,
-    addNewSoundControls
+    ...defaultGlobalOptions
   }]);
-  const addToAdditionalNotes = (key) => ({ value, context, synth, bpm }) => {
+  const addToAdditionalNotes = (key) => ({ value, context, synth, bpm, useGlobalBPM }) => {
     setSoundControls(prev => prev.map(
       soundControls => soundControls.key !== key ?
-        soundControls :
+        soundControls.useGlobalBPM && useGlobalBPM ? 
+          { ...soundControls, bpm } :
+          soundControls :
         Object.assign(
           { ...soundControls },
           {
             notes: value(soundControls.notes),
             context,
             synth,
-            bpm
+            bpm,
+            useGlobalBPM
           }
         )
     ))
@@ -187,8 +201,8 @@ const App = () => {
   const clearOscillators = () => setOscillators([]);
   const playAdditionalNotes = () => {
     clearOscillators();
-    console.log('playing additional:', additionalSoundControls)
-    additionalSoundControls.forEach(
+    console.log('playing additional:', soundControls)
+    soundControls.forEach(
       ({ notes, context, synth, bpm }, _, __) => {
         if(notes && context && synth){
           playNotes(notes.flat(), context, synth, bpm, replaceOscillator);
@@ -200,38 +214,25 @@ const App = () => {
   return (
     <ThemeProvider theme={dark_theme}>
       <CssBaseline/>
-      <SoundControls
-        key='alpha-and-omega'
-        context={ context }
-        addNewSoundControls={ addNewSoundControls }
-        customSynths={ customSynths }
-        synthControls={ synthControls }
-        primary={ true }
-        clearOscillators={ clearOscillators }
-        useOscillator={ replaceOscillator }
-        addToAdditionalNotes={ () => {} }
-        playAdditionalNotes={ playAdditionalNotes }
-        setGlobalOption={ setGlobalOption }
-        globalOptions={ globalOptions }
-         />
       {
-        additionalSoundControls.length > 0 &&
-          additionalSoundControls.map(
-            desc =>
-              <SoundControls
-                key={ desc.key }
-                context={ context }
-                customSynths={ customSynths }
-                synthControls={ synthControls }
-                addNewSoundControls={ desc.addNewSoundControls }
-                clearOscillators={ clearOscillators }
-                useOscillator={ replaceOscillator }
-                addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
-                primary={ desc.primary }
-                setGlobalOption={ setGlobalOption }
-                globalOptions={ globalOptions }
-                removeSelf={ () => removeSelf(desc.key) } />
-          )
+        soundControls.map(
+          desc =>
+            <SoundControls
+              key={ desc.key }
+              context={ context }
+              customSynths={ customSynths }
+              synthControls={ synthControls }
+              addNewSoundControls={ addNewSoundControls }
+              clearOscillators={ clearOscillators }
+              useOscillator={ replaceOscillator }
+              addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
+              playAdditionalNotes={ playAdditionalNotes }
+              primary={ desc.primary }
+              useGlobalBPM={ desc.useGlobalBPM }
+              setGlobalOption={ setGlobalOption }
+              globalOptions={ globalOptions }
+              removeSelf={ () => removeSelf(desc.key) } />
+        )
       }
       <Oscilloscope context={ context } source={ oscillators[oscillators.length-1] }/>
     </ThemeProvider>

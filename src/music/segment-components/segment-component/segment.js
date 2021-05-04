@@ -8,18 +8,40 @@ import {
     TextField,
     Typography
 } from '@material-ui/core';
+import chordStrategies, { getStrategy } from '../../segments/chords';
 import { Chord } from 'octavian';
 import { RELEASE, TENSION } from '../../segments/constants';
 
 const Segment = ({
     color,
-    segmentType: { name, gridSize, root, repeats, mood },
+    segmentType: {
+        name,
+        gridSize,
+        root,
+        repeats,
+        mood,
+        chordStrategy,
+        chordOptions,
+        chordOptions: {
+            threshold,
+            maxStack,
+            minStack,
+            chanceFalloff
+        }
+    },
     removeSegment,
     regenerateNotes,
     setRootNote,
     setMood,
-    setRepeats
+    setRepeats,
+    setChordStrategy,
+    setChordThreshold,
+    setChordChanceFalloff,
+    setChordMaxStack,
+    setChordMinStack
 }) => {
+
+    const nextRootNote = value => getStrategy(chordStrategy)({ ...chordOptions, mood })(new Chord(value));
     return <Grid
         container
         spacing={ 3 }
@@ -33,10 +55,9 @@ const Segment = ({
         <Grid item>
             <TextField onChange={ ({ target: { value }}) => {
                 try {
-                    const rootNote = new Chord(value);
-                    regenerateNotes(mood, rootNote, repeats);
-                } catch {
-                    console.warn(`Invalid root note: ${ value }`)
+                    regenerateNotes(mood, nextRootNote(value), repeats, chordStrategy, chordOptions);
+                } catch (error) {
+                    console.warn(`Invalid root note: ${ value }`, error)
                 } finally {
                     setRootNote(value);
                 }
@@ -55,7 +76,7 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing value: ', value);
                     try {
-                        regenerateNotes(value, new Chord(root), repeats);
+                        regenerateNotes(value, nextRootNote(root), repeats, chordStrategy, chordOptions);
                         setMood(value);
                     } catch {
                         console.warn(`Invalid mood: ${ value }`)
@@ -71,7 +92,7 @@ const Segment = ({
                 console.log('Changing repeats: ', value);
                 try {
                     if(value > 0) {
-                        regenerateNotes(mood, new Chord(root), value);
+                        regenerateNotes(mood, nextRootNote(root), value, chordStrategy, chordOptions);
                     }
                 } catch {
                     console.warn(`Invalid repeat value: ${ value }`)
@@ -80,7 +101,129 @@ const Segment = ({
                 }
              } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } type={ 'number' } />
         </Grid>
-
+        <Grid item>
+            <Tooltip placement={ 'top' } title={ 'SELECT CHORD STRATEGY' } aria-label={ 'select a strategy for creating chords' }>
+                <InputLabel style={{ color }} id="chord-strategy-select">Chord Strategy</InputLabel>
+            </Tooltip>
+            <Select
+                value={chordStrategy}
+                onChange={ ({ target: { value }}) => {
+                    console.log('Changing chord strategy: ', value);
+                    try {
+                        regenerateNotes(mood, nextRootNote(root), repeats, value, chordOptions);
+                    } catch {
+                        console.warn(`Invalid chord strategy value: ${ value }`)
+                    } finally {
+                        setChordStrategy(value);
+                    }
+                 }  }
+                style={{ color }}
+                labelId="chord-strategy-select"
+                id="chord-strategy-selector">
+                {
+                    Object.entries(chordStrategies).map(
+                        ([chordStrategyGroupName, chordStrategyGroup])  => 
+                            Object.keys(chordStrategyGroup).map(
+                                chordStrategyName => {
+                                    return <MenuItem value={`${chordStrategyGroupName},${chordStrategyName}`}>
+                                        <small>{ `${ chordStrategyGroupName.toUpperCase() }:` }&nbsp;</small>
+                                        { chordStrategyName.toUpperCase() }
+                                    </MenuItem>
+                                    
+                                }
+                            ))
+                }
+            </Select>
+        </Grid>
+        {
+        chordStrategy.startsWith('none') ? '' :
+        <Grid>
+            <Grid item>
+                <TextField
+                    type={ 'number' }
+                    onChange={ ({ target: { value }}) => {
+                        try {
+                            if(value > 0) {
+                                regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                                    ...chordOptions,
+                                    threshold: value
+                                });
+                            }
+                        } catch {
+                            console.warn(`Invalid chord threshold chance value: ${ value }`)
+                        } finally {
+                            setChordThreshold(parseFloat(value));
+                        }
+                        } }
+                    label={'Chord Chance'} id={`chord-chance-threshold-${ name }-${ threshold }`}
+                    placeholder={'0.5'} value={ threshold }  />
+            </Grid>
+            <Grid item>
+                <TextField
+                    type={ 'number' }
+                    onChange={ ({ target: { value }}) => {
+                        try {
+                            if(value > 0) {
+                                regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                                    ...chordOptions,
+                                    chanceFalloff: value
+                                });
+                            }
+                        } catch {
+                            console.warn(`Invalid chord chance falloff value: ${ value }`)
+                        } finally {
+                            setChordChanceFalloff(parseFloat(value));
+                        }
+                        } }
+                    label={'Chord Chance Falloff'} id={`chord-chance-falloff-${ name }-${ threshold }`}
+                    placeholder={'0.05'} value={ chanceFalloff }  />
+            </Grid>
+            <Grid item>
+                <TextField
+                    type={ 'number' }
+                    onChange={ ({ target: { value }}) => {
+                        const val = parseInt(value);
+                        try {
+                            regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                                ...chordOptions,
+                                maxStack: value
+                            });
+                        } catch {
+                            console.warn(`Invalid max stack value: ${ value }`)
+                        } finally {
+                            setChordMaxStack(value);
+                            if(val < minStack) {
+                                setChordMinStack(value);
+                            }
+                        }
+                        } }
+                    label={'Max Chord Stack'} id={`chord-max-stack-${ name }-${ maxStack }`}
+                    placeholder={'3'} value={ maxStack }  />
+            </Grid>
+            <Grid item>
+                <TextField
+                    type={ 'number' }
+                    onChange={ ({ target: { value }}) => {
+                        const val = parseInt(value);
+                        try {
+                            regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                                ...chordOptions,
+                                minStack: value
+                            });
+                        } catch {
+                            console.warn(`Invalid min stack value: ${ value }`)
+                        } finally {
+                            setChordMinStack(value);
+                            if(val > maxStack) {
+                                setChordMaxStack(value);
+                            }
+                        }
+                        } }
+                    label={'Min Chord Stack'} id={`chord-min-stack-${ name }-${ minStack }`}
+                    placeholder={'0'} value={ minStack }  />
+            </Grid>
+        </Grid>
+        }
         <Grid item>
             <Button style={{ color }} onClick={ removeSegment }>REMOVE {name}</Button>
         </Grid>

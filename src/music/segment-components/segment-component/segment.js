@@ -110,7 +110,8 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing chord strategy: ', value);
                     try {
-                        regenerateNotes(mood, nextRootNote(root), repeats, value, chordOptions);
+                        const nextRoot = getStrategy(value)({ ...chordOptions, mood })(new Chord(root));
+                        regenerateNotes(mood, nextRoot, repeats, value, chordOptions);
                     } catch {
                         console.warn(`Invalid chord strategy value: ${ value }`)
                     } finally {
@@ -144,7 +145,8 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         try {
                             if(value > 0) {
-                                regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                                const nextRoot = getStrategy(chordStrategy)({ ...chordOptions, mood, threshold: value })(new Chord(root));
+                                regenerateNotes(mood, nextRoot, repeats, chordStrategy, {
                                     ...chordOptions,
                                     threshold: value
                                 });
@@ -184,7 +186,8 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         const val = parseInt(value);
                         try {
-                            regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                            const nextRoot = getStrategy(chordStrategy)({ ...chordOptions, mood, maxStack: val })(new Chord(root));
+                            regenerateNotes(mood, nextRoot, repeats, chordStrategy, {
                                 ...chordOptions,
                                 maxStack: value
                             });
@@ -206,7 +209,8 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         const val = parseInt(value);
                         try {
-                            regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                            const nextRoot = getStrategy(chordStrategy)({ ...chordOptions, mood, minStack: value })(new Chord(root));
+                            regenerateNotes(mood, nextRoot, repeats, chordStrategy, {
                                 ...chordOptions,
                                 minStack: value
                             });

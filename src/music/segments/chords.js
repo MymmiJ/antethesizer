@@ -54,17 +54,17 @@ const chordStrategies = {
                 return chord;
             } else {
                 if(maxStack <= 0) {
-                    return chordStrategies.random.default({
-                        threshold: threshold-chanceFalloff, chanceFalloff,
-                        maxStack: maxStack-1,
-                        minStack: minStack-1 })(chord);;
+                    return chord;
                 }
                 let interval = pick([...tenseMoves, ...releaseMoves, ...octaveMoves]);
                 if(interval === false) {
                     interval = pick(octaveMoves);
                 }
                 chord.addInterval(interval); // Caution: mutation!
-                return chord;
+                return chordStrategies.random.default({
+                    threshold: threshold-chanceFalloff, chanceFalloff,
+                    maxStack: maxStack-1,
+                    minStack: minStack-1 })(chord);
             }
         }
     }
@@ -87,7 +87,8 @@ const getStrategy = strategy => {
 const defaultChordOptions = {
     threshold: 0.2,
     maxStack: 3,
-    minStack: 0
+    minStack: 0,
+    chanceFalloff: 0
 }
 
 export { getStrategy, defaultChordOptions };

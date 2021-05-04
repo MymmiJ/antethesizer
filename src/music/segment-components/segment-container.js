@@ -17,8 +17,8 @@ import { RELEASE } from '../segments/constants';
 import OptionMenu from '../options';
 import { defaultChordOptions } from '../segments/chords.js';
 
-const generateNotes = (f, mood, rootNote, repeats, chordStrategy) => {
-    const notes = f(rootNote, mood, chordStrategy);
+const generateNotes = (f, mood, rootNote, repeats, chordStrategy, chordOptions) => {
+    const notes = f(rootNote, mood, chordStrategy, chordOptions);
     return repeatNotes(notes, repeats);
 }
 
@@ -85,7 +85,8 @@ const SegmentContainer = ({
             mood,
             rootNote,
             repeats,
-            chordStrategy
+            chordStrategy,
+            chordOptions
         );
         setNotes(prev => {
             const next = [...prev];
@@ -215,6 +216,7 @@ const SegmentContainer = ({
                         setChordThreshold={ setChordOption(i, 'threshold') }
                         setChordMaxStack={ setChordOption(i, 'maxStack') }
                         setChordMinStack={ setChordOption(i, 'minStack') }
+                        setChordChanceFalloff={ setChordOption(i, 'chanceFalloff') }
                         regenerateNotes={
                             (mood, rootNote, repeats, chordStrategy, chordOptions) =>
                                 regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)

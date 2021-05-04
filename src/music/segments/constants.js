@@ -19,8 +19,6 @@ const releaseMoves = [
     'majorThird',
     'perfectFifth',
     'majorSeventh',
-    'downOctave',
-    // 'perfectOctave',
     false
 ];
 

@@ -1,4 +1,4 @@
-import { TENSION, RELEASE, EITHER, tenseMoves, releaseMoves } from './constants';
+import { TENSION, RELEASE, EITHER, tenseMoves, releaseMoves, octaveMoves } from './constants';
 import { Note, Chord } from 'octavian';
 import { pick } from './index';
 
@@ -19,7 +19,7 @@ const chordStrategies = {
         default: () => chord => chord
     },
     random: {
-        "with mood": ({ mood, threshold = 0.5 }) => chord => {
+        "with mood": ({ mood, threshold = 0.2, maxStack, minStack, chanceFalloff = 0 }) => chord => {
             let interval;
             switch(mood) {
                 case TENSION:
@@ -30,21 +30,42 @@ const chordStrategies = {
                     break;
                 case EITHER:
                 default:
-                    return chordStrategies.random.default({ chord, threshold });
+                    return chordStrategies.random.default({
+                        threshold: threshold-chanceFalloff, chanceFalloff, maxStack, minStack })(chord);
             }
-            if(interval === false || Math.random() < threshold) {
+            if(interval === false) {
+                interval = pick(octaveMoves);
+            }
+            if(Math.random() > threshold && minStack <= 0) {
                 return chord;
+            } else {
+                if(maxStack <= 0) {
+                    return chord;
+                }
+                chord.addInterval(interval);
+                return chordStrategies.random['with mood']({
+                    mood, threshold: threshold-chanceFalloff, chanceFalloff,
+                    maxStack: maxStack-1,
+                    minStack: minStack-1 })(chord);
             }
-            chord.addInterval(interval);
-            return chord;
         },
-        default: ({ threshold = 0.5 }) => chord => {
-            if(Math.random() < threshold) {
+        default: ({ threshold = 0.2, maxStack, minStack, chanceFalloff }) => chord => {
+            if(Math.random() > threshold && minStack <= 0) {
+                return chord;
+            } else {
+                if(maxStack <= 0) {
+                    return chordStrategies.random.default({
+                        threshold: threshold-chanceFalloff, chanceFalloff,
+                        maxStack: maxStack-1,
+                        minStack: minStack-1 })(chord);;
+                }
+                let interval = pick([...tenseMoves, ...releaseMoves, ...octaveMoves]);
+                if(interval === false) {
+                    interval = pick(octaveMoves);
+                }
+                chord.addInterval(interval); // Caution: mutation!
                 return chord;
             }
-            const interval = pick([...tenseMoves, ...releaseMoves]);
-            chord.addInterval(interval); // Caution: mutation!
-            return chord;
         }
     }
 }
@@ -64,7 +85,7 @@ const getStrategy = strategy => {
 }
 
 const defaultChordOptions = {
-    threshold: 0.5,
+    threshold: 0.2,
     maxStack: 3,
     minStack: 0
 }

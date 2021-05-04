@@ -8,7 +8,7 @@ import {
     TextField,
     Typography
 } from '@material-ui/core';
-import chordStrategies from '../../segments/chords';
+import chordStrategies, { getStrategy } from '../../segments/chords';
 import { Chord } from 'octavian';
 import { RELEASE, TENSION } from '../../segments/constants';
 
@@ -25,7 +25,8 @@ const Segment = ({
         chordOptions: {
             threshold,
             maxStack,
-            minStack
+            minStack,
+            chanceFalloff
         }
     },
     removeSegment,
@@ -35,9 +36,12 @@ const Segment = ({
     setRepeats,
     setChordStrategy,
     setChordThreshold,
+    setChordChanceFalloff,
     setChordMaxStack,
     setChordMinStack
 }) => {
+
+    const nextRootNote = value => getStrategy(chordStrategy)({ ...chordOptions, mood })(new Chord(value));
     return <Grid
         container
         spacing={ 3 }
@@ -51,10 +55,9 @@ const Segment = ({
         <Grid item>
             <TextField onChange={ ({ target: { value }}) => {
                 try {
-                    const rootNote = new Chord(value);
-                    regenerateNotes(mood, rootNote, repeats, chordStrategy);
-                } catch {
-                    console.warn(`Invalid root note: ${ value }`)
+                    regenerateNotes(mood, nextRootNote(value), repeats, chordStrategy, chordOptions);
+                } catch (error) {
+                    console.warn(`Invalid root note: ${ value }`, error)
                 } finally {
                     setRootNote(value);
                 }
@@ -73,7 +76,7 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing value: ', value);
                     try {
-                        regenerateNotes(value, new Chord(root), repeats, chordStrategy);
+                        regenerateNotes(value, nextRootNote(root), repeats, chordStrategy, chordOptions);
                         setMood(value);
                     } catch {
                         console.warn(`Invalid mood: ${ value }`)
@@ -89,7 +92,7 @@ const Segment = ({
                 console.log('Changing repeats: ', value);
                 try {
                     if(value > 0) {
-                        regenerateNotes(mood, new Chord(root), value, chordStrategy);
+                        regenerateNotes(mood, nextRootNote(root), value, chordStrategy, chordOptions);
                     }
                 } catch {
                     console.warn(`Invalid repeat value: ${ value }`)
@@ -107,7 +110,7 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing chord strategy: ', value);
                     try {
-                        regenerateNotes(mood, new Chord(root), repeats, value);
+                        regenerateNotes(mood, nextRootNote(root), repeats, value, chordOptions);
                     } catch {
                         console.warn(`Invalid chord strategy value: ${ value }`)
                     } finally {
@@ -141,19 +144,39 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         try {
                             if(value > 0) {
-                                regenerateNotes(mood, new Chord(root), repeats, chordStrategy, {
+                                regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
                                     ...chordOptions,
                                     threshold: value
                                 });
                             }
                         } catch {
-                            console.warn(`Invalid chord threshold value: ${ value }`)
+                            console.warn(`Invalid chord threshold chance value: ${ value }`)
                         } finally {
                             setChordThreshold(parseFloat(value));
                         }
                         } }
-                    label={'Chord Threshold'} id={`chord-threshold-${ name }-${ threshold }`}
+                    label={'Chord Chance'} id={`chord-chance-threshold-${ name }-${ threshold }`}
                     placeholder={'0.5'} value={ threshold }  />
+            </Grid>
+            <Grid item>
+                <TextField
+                    type={ 'number' }
+                    onChange={ ({ target: { value }}) => {
+                        try {
+                            if(value > 0) {
+                                regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                                    ...chordOptions,
+                                    chanceFalloff: value
+                                });
+                            }
+                        } catch {
+                            console.warn(`Invalid chord chance falloff value: ${ value }`)
+                        } finally {
+                            setChordChanceFalloff(parseFloat(value));
+                        }
+                        } }
+                    label={'Chord Chance Falloff'} id={`chord-chance-falloff-${ name }-${ threshold }`}
+                    placeholder={'0.05'} value={ chanceFalloff }  />
             </Grid>
             <Grid item>
                 <TextField
@@ -161,12 +184,12 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         const val = parseInt(value);
                         try {
-                            regenerateNotes(mood, new Chord(root), repeats, chordStrategy, {
+                            regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
                                 ...chordOptions,
                                 maxStack: value
                             });
                         } catch {
-                            console.warn(`Invalid chord threshold value: ${ value }`)
+                            console.warn(`Invalid max stack value: ${ value }`)
                         } finally {
                             setChordMaxStack(value);
                             if(val < minStack) {
@@ -183,12 +206,12 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         const val = parseInt(value);
                         try {
-                            regenerateNotes(mood, new Chord(root), repeats, chordStrategy, {
+                            regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
                                 ...chordOptions,
                                 minStack: value
                             });
                         } catch {
-                            console.warn(`Invalid chord threshold value: ${ value }`)
+                            console.warn(`Invalid min stack value: ${ value }`)
                         } finally {
                             setChordMinStack(value);
                             if(val > maxStack) {

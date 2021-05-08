@@ -8,6 +8,7 @@ import {
 import SegmentContainer from './segment-components/segment-container';
 import { SINE, TRIANGLE } from './presets';
 import { RELEASE } from './segments/constants';
+import accurateSetTimeout from '../timing/set-timeout';
 
 // Play helpers - Put these in their own folder
 const getTimes = bpm => {
@@ -32,7 +33,7 @@ const playNotes = (
     const { timeBeforeNewNote, lengthOfNote } = getTimes(bpm);
     console.log(timekeeping)
     return notes.map((chord, i) => chord.frequencies.map(
-            frequency => setTimeout(
+            frequency => accurateSetTimeout(
                 () => {
                     playNote(frequency, context, lengthOfNote, synth, useOscillator)
                 },

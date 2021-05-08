@@ -1,3 +1,5 @@
+import accurateSetTimeout from "../../timing/set-timeout";
+
 const EXP = 'exponentialRampToValueAtTime';
 const LIN = 'linearRampToValueAtTime';
 
@@ -68,7 +70,7 @@ class Synth {
         useOscillator(oscillator);
         oscillator.start(context.currentTime);
     
-        setTimeout(() => oscillator.stop(context.currentTime), noteLength);
+        accurateSetTimeout(() => oscillator.stop(context.currentTime), noteLength);
     }
 
     getOscillator(context, frequency) {
@@ -119,7 +121,7 @@ class Synth {
     
         oscillator.connect(envelope).connect(frequency);
         oscillator.start(context.currentTime);
-        setTimeout(() => oscillator.stop(context.currentTime + lengthOfNote), lengthOfNote - 8);
+        accurateSetTimeout(() => oscillator.stop(context.currentTime + lengthOfNote), lengthOfNote - 8);
     }
 }
 

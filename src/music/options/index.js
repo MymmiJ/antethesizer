@@ -16,7 +16,7 @@ import {
     Waveform,
     SINE_TWO
 } from '../presets';
-import { RELEASE, TENSION } from '../segments/constants';
+import { RELEASE, TENSION, ACCURATE, SLOPPY } from '../segments/constants';
 import { Chord } from 'octavian';
 import Option from './global';
 import CustomSynthMenu from './custom-synth-menu';
@@ -49,6 +49,7 @@ const OptionMenu = ({
     globalOptions,
     setGlobalOption,
     useGlobalBPM,
+    useGlobalTimekeeping,
     localOptions,
     setLocalOption,
     setOpt,
@@ -155,8 +156,8 @@ const OptionMenu = ({
         setCurrentSynth(prev => updateDeep({...prev},keys,value));
     };
 
-    const { bpm } = globalOptions;
-    const { bpm: localBPM } = localOptions;
+    const { bpm, timekeeping } = globalOptions;
+    const { bpm: localBPM, timekeeping: localTimekeeping } = localOptions;
     return <Grid container spacing={4} alignContent={'center'} alignItems={'center'} justify={'center'}>
         <Grid item xs={3}>
             <Tooltip
@@ -262,6 +263,36 @@ const OptionMenu = ({
                 tooltipDetails={{ placement: 'top', title: 'Beats Per Minute', label: 'BPM:', aria_label: 'beats per minute' }}
                 setLocal={ setLocalOption('bpm') } local={ localBPM } type={ 'number' }
                 setOpt={ setOpt('bpm') }/>
+        </Grid>
+        <Grid item xs={ 2 }>
+            <Option
+                Type={ Select }
+                global={ timekeeping }
+                setGlobal={ setGlobalOption('timekeeping') }
+                useGlobal={ useGlobalTimekeeping }
+                setUseGlobal={ (next, useGlobalTimekeeping) => () => setOpts({
+                    timekeeping: next,
+                    useGlobalTimekeeping
+                }) }
+                tooltipDetails={{
+                    placement: 'top',
+                    title: 'Select time keeping accuracy',
+                    label: 'TIME KEEPING:',
+                    aria_label: 'select time keeping accuracy - in JavaScript, accurate corresponds to a custom method and sloppy corresponds to using setTimeout'
+                }}
+                setLocal={ setLocalOption('timekeeping') }
+                local={ localTimekeeping }
+                setOpt={ setOpt('timekeeping') }
+                options={[{
+                    value: ACCURATE,
+                    label: 'ACCURATE - MORE LOAD ON CPU',
+                    OptionType: MenuItem
+                }, {
+                    value: SLOPPY,
+                    label: 'SLOPPY - LESS LOAD ON CPU',
+                    OptionType: MenuItem
+                }
+                ]}/>
         </Grid>
     </Grid>;
 };

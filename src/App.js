@@ -5,6 +5,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { playNotes, SoundControls } from './music';
 import Oscilloscope from './visualize/oscilloscope';
 import { v4 as uuidv4 } from 'uuid';
+import { ACCURATE } from './music/segments/constants';
 
 const sharedOverrides = {
   MuiButton: {
@@ -66,6 +67,7 @@ const light_theme = createMuiTheme({
  * - Light/dark theme toggle
  * - 'Regenerate all' button to force all notes to regenerate
  * - Add help system to assist with all parts of the app
+ *   - https://github.com/elrumordelaluz/reactour
  * Options Menu:
  * - Overall direction (determine root note by increasing/decreasing from source)
  *    - just generally keep track of lower down things from higher up rather than trying to do things strictly hierarchically!
@@ -100,6 +102,7 @@ const light_theme = createMuiTheme({
  * - time signature
  * - accents
  * - change individual note lengths (use American quarter note system) 1
+ *   - to be able to do this, must also be able to adjust number of notes in a given phrase
  * - allow use of hemisemidemiquaver system
  * - syncopation
  * Dynamics:
@@ -134,7 +137,9 @@ const light_theme = createMuiTheme({
  */
 const defaultGlobalOptions = {
   bpm: 120,
-  useGlobalBPM: true
+  useGlobalBPM: true,
+  timekeeping: ACCURATE,
+  useGlobalTimekeeping: true
 }
 // Config ends
 
@@ -177,12 +182,24 @@ const App = () => {
     synth: null,
     ...defaultGlobalOptions
   }]);
-  const addToAdditionalNotes = (key) => ({ value, context, synth, bpm, useGlobalBPM }) => {
+  const addToAdditionalNotes = (key) => ({
+    value,
+    context,
+    synth,
+    bpm,
+    useGlobalBPM,
+    timekeeping,
+    useGlobalTimekeeping
+  }) => {
     setSoundControls(prev => prev.map(
       soundControls => soundControls.key !== key ?
+        // Handle all other sound controls
         soundControls.useGlobalBPM && useGlobalBPM ? 
           { ...soundControls, bpm } :
+        soundControls.useGlobalTimekeeping && useGlobalTimekeeping ?
+          { ...soundControls, timekeeping } :
           soundControls :
+        // Handlle sound control being updated
         Object.assign(
           { ...soundControls },
           {
@@ -190,7 +207,9 @@ const App = () => {
             context,
             synth,
             bpm,
-            useGlobalBPM
+            useGlobalBPM,
+            timekeeping,
+            useGlobalTimekeeping
           }
         )
     ))
@@ -203,9 +222,11 @@ const App = () => {
     clearOscillators();
     console.log('playing additional:', soundControls)
     soundControls.forEach(
-      ({ notes, context, synth, bpm }, _, __) => {
+      ({ notes, context, synth, bpm, timekeeping }, _, __) => {
         if(notes && context && synth){
-          playNotes(notes.flat(), context, synth, bpm, replaceOscillator);
+          playNotes(notes.flat(), context, synth, {
+            bpm, timekeeping
+          }, replaceOscillator);
         }
       }
     );
@@ -229,6 +250,7 @@ const App = () => {
               playAdditionalNotes={ playAdditionalNotes }
               primary={ desc.primary }
               useGlobalBPM={ desc.useGlobalBPM }
+              useGlobalTimekeeping={ desc.useGlobalTimekeeping }
               setGlobalOption={ setGlobalOption }
               globalOptions={ globalOptions }
               removeSelf={ () => removeSelf(desc.key) } />

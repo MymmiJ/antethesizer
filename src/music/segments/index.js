@@ -52,18 +52,18 @@ const diatom = (root, mood, chordStrategy='none,default', chordOptions) => {
             method = pickBiasEarly(tenseMoves);
         }
     } else if(mood === RELEASE) {
-        method = pickBiasEarly(releaseMoves);
+        // Falling more likely for release
+        if(root.octave > 1 && Math.random() < 0.5) {
+            alterMethod = 'downOctave';
+            method = pickBiasLate(releaseMoves.slice(0,-1)) // Hack to ignore root note, replace later
+        } else {
+            method = pickBiasEarly(releaseMoves);
+        }
         if(method === false) {
             console.log('false; selecting root',  root);
             let next = root.toChord();
             next = getStrategy(chordStrategy)({ ...chordOptions, mood })( next );
             return [root, next];
-        }
-        // Falling more likely for release
-        if(!method.includes('Octave')
-            && root.octave > 1
-            && Math.random() < 0.5) {
-            alterMethod = 'downOctave';
         }
     }
     let next;

@@ -88,6 +88,9 @@ class Synth {
         return withEnvelope;
     }
 
+// withCompressor: https://developer.mozilla.org/en-US/docs/Web/API/DynamicsCompressorNode
+
+
     withEnvelope(
         context,
         oscillator,

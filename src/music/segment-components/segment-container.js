@@ -38,6 +38,7 @@ const SegmentContainer = ({
     globalOptions,
     setGlobalOption,
     useGlobalBPM,
+    useGlobalTimekeeping,
     localOptions,
     setLocalOption,
     setDeFactoOption,
@@ -175,6 +176,7 @@ const SegmentContainer = ({
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
                 useGlobalBPM={ useGlobalBPM }
+                useGlobalTimekeeping={ useGlobalTimekeeping }
                 localOptions={ localOptions }
                 setLocalOption={ setLocalOption }
                 setOpt={ setDeFactoOption }

@@ -72,7 +72,7 @@ const diatom = (root, mood, chordStrategy='none,default', chordOptions) => {
         next = alteredRoot[method]().toChord();
         next = getStrategy(chordStrategy)({...chordOptions, mood })(next);
     } catch (error) {
-        console.log('error, method:', method, alteredRoot, error);
+        console.log('error, method:', method, alteredRoot);
         const safeNote = new Chord(pick(startingNotes));
         return [safeNote, safeNote];
     }

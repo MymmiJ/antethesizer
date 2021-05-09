@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import SegmentContainer from './segment-components/segment-container';
 import { SINE, TRIANGLE } from './presets';
-import { RELEASE } from './segments/constants';
+import { ACCURATE, RELEASE } from './segments/constants';
 import accurateSetTimeout from '../timing/set-timeout';
 
 // Play helpers - Put these in their own folder
@@ -19,8 +19,8 @@ const getTimes = bpm => {
     }
 }
 
-const playNote = (frequency, context, lengthOfNote, synth = SINE, useOscillator=()=>{}) => {
-    return synth.playNote(context, frequency, lengthOfNote, useOscillator);
+const playNote = (frequency, context, lengthOfNote, synth = SINE, modifiedSetTimeout, useOscillator=()=>{}) => {
+    return synth.playNote(context, frequency, lengthOfNote, modifiedSetTimeout, useOscillator);
 }
 
 const playNotes = (
@@ -31,11 +31,14 @@ const playNotes = (
     useOscillator=()=>{}
 ) => {
     const { timeBeforeNewNote, lengthOfNote } = getTimes(bpm);
-    console.log(timekeeping)
+    let modifiedSetTimeout = setTimeout;
+    if(timekeeping === ACCURATE) {
+        modifiedSetTimeout = accurateSetTimeout;
+    }
     return notes.map((chord, i) => chord.frequencies.map(
-            frequency => accurateSetTimeout(
+            frequency => modifiedSetTimeout(
                 () => {
-                    playNote(frequency, context, lengthOfNote, synth, useOscillator)
+                    playNote(frequency, context, lengthOfNote, synth, modifiedSetTimeout, useOscillator)
                 },
                 i * timeBeforeNewNote
         )));

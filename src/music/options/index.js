@@ -276,20 +276,20 @@ const OptionMenu = ({
                 }) }
                 tooltipDetails={{
                     placement: 'top',
-                    title: 'Select time keeping accuracy',
+                    title: 'Select time keeping accuracy - accurate may cause performance issues and will not work correctly if you tab out',
                     label: 'TIME KEEPING:',
-                    aria_label: 'select time keeping accuracy - in JavaScript, accurate corresponds to a custom method and sloppy corresponds to using setTimeout'
+                    aria_label: 'select time keeping accuracy  - accurate may cause performance issues and will not work correctly if you tab out'
                 }}
                 setLocal={ setLocalOption('timekeeping') }
                 local={ localTimekeeping }
                 setOpt={ setOpt('timekeeping') }
                 options={[{
                     value: ACCURATE,
-                    label: 'ACCURATE - MORE LOAD ON CPU',
+                    label: 'ACCURATE - MAY CAUSE MORE LOAD ON CPU',
                     OptionType: MenuItem
                 }, {
                     value: SLOPPY,
-                    label: 'SLOPPY - LESS LOAD ON CPU',
+                    label: 'SLOPPY - MAY CAUSE LESS LOAD ON CPU',
                     OptionType: MenuItem
                 }
                 ]}/>

@@ -129,6 +129,8 @@ const light_theme = createMuiTheme({
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
  * - Refactor: global and local state, remove unnecessary local state in segments wherever possible
+ *  - use Context to sharee state; if overly complex, see if a lighter alternative to Redux will do
+ * - Performance: identify odd 'CPU leak' issue where playing multiple times seems to permanently increase cpu requirements
  * 
  */
 

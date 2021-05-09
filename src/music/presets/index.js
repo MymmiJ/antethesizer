@@ -56,7 +56,7 @@ class Synth {
         this.waveform = waveform;
     }
 
-    playNote(context, frequency, noteLength, useOscillator=()=>{}) {
+    playNote(context, frequency, noteLength, modifiedSetTimeout = setTimeout, useOscillator=()=>{}) {
         const oscillator = this.getOscillator(context, frequency);
         if(this.vibratoFacts && this.vibratoFacts.rate && this.vibratoFacts.gain) {
             this.vibrato(
@@ -70,7 +70,7 @@ class Synth {
         useOscillator(oscillator);
         oscillator.start(context.currentTime);
     
-        accurateSetTimeout(() => oscillator.stop(context.currentTime), noteLength);
+        modifiedSetTimeout(() => oscillator.stop(context.currentTime), noteLength);
     }
 
     getOscillator(context, frequency) {

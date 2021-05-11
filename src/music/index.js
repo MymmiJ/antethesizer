@@ -7,7 +7,8 @@ import {
 } from '@material-ui/core';
 import SegmentContainer from './segment-components/segment-container';
 import { SINE, TRIANGLE } from './presets';
-import { RELEASE } from './segments/constants';
+import { ACCURATE, RELEASE } from './segments/constants';
+import accurateSetTimeout from '../timing/set-timeout';
 
 // Play helpers - Put these in their own folder
 const getTimes = bpm => {
@@ -18,16 +19,26 @@ const getTimes = bpm => {
     }
 }
 
-const playNote = (frequency, context, lengthOfNote, synth = SINE, useOscillator=()=>{}) => {
-    return synth.playNote(context, frequency, lengthOfNote, useOscillator);
+const playNote = (frequency, context, lengthOfNote, synth = SINE, modifiedSetTimeout, useOscillator=()=>{}) => {
+    return synth.playNote(context, frequency, lengthOfNote, modifiedSetTimeout, useOscillator);
 }
 
-const playNotes = (notes, context, synth, bpm, useOscillator=()=>{}) => {
+const playNotes = (
+        notes,
+        context,
+        synth,
+        { bpm, timekeeping},
+    useOscillator=()=>{}
+) => {
     const { timeBeforeNewNote, lengthOfNote } = getTimes(bpm);
+    let modifiedSetTimeout = setTimeout;
+    if(timekeeping === ACCURATE) {
+        modifiedSetTimeout = accurateSetTimeout;
+    }
     return notes.map((chord, i) => chord.frequencies.map(
-            frequency => setTimeout(
+            frequency => modifiedSetTimeout(
                 () => {
-                    playNote(frequency, context, lengthOfNote, synth, useOscillator)
+                    playNote(frequency, context, lengthOfNote, synth, modifiedSetTimeout, useOscillator)
                 },
                 i * timeBeforeNewNote
         )));
@@ -36,7 +47,7 @@ const playNotes = (notes, context, synth, bpm, useOscillator=()=>{}) => {
 // Note helpers ends
 
 //Config to go in own file
-const soundControlsShouldUpdateOn = ['bpm', 'useGlobalBPM'];
+const soundControlsShouldUpdateOn = ['bpm', 'useGlobalBPM', 'timekeeping', 'useGlobalTimekeeping' ];
 // Config ends
 
 const SoundControls = ({
@@ -74,24 +85,25 @@ const SoundControls = ({
     ));
     }
 
-    const { bpm, useGlobalBPM } = deFactoOptions;
+    const { bpm, useGlobalBPM, timekeeping, useGlobalTimekeeping } = deFactoOptions;
     const soundControlValues = soundControlsShouldUpdateOn.reduce((acc, curr) => {
         acc[curr] = deFactoOptions[curr];
         return acc;
     },{})
 
+    // Lift this to play only this entry from 'additional notes'
     const handlePlay = () => {
         clearOscillators();
-        playNotes(notes.flat(), context, synth, bpm, useOscillator);
+        playNotes(notes.flat(), context, synth, { bpm, timekeeping }, useOscillator);
     }
 
     const handleSetNotes = value => {
-        addToAdditionalNotes({ value, context, synth, bpm, useGlobalBPM });
+        addToAdditionalNotes({ value, context, synth, bpm, useGlobalBPM, timekeeping, useGlobalTimekeeping });
         setNotes( value );
     }
 
     const handleSetSynth = value => {
-        addToAdditionalNotes({ value: id=>id, context, synth: value, bpm, useGlobalBPM });
+        addToAdditionalNotes({ value: id=>id, context, synth: value, bpm, useGlobalBPM, timekeeping, useGlobalTimekeeping });
         setSynth( value );
     }
 
@@ -153,6 +165,7 @@ const SoundControls = ({
                 globalOptions={ globalOptions }
                 setGlobalOption={ setGlobalOption }
                 useGlobalBPM={ useGlobalBPM }
+                useGlobalTimekeeping={ useGlobalTimekeeping }
                 localOptions={ localOptions }
                 setLocalOption={ setLocalOption }
                 setDeFactoOption={ handleSetDeFactoOption }

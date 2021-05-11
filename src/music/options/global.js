@@ -40,7 +40,7 @@ const Option = ({
             {
                 options && options.map(
                     ({ OptionType, value, label }) =>
-                    <OptionType value={ value }>{ label }</OptionType>)
+                    <OptionType key={ value } value={ value }>{ label }</OptionType>)
             }
         </Type>
         <FormControlLabel

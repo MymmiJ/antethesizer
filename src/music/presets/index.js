@@ -1,3 +1,5 @@
+import accurateSetTimeout from "../../timing/set-timeout";
+
 const EXP = 'exponentialRampToValueAtTime';
 const LIN = 'linearRampToValueAtTime';
 
@@ -54,7 +56,7 @@ class Synth {
         this.waveform = waveform;
     }
 
-    playNote(context, frequency, noteLength, useOscillator=()=>{}) {
+    playNote(context, frequency, noteLength, modifiedSetTimeout = setTimeout, useOscillator=()=>{}) {
         const oscillator = this.getOscillator(context, frequency);
         if(this.vibratoFacts && this.vibratoFacts.rate && this.vibratoFacts.gain) {
             this.vibrato(
@@ -68,7 +70,7 @@ class Synth {
         useOscillator(oscillator);
         oscillator.start(context.currentTime);
     
-        setTimeout(() => oscillator.stop(context.currentTime), noteLength);
+        modifiedSetTimeout(() => oscillator.stop(context.currentTime), noteLength);
     }
 
     getOscillator(context, frequency) {
@@ -87,6 +89,9 @@ class Synth {
         );
         return withEnvelope;
     }
+
+// withCompressor: https://developer.mozilla.org/en-US/docs/Web/API/DynamicsCompressorNode
+
 
     withEnvelope(
         context,
@@ -116,7 +121,7 @@ class Synth {
     
         oscillator.connect(envelope).connect(frequency);
         oscillator.start(context.currentTime);
-        setTimeout(() => oscillator.stop(context.currentTime + lengthOfNote), lengthOfNote - 8);
+        accurateSetTimeout(() => oscillator.stop(context.currentTime + lengthOfNote), lengthOfNote - 8);
     }
 }
 

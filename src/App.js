@@ -5,6 +5,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { playNotes, SoundControls } from './music';
 import Oscilloscope from './visualize/oscilloscope';
 import { v4 as uuidv4 } from 'uuid';
+import { ACCURATE } from './music/segments/constants';
 
 const sharedOverrides = {
   MuiButton: {
@@ -66,14 +67,16 @@ const light_theme = createMuiTheme({
  * - Light/dark theme toggle
  * - 'Regenerate all' button to force all notes to regenerate
  * - Add help system to assist with all parts of the app
+ *   - https://github.com/elrumordelaluz/reactour
  * Options Menu:
  * - Overall direction (determine root note by increasing/decreasing from source)
  *    - just generally keep track of lower down things from higher up rather than trying to do things strictly hierarchically!
- * - Allow/add multiple generators per pattern
+ * - Allow/add multiple generators per pattern - what did I mean by this?
  * Synths:
  * - Make attack/decay/sustain/release more formalized (i.e. specify sustain!) (& ensure that the values _are able to_ scale to the length of time)!
  * - Import/export wavetables as JSON 1
- * - Import wavetables as mathematical formulae* - can't be free text entry to be eval'ed!
+ * - Display scale of wavetable
+ * - Import wavetables as mathematical formulae*
  * - Allow converting from ifft form to wavetable*
  * - Use display to input back into wavetable*
  * - Allow composing synths together
@@ -94,12 +97,12 @@ const light_theme = createMuiTheme({
  * - Acciaccatura/trills etc.
  * - Microtonal shifts
  * - (more) vibrato/tremolo
- * - Allow 'skipped' notes
+ * - Allow 'skipped' notes - after we've got the rhythm work complete
  * Rhythm:
- * - drop in replacement for 'setTimeout' with greater accuracy https://stackoverflow.com/questions/196027/is-there-a-more-accurate-way-to-create-a-javascript-timer-than-settimeout
  * - time signature
  * - accents
  * - change individual note lengths (use American quarter note system) 1
+ *   - to be able to do this, must also be able to adjust number of notes in a given phrase
  * - allow use of hemisemidemiquaver system
  * - syncopation
  * Dynamics:
@@ -111,9 +114,9 @@ const light_theme = createMuiTheme({
  *  - Improve generation by using pickBiasLate to descend slowly
  *  - Ensure that generation is always valid by checking octave against octavian 1
  *  - Allow user to force ending the passage on the root note
- *  - Improve generation by remembering _first_ root Note of series
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
- *  - Improve generation by picking different sets of movements that can move to each other
+ *  - Improve generation by picking different sets of movements that can move to each other at the function level
+ *    (e.g. passage as C3 => E3, then fill intervening notes, rather than generating all notes at once )
  *  - Improve generation by allowing 'motion towards' particular notes
  *  - Improve generation by generating in batches of 2 with option for truncated gen (i.e. short phrase returns 4, long phrase returns 8).
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
@@ -126,6 +129,8 @@ const light_theme = createMuiTheme({
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
  * - Refactor: global and local state, remove unnecessary local state in segments wherever possible
+ * - use Context to share state; if overly complex, see if a lighter alternative to Redux will do
+ * - Performance: identify odd 'CPU leak' issue where playing multiple times seems to permanently increase cpu requirements
  * 
  */
 
@@ -134,7 +139,9 @@ const light_theme = createMuiTheme({
  */
 const defaultGlobalOptions = {
   bpm: 120,
-  useGlobalBPM: true
+  useGlobalBPM: true,
+  timekeeping: ACCURATE,
+  useGlobalTimekeeping: true
 }
 // Config ends
 
@@ -177,12 +184,24 @@ const App = () => {
     synth: null,
     ...defaultGlobalOptions
   }]);
-  const addToAdditionalNotes = (key) => ({ value, context, synth, bpm, useGlobalBPM }) => {
+  const addToAdditionalNotes = (key) => ({
+    value,
+    context,
+    synth,
+    bpm,
+    useGlobalBPM,
+    timekeeping,
+    useGlobalTimekeeping
+  }) => {
     setSoundControls(prev => prev.map(
       soundControls => soundControls.key !== key ?
+        // Handle all other sound controls
         soundControls.useGlobalBPM && useGlobalBPM ? 
           { ...soundControls, bpm } :
+        soundControls.useGlobalTimekeeping && useGlobalTimekeeping ?
+          { ...soundControls, timekeeping } :
           soundControls :
+        // Handlle sound control being updated
         Object.assign(
           { ...soundControls },
           {
@@ -190,7 +209,9 @@ const App = () => {
             context,
             synth,
             bpm,
-            useGlobalBPM
+            useGlobalBPM,
+            timekeeping,
+            useGlobalTimekeeping
           }
         )
     ))
@@ -203,9 +224,11 @@ const App = () => {
     clearOscillators();
     console.log('playing additional:', soundControls)
     soundControls.forEach(
-      ({ notes, context, synth, bpm }, _, __) => {
+      ({ notes, context, synth, bpm, timekeeping }, _, __) => {
         if(notes && context && synth){
-          playNotes(notes.flat(), context, synth, bpm, replaceOscillator);
+          playNotes(notes.flat(), context, synth, {
+            bpm, timekeeping
+          }, replaceOscillator);
         }
       }
     );
@@ -229,6 +252,7 @@ const App = () => {
               playAdditionalNotes={ playAdditionalNotes }
               primary={ desc.primary }
               useGlobalBPM={ desc.useGlobalBPM }
+              useGlobalTimekeeping={ desc.useGlobalTimekeeping }
               setGlobalOption={ setGlobalOption }
               globalOptions={ globalOptions }
               removeSelf={ () => removeSelf(desc.key) } />

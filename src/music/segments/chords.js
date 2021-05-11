@@ -26,7 +26,7 @@ const chordStrategies = {
                     interval = pick(tenseMoves);
                     break;
                 case RELEASE:
-                    interval = pick(releaseMoves);
+                    interval = pick([...releaseMoves, 'perfectOctave']);
                     break;
                 case EITHER:
                 default:

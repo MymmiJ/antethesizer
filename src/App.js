@@ -71,11 +71,12 @@ const light_theme = createMuiTheme({
  * Options Menu:
  * - Overall direction (determine root note by increasing/decreasing from source)
  *    - just generally keep track of lower down things from higher up rather than trying to do things strictly hierarchically!
- * - Allow/add multiple generators per pattern
+ * - Allow/add multiple generators per pattern - what did I mean by this?
  * Synths:
  * - Make attack/decay/sustain/release more formalized (i.e. specify sustain!) (& ensure that the values _are able to_ scale to the length of time)!
  * - Import/export wavetables as JSON 1
- * - Import wavetables as mathematical formulae* - can't be free text entry to be eval'ed!
+ * - Display scale of wavetable
+ * - Import wavetables as mathematical formulae*
  * - Allow converting from ifft form to wavetable*
  * - Use display to input back into wavetable*
  * - Allow composing synths together
@@ -96,9 +97,8 @@ const light_theme = createMuiTheme({
  * - Acciaccatura/trills etc.
  * - Microtonal shifts
  * - (more) vibrato/tremolo
- * - Allow 'skipped' notes
+ * - Allow 'skipped' notes - after we've got the rhythm work complete
  * Rhythm:
- * - drop in replacement for 'setTimeout' with greater accuracy https://stackoverflow.com/questions/196027/is-there-a-more-accurate-way-to-create-a-javascript-timer-than-settimeout
  * - time signature
  * - accents
  * - change individual note lengths (use American quarter note system) 1
@@ -114,9 +114,9 @@ const light_theme = createMuiTheme({
  *  - Improve generation by using pickBiasLate to descend slowly
  *  - Ensure that generation is always valid by checking octave against octavian 1
  *  - Allow user to force ending the passage on the root note
- *  - Improve generation by remembering _first_ root Note of series
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
- *  - Improve generation by picking different sets of movements that can move to each other
+ *  - Improve generation by picking different sets of movements that can move to each other at the function level
+ *    (e.g. passage as C3 => E3, then fill intervening notes, rather than generating all notes at once )
  *  - Improve generation by allowing 'motion towards' particular notes
  *  - Improve generation by generating in batches of 2 with option for truncated gen (i.e. short phrase returns 4, long phrase returns 8).
  *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
@@ -129,7 +129,7 @@ const light_theme = createMuiTheme({
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
  * - Refactor: global and local state, remove unnecessary local state in segments wherever possible
- *  - use Context to sharee state; if overly complex, see if a lighter alternative to Redux will do
+ * - use Context to share state; if overly complex, see if a lighter alternative to Redux will do
  * - Performance: identify odd 'CPU leak' issue where playing multiple times seems to permanently increase cpu requirements
  * 
  */

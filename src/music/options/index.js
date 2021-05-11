@@ -158,7 +158,7 @@ const OptionMenu = ({
 
     const { bpm, timekeeping } = globalOptions;
     const { bpm: localBPM, timekeeping: localTimekeeping } = localOptions;
-    return <Grid container spacing={4} alignContent={'center'} alignItems={'center'} justify={'center'}>
+    return <Grid container spacing={4} alignContent={'flex-start'} alignItems={'flex-start'} justify={'center'}>
         <Grid item xs={3}>
             <Tooltip
                 placement={ 'top' }
@@ -250,49 +250,51 @@ const OptionMenu = ({
                 <MenuItem value={RELEASE}>RELEASE</MenuItem>
             </Select>
         </Grid>
-        <Grid item xs={ 2 }>
-            <Option
-                Type={ TextField }
-                global={ bpm }
-                setGlobal={ setGlobalOption('bpm') }
-                useGlobal={ useGlobalBPM }
-                setUseGlobal={ (next, useGlobalBPM) => () => setOpts({
-                    bpm: next,
-                    useGlobalBPM
-                }) }
-                tooltipDetails={{ placement: 'top', title: 'Beats Per Minute', label: 'BPM:', aria_label: 'beats per minute' }}
-                setLocal={ setLocalOption('bpm') } local={ localBPM } type={ 'number' }
-                setOpt={ setOpt('bpm') }/>
-        </Grid>
-        <Grid item xs={ 2 }>
-            <Option
-                Type={ Select }
-                global={ timekeeping }
-                setGlobal={ setGlobalOption('timekeeping') }
-                useGlobal={ useGlobalTimekeeping }
-                setUseGlobal={ (next, useGlobalTimekeeping) => () => setOpts({
-                    timekeeping: next,
-                    useGlobalTimekeeping
-                }) }
-                tooltipDetails={{
-                    placement: 'top',
-                    title: 'Select time keeping accuracy - accurate may cause performance issues and will not work correctly if you tab out',
-                    label: 'TIME KEEPING:',
-                    aria_label: 'select time keeping accuracy  - accurate may cause performance issues and will not work correctly if you tab out'
-                }}
-                setLocal={ setLocalOption('timekeeping') }
-                local={ localTimekeeping }
-                setOpt={ setOpt('timekeeping') }
-                options={[{
-                    value: ACCURATE,
-                    label: 'ACCURATE - MAY CAUSE MORE LOAD ON CPU',
-                    OptionType: MenuItem
-                }, {
-                    value: SLOPPY,
-                    label: 'SLOPPY - MAY CAUSE LESS LOAD ON CPU',
-                    OptionType: MenuItem
-                }
-                ]}/>
+        <Grid container spacing={4}  alignContent={'flex-start'} alignItems={'flex-start'} justify={'center'}>
+            <Grid item xs={ 2 }>
+                <Option
+                    Type={ TextField }
+                    global={ bpm }
+                    setGlobal={ setGlobalOption('bpm') }
+                    useGlobal={ useGlobalBPM }
+                    setUseGlobal={ (next, useGlobalBPM) => () => setOpts({
+                        bpm: next,
+                        useGlobalBPM
+                    }) }
+                    tooltipDetails={{ placement: 'top', title: 'Beats Per Minute', label: 'BPM:', aria_label: 'beats per minute' }}
+                    setLocal={ setLocalOption('bpm') } local={ localBPM } type={ 'number' }
+                    setOpt={ setOpt('bpm') }/>
+            </Grid>
+            <Grid item xs={ 2 }>
+                <Option
+                    Type={ Select }
+                    global={ timekeeping }
+                    setGlobal={ setGlobalOption('timekeeping') }
+                    useGlobal={ useGlobalTimekeeping }
+                    setUseGlobal={ (next, useGlobalTimekeeping) => () => setOpts({
+                        timekeeping: next,
+                        useGlobalTimekeeping
+                    }) }
+                    tooltipDetails={{
+                        placement: 'top',
+                        title: 'Select time keeping accuracy - accurate may cause performance issues and will not work correctly if you tab out',
+                        label: 'TIME KEEPING:',
+                        aria_label: 'select time keeping accuracy  - accurate may cause performance issues and will not work correctly if you tab out'
+                    }}
+                    setLocal={ setLocalOption('timekeeping') }
+                    local={ localTimekeeping }
+                    setOpt={ setOpt('timekeeping') }
+                    options={[{
+                        value: ACCURATE,
+                        label: 'ACCURATE - MAY CAUSE MORE LOAD ON CPU',
+                        OptionType: MenuItem
+                    }, {
+                        value: SLOPPY,
+                        label: 'SLOPPY - MAY CAUSE LESS LOAD ON CPU',
+                        OptionType: MenuItem
+                    }
+                    ]}/>
+            </Grid>
         </Grid>
     </Grid>;
 };

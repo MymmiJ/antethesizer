@@ -71,9 +71,9 @@ const light_theme = createMuiTheme({
  * - Stop playing button*
  * Options Menu:
  * Synths:
- * - Make attack/decay/sustain/release more formalized (i.e. specify sustain!) (& ensure that the values _are able to_ scale to the length of time)!
- * - Import/export wavetables as JSON 1
- * - Display scale of wavetable
+ * - Make attack/decay/sustain/release more formalized (i.e. specify sustain!) (& ensure that the values _are able to_ scale to the length of time)! 1
+ * - Import/export wavetables as JSON!
+ * - Display scale of wavetable graph
  * - Import wavetables as mathematical formulae*
  * - Allow converting from ifft form to wavetable*
  * - Use display to input back into wavetable*
@@ -111,10 +111,10 @@ const light_theme = createMuiTheme({
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
  * Generation:
  *  - Use pickBiasLate to descend slowly
- *  - Ensure that generation is always valid by checking octave against octavian 1
- *  - Allow user to force ending the passage on the root note
+ *  - Ensure that generation is always valid by checking octave & letter against octavian 1
+ *  - Allow user to force ending the passage on the root note!
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
- *  - Pick different sets of movements that can move to each other at the function level
+ *  - Pick different sets of movements that can move to each other at the function level!
  *    (e.g. passage as C3 => E3, then fill intervening notes, rather than generating all notes at once )
  *  - add themed 'packs' to allow more interesting generation (modal, gospel, r&b, bebop)
  * Visualization:
@@ -126,7 +126,6 @@ const light_theme = createMuiTheme({
  * - POST-BETA FEATURE
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
- * - Refactor: global and local state, remove unnecessary local state in segments wherever possible
  * - use Context to share state; if overly complex, see if a lighter alternative to Redux will do
  * 
  */
@@ -230,6 +229,17 @@ const App = () => {
       }
     );
   }
+  const playIndexedNotes = index => () => {
+    clearOscillators();
+    const soundControl = soundControls.filter(desc => desc.key === index)[0];
+    console.log('playing indexed notes:', soundControl);
+    const { notes, context, synth, bpm, timekeeping } = soundControl;
+    if(notes && context && synth){
+      playNotes(notes.flat(), context, synth, {
+        bpm, timekeeping
+      }, replaceOscillator);
+    }
+  }
   const removeSelf = (id) => setSoundControls(prev => prev.filter(desc => desc.key !== id ));
   return (
     <ThemeProvider theme={dark_theme}>
@@ -239,14 +249,14 @@ const App = () => {
           desc =>
             <SoundControls
               key={ desc.key }
+              description = { desc } // TODO: Rationalize this, pass all info down together
               context={ context }
               customSynths={ customSynths }
               synthControls={ synthControls }
               addNewSoundControls={ addNewSoundControls }
-              clearOscillators={ clearOscillators }
-              useOscillator={ replaceOscillator }
               addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
               playAdditionalNotes={ playAdditionalNotes }
+              playIndexedNotes={ playIndexedNotes(desc.key) }
               primary={ desc.primary }
               useGlobalBPM={ desc.useGlobalBPM }
               useGlobalTimekeeping={ desc.useGlobalTimekeeping }

@@ -51,20 +51,19 @@ const soundControlsShouldUpdateOn = ['bpm', 'useGlobalBPM', 'timekeeping', 'useG
 // Config ends
 
 const SoundControls = ({
+    description: { notes },
     context,
     customSynths,
     synthControls,
-    clearOscillators,
-    useOscillator,
     addNewSoundControls,
     primary,
     removeSelf,
     addToAdditionalNotes,
     playAdditionalNotes,
+    playIndexedNotes,
     setGlobalOption,
     globalOptions
 }) => {
-    const [notes, setNotes] = useState([]);
     const [defaultMood, setDefaultMood] = useState(RELEASE);
     const [defaultRootNote, setDefaultRootNote] = useState('C3');
     const [synth, setSynth] = useState(TRIANGLE);
@@ -91,15 +90,8 @@ const SoundControls = ({
         return acc;
     },{})
 
-    // Lift this to play only this entry from 'additional notes'
-    const handlePlay = () => {
-        clearOscillators();
-        playNotes(notes.flat(), context, synth, { bpm, timekeeping }, useOscillator);
-    }
-
     const handleSetNotes = value => {
         addToAdditionalNotes({ value, context, synth, bpm, useGlobalBPM, timekeeping, useGlobalTimekeeping });
-        setNotes( value );
     }
 
     const handleSetSynth = value => {
@@ -202,7 +194,7 @@ const SoundControls = ({
             </Typography>
         </Grid>
         <Grid item xs={10}>
-            <Button color={'primary'} onClick={ handlePlay }>PLAY ➣</Button>
+            <Button color={'primary'} onClick={ playIndexedNotes }>PLAY ➣</Button>
         </Grid>
         {
             primary &&

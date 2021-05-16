@@ -6,6 +6,7 @@ import { playNotes, SoundControls } from './music';
 import Oscilloscope from './visualize/oscilloscope';
 import { v4 as uuidv4 } from 'uuid';
 import { ACCURATE } from './music/segments/constants';
+import { TRIANGLE } from './music/presets';
 
 const sharedOverrides = {
   MuiButton: {
@@ -150,7 +151,7 @@ const App = () => {
     primary: true,
     notes: [],
     context: null,
-    synth: null,
+    synth: TRIANGLE,
     ...defaultGlobalOptions
   }]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
@@ -177,7 +178,7 @@ const App = () => {
     primary: false,
     notes: [],
     context: null,
-    synth: null,
+    synth: TRIANGLE,
     ...defaultGlobalOptions
   }]);
   const addToAdditionalNotes = (key) => ({

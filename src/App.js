@@ -68,10 +68,8 @@ const light_theme = createMuiTheme({
  * - 'Regenerate all' button to force all notes to regenerate
  * - Add help system to assist with all parts of the app
  *   - https://github.com/elrumordelaluz/reactour
+ * - Stop playing button*
  * Options Menu:
- * - Overall direction (determine root note by increasing/decreasing from source)
- *    - just generally keep track of lower down things from higher up rather than trying to do things strictly hierarchically!
- * - Allow/add multiple generators per pattern - what did I mean by this?
  * Synths:
  * - Make attack/decay/sustain/release more formalized (i.e. specify sustain!) (& ensure that the values _are able to_ scale to the length of time)!
  * - Import/export wavetables as JSON 1
@@ -92,6 +90,7 @@ const light_theme = createMuiTheme({
  *     Essential for allowing insertion of specific runs
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
+ * - Allow target end note to be set
  * Ornaments:
  * - Arpeggios
  * - Acciaccatura/trills etc.
@@ -111,26 +110,24 @@ const light_theme = createMuiTheme({
  * Motifs:
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
  * Generation:
- *  - Improve generation by using pickBiasLate to descend slowly
+ *  - Use pickBiasLate to descend slowly
  *  - Ensure that generation is always valid by checking octave against octavian 1
  *  - Allow user to force ending the passage on the root note
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
- *  - Improve generation by picking different sets of movements that can move to each other at the function level
+ *  - Pick different sets of movements that can move to each other at the function level
  *    (e.g. passage as C3 => E3, then fill intervening notes, rather than generating all notes at once )
- *  - Improve generation by allowing 'motion towards' particular notes
- *  - Improve generation by generating in batches of 2 with option for truncated gen (i.e. short phrase returns 4, long phrase returns 8).
- *  - Improve generation by allowing different composable(?) 'patterns', e.g. mode, up-and-down
+ *  - add themed 'packs' to allow more interesting generation (modal, gospel, r&b, bebop)
  * Visualization:
  * - Add more options to viz, (flame, bar?) using https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode as guide
- * - Color picker 1
- * - Manually handle scale
+ * - Color picker
+ * - Manually handle scale (maybe)
+ * - Handle multiple oscillators better 1
  * Reverse Engineering:
  * - POST-BETA FEATURE
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
  * Code:
  * - Refactor: global and local state, remove unnecessary local state in segments wherever possible
  * - use Context to share state; if overly complex, see if a lighter alternative to Redux will do
- * - Performance: identify odd 'CPU leak' issue where playing multiple times seems to permanently increase cpu requirements
  * 
  */
 

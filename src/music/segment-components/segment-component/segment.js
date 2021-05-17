@@ -8,9 +8,11 @@ import {
     TextField,
     Typography
 } from '@material-ui/core';
+import LockIcon from '@material-ui/icons/Lock';
 import chordStrategies, { getStrategy } from '../../segments/chords';
 import { Chord } from 'octavian';
 import { RELEASE, TENSION } from '../../segments/constants';
+import { LockOpen } from '@material-ui/icons';
 
 const Segment = ({
     color,
@@ -32,6 +34,8 @@ const Segment = ({
     removeSegment,
     regenerateNotes,
     setRootNote,
+    isLocked,
+    toggleLock,
     setMood,
     setRepeats,
     setChordStrategy,
@@ -66,11 +70,11 @@ const Segment = ({
         </Grid>
         <Grid>
             <Tooltip placement={ 'top' } title={ 'SELECT MOOD TO RESOLVE TO' } aria-label={ 'select a mood to resolve the music segment towards' }>
-                <InputLabel style={{ color }} id="mood-select">Mood</InputLabel>
+                <InputLabel style={{ color }} id={`mood-select-${ name }-${ mood }-${ root }`}>Mood</InputLabel>
             </Tooltip>
             <Select
                 style={{ color }}
-                labelId="mood-select"
+                labelId={ `mood-select-${ name }-${ mood }-${ root }` }
                 id="mood-selector"
                 value={ mood }
                 onChange={ ({ target: { value }}) => {
@@ -88,7 +92,9 @@ const Segment = ({
             </Select>
         </Grid>
         <Grid item>
-            <TextField onChange={ ({ target: { value }}) => {
+            <TextField 
+            onKeyDown={ e => { if(isLocked && !(e.key==="ArrowUp" || e.key==="ArrowDown")) { e.preventDefault(); } } }
+            onChange={ ({ target: { value }}) => {
                 console.log('Changing repeats: ', value);
                 try {
                     if(value > 0) {
@@ -101,6 +107,10 @@ const Segment = ({
                 }
              } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } type={ 'number' } />
         </Grid>
+        <Grid item>
+            <Button onClick={ toggleLock }>{ isLocked ? <LockIcon/> : <LockOpen/> }</Button>
+        </Grid>
+        {/* Move the below into its own component */}
         <Grid item>
             <Tooltip placement={ 'top' } title={ 'SELECT CHORD STRATEGY' } aria-label={ 'select a strategy for creating chords' }>
                 <InputLabel style={{ color }} id="chord-strategy-select">Chord Strategy</InputLabel>

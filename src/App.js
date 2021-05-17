@@ -78,6 +78,8 @@ const light_theme = createMuiTheme({
  * - Import wavetables as mathematical formulae*
  * - Allow converting from ifft form to wavetable*
  * - Use display to input back into wavetable*
+ * - Allow importing 'synths' from mic audio
+ *     & other audio sources
  * - Allow composing synths together
  * - Allow distortion in synths
  * Sections:
@@ -86,12 +88,10 @@ const light_theme = createMuiTheme({
  * - Allow option to end on a root note (either added or replacing the final note)
  * - Turn bias for picking next shift off
  * - Allow selecting 'EITHER' option
- * - Allow locking of note runs in place 1
- *     preventing regeneration & changing mood/root note, retaining ability to e.g. repeat notes
- *     Essential for allowing insertion of specific runs
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
  * - Allow target end note to be set
+ * - Allow changing number of repeats while runs are locked
  * Ornaments:
  * - Arpeggios
  * - Acciaccatura/trills etc.
@@ -138,7 +138,7 @@ const defaultGlobalOptions = {
   bpm: 120,
   useGlobalBPM: true,
   timekeeping: ACCURATE,
-  useGlobalTimekeeping: true
+  useGlobalTimekeeping: true,
 }
 // Config ends
 
@@ -152,6 +152,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: TRIANGLE,
+    locked: [],
     ...defaultGlobalOptions
   }]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
@@ -179,6 +180,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: TRIANGLE,
+    locked: [],
     ...defaultGlobalOptions
   }]);
   const addToAdditionalNotes = (key) => ({
@@ -198,7 +200,7 @@ const App = () => {
         soundControls.useGlobalTimekeeping && useGlobalTimekeeping ?
           { ...soundControls, timekeeping } :
           soundControls :
-        // Handlle sound control being updated
+        // Handle sound control being updated
         Object.assign(
           { ...soundControls },
           {
@@ -213,6 +215,19 @@ const App = () => {
         )
     ))
   }
+
+  const handleToggleLock = key => index => () => {
+    setSoundControls(prev => prev.map(
+      soundControls => {
+        const nextLocked = soundControls.locked;
+        nextLocked[index] = !nextLocked[index];
+        return soundControls.key === key ? ({
+        ...soundControls,
+        locked: nextLocked
+      }) : soundControls }) )
+  };
+
+  // Oscillators & actually playing music
   const replaceOscillator = oscillator => {
     setOscillators(prev => [...prev, oscillator]);
   }
@@ -256,6 +271,7 @@ const App = () => {
               synthControls={ synthControls }
               addNewSoundControls={ addNewSoundControls }
               addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
+              toggleLock={ handleToggleLock(desc.key) }
               playAdditionalNotes={ playAdditionalNotes }
               playIndexedNotes={ playIndexedNotes(desc.key) }
               primary={ desc.primary }

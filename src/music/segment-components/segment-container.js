@@ -34,6 +34,8 @@ const SegmentContainer = ({
     setDefaultMood,
     defaultRootNote,
     setDefaultRootNote,
+    locked,
+    toggleLock,
     addNewSoundControls,
     globalOptions,
     setGlobalOption,
@@ -46,7 +48,6 @@ const SegmentContainer = ({
 }) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
-
     const addNewNotes = (f, mood, rootNote, repeats, chordStrategy,chordOptions=defaultChordOptions) => {
         const notes = generateNotes(f, mood, rootNote, repeats, chordStrategy, chordOptions);
         setNotes(prev => prev.concat([notes]));
@@ -81,6 +82,16 @@ const SegmentContainer = ({
             chordStrategy='none,default',
             chordOptions=defaultChordOptions
         ) => {
+        if(locked[i]) {
+            const currentRepeats = parseInt(segmentType.repeats);
+            setNotes(prev => {
+                const next = [...prev];
+                const repeatedNotes = repeatNotes(next[i].slice(0,next[i].length / currentRepeats), repeats);
+                next[i] = repeatedNotes;
+                return next;
+            })
+            return;
+        }
         const nextNotes = generateNotes(
             segmentType.action,
             mood,
@@ -212,6 +223,8 @@ const SegmentContainer = ({
                         color={ color }
                         segmentType={ segment.segment }
                         setRootNote={ setSegmentField(i, 'root') }
+                        isLocked={ locked[i] }
+                        toggleLock={ toggleLock(i) }
                         setMood={ setSegmentField(i, 'mood') }
                         setRepeats={ setSegmentField(i, 'repeats') }
                         setChordStrategy={ setSegmentField(i, 'chordStrategy') }
@@ -221,7 +234,7 @@ const SegmentContainer = ({
                         setChordChanceFalloff={ setChordOption(i, 'chanceFalloff') }
                         regenerateNotes={
                             (mood, rootNote, repeats, chordStrategy, chordOptions) =>
-                                regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)
+                            regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)
                         }
                         removeSegment={ () => removeSegment(i) } />;
                 }) :

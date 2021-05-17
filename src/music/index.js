@@ -3,11 +3,11 @@ import {
     Button,
     Box,
     Grid,
-    Typography
 } from '@material-ui/core';
 import SegmentContainer from './segment-components/segment-container';
 import { SINE, TRIANGLE } from './presets';
 import { ACCURATE, RELEASE } from './segments/constants';
+import SegmentNoteDisplay from './segments/segment-note-display';
 import accurateSetTimeout from '../timing/set-timeout';
 
 // Play helpers - Put these in their own folder
@@ -165,32 +165,7 @@ const SoundControls = ({
                 />
         </Grid>
         <Grid item xs={10}>
-            <Typography align={'left'}>
-                { notes.map((noteSegment, i) => {
-                    let color;
-                    switch(i % 3) {
-                        case 0:
-                            color = '#EF4646';
-                            break;
-                        case 1:
-                            color = '#A2A2EF';
-                            break;
-                        case 2:
-                        default:
-                            color = '#A2EFA2';
-                            break;
-                    }
-                    return <span key={ `text-${i}` } style={{ color }}>
-                    { noteSegment.map(chord => {
-                        if(chord.notes.length > 1) {
-                            return `[${ chord.notes.map(note => `${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`) }] `
-                        }
-                        const note = chord.notes[0];
-                        return `${note.letter}${note.modifier ? note.modifier : ''}${note.octave}`
-                    }).join(' ') }&nbsp;
-                </span>
-                }) }
-            </Typography>
+            <SegmentNoteDisplay notes={ notes } />
         </Grid>
         <Grid item xs={10}>
             <Button color={'primary'} onClick={ playIndexedNotes }>PLAY ➣</Button>

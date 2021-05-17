@@ -82,6 +82,16 @@ const SegmentContainer = ({
             chordStrategy='none,default',
             chordOptions=defaultChordOptions
         ) => {
+        if(locked[i]) {
+            const currentRepeats = parseInt(segmentType.repeats);
+            setNotes(prev => {
+                const next = [...prev];
+                const repeatedNotes = repeatNotes(next[i].slice(0,next[i].length / currentRepeats), repeats);
+                next[i] = repeatedNotes;
+                return next;
+            })
+            return;
+        }
         const nextNotes = generateNotes(
             segmentType.action,
             mood,
@@ -213,6 +223,7 @@ const SegmentContainer = ({
                         color={ color }
                         segmentType={ segment.segment }
                         setRootNote={ setSegmentField(i, 'root') }
+                        isLocked={ locked[i] }
                         toggleLock={ toggleLock(i) }
                         setMood={ setSegmentField(i, 'mood') }
                         setRepeats={ setSegmentField(i, 'repeats') }
@@ -222,9 +233,7 @@ const SegmentContainer = ({
                         setChordMinStack={ setChordOption(i, 'minStack') }
                         setChordChanceFalloff={ setChordOption(i, 'chanceFalloff') }
                         regenerateNotes={
-                            locked[i]
-                                ? () => console.log('Avoiding note generation')
-                                : (mood, rootNote, repeats, chordStrategy, chordOptions) =>
+                            (mood, rootNote, repeats, chordStrategy, chordOptions) =>
                             regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)
                         }
                         removeSegment={ () => removeSegment(i) } />;

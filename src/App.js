@@ -88,12 +88,10 @@ const light_theme = createMuiTheme({
  * - Allow option to end on a root note (either added or replacing the final note)
  * - Turn bias for picking next shift off
  * - Allow selecting 'EITHER' option
- * - Allow locking of note runs in place 1
- *     preventing regeneration & changing mood/root note, retaining ability to e.g. repeat notes
- *     Essential for allowing insertion of specific runs
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
  * - Allow target end note to be set
+ * - Allow changing number of repeats while runs are locked
  * Ornaments:
  * - Arpeggios
  * - Acciaccatura/trills etc.
@@ -154,7 +152,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: TRIANGLE,
-    locked: [true],
+    locked: [],
     ...defaultGlobalOptions
   }]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
@@ -182,7 +180,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: TRIANGLE,
-    locked: [true],
+    locked: [],
     ...defaultGlobalOptions
   }]);
   const addToAdditionalNotes = (key) => ({
@@ -220,10 +218,13 @@ const App = () => {
 
   const handleToggleLock = key => index => () => {
     setSoundControls(prev => prev.map(
-      soundControls => soundControls.key === key ? ({
+      soundControls => {
+        const nextLocked = soundControls.locked;
+        nextLocked[index] = !nextLocked[index];
+        return soundControls.key === key ? ({
         ...soundControls,
-        locked: !soundControls.locked[index]
-      }) : soundControls ) )
+        locked: nextLocked
+      }) : soundControls }) )
   };
 
   // Oscillators & actually playing music

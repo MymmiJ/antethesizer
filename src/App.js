@@ -91,7 +91,6 @@ const light_theme = createMuiTheme({
  * - Allow starting section after delay of x notes
  * - Allow sections to be played backwards
  * - Allow target end note to be set
- * - Allow changing number of repeats while runs are locked
  * Ornaments:
  * - Arpeggios
  * - Acciaccatura/trills etc.

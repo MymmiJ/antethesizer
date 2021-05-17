@@ -51,7 +51,7 @@ const soundControlsShouldUpdateOn = ['bpm', 'useGlobalBPM', 'timekeeping', 'useG
 // Config ends
 
 const SoundControls = ({
-    description: { notes, synth },
+    description: { notes, synth, locked },
     context,
     customSynths,
     synthControls,
@@ -59,6 +59,7 @@ const SoundControls = ({
     primary,
     removeSelf,
     addToAdditionalNotes,
+    toggleLock,
     playAdditionalNotes,
     playIndexedNotes,
     setGlobalOption,
@@ -66,7 +67,6 @@ const SoundControls = ({
 }) => {
     const [defaultMood, setDefaultMood] = useState(RELEASE);
     const [defaultRootNote, setDefaultRootNote] = useState('C3');
-    const [lockedIndexes, setLocks] = useState([]);
 
     const [localOptions, setLocalOptions] = useState(globalOptions);
     const [deFactoOptions, setDeFactoOptions] = useState(globalOptions);
@@ -149,7 +149,8 @@ const SoundControls = ({
                 setDefaultMood={ setDefaultMood }
                 defaultRootNote={ defaultRootNote }
                 setDefaultRootNote={ setDefaultRootNote }
-                setLocks={ setLocks }
+                locked={ locked }
+                toggleLock={ toggleLock }
                 customSynths={ customSynths }
                 synthControls={ synthControls }
                 globalOptions={ globalOptions }

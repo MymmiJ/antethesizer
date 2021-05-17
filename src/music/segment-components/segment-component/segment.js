@@ -32,6 +32,7 @@ const Segment = ({
     removeSegment,
     regenerateNotes,
     setRootNote,
+    toggleLock,
     setMood,
     setRepeats,
     setChordStrategy,

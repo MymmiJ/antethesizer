@@ -78,6 +78,8 @@ const light_theme = createMuiTheme({
  * - Import wavetables as mathematical formulae*
  * - Allow converting from ifft form to wavetable*
  * - Use display to input back into wavetable*
+ * - Allow importing 'synths' from mic audio
+ *     & other audio sources
  * - Allow composing synths together
  * - Allow distortion in synths
  * Sections:
@@ -138,7 +140,7 @@ const defaultGlobalOptions = {
   bpm: 120,
   useGlobalBPM: true,
   timekeeping: ACCURATE,
-  useGlobalTimekeeping: true
+  useGlobalTimekeeping: true,
 }
 // Config ends
 
@@ -152,6 +154,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: TRIANGLE,
+    locked: [true],
     ...defaultGlobalOptions
   }]);
   const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
@@ -179,6 +182,7 @@ const App = () => {
     notes: [],
     context: null,
     synth: TRIANGLE,
+    locked: [true],
     ...defaultGlobalOptions
   }]);
   const addToAdditionalNotes = (key) => ({
@@ -198,7 +202,7 @@ const App = () => {
         soundControls.useGlobalTimekeeping && useGlobalTimekeeping ?
           { ...soundControls, timekeeping } :
           soundControls :
-        // Handlle sound control being updated
+        // Handle sound control being updated
         Object.assign(
           { ...soundControls },
           {
@@ -213,6 +217,16 @@ const App = () => {
         )
     ))
   }
+
+  const handleToggleLock = key => index => () => {
+    setSoundControls(prev => prev.map(
+      soundControls => soundControls.key === key ? ({
+        ...soundControls,
+        locked: !soundControls.locked[index]
+      }) : soundControls ) )
+  };
+
+  // Oscillators & actually playing music
   const replaceOscillator = oscillator => {
     setOscillators(prev => [...prev, oscillator]);
   }
@@ -256,6 +270,7 @@ const App = () => {
               synthControls={ synthControls }
               addNewSoundControls={ addNewSoundControls }
               addToAdditionalNotes={ addToAdditionalNotes(desc.key) }
+              toggleLock={ handleToggleLock(desc.key) }
               playAdditionalNotes={ playAdditionalNotes }
               playIndexedNotes={ playIndexedNotes(desc.key) }
               primary={ desc.primary }

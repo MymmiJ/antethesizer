@@ -34,6 +34,8 @@ const SegmentContainer = ({
     setDefaultMood,
     defaultRootNote,
     setDefaultRootNote,
+    locked,
+    toggleLock,
     addNewSoundControls,
     globalOptions,
     setGlobalOption,
@@ -46,7 +48,6 @@ const SegmentContainer = ({
 }) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
-
     const addNewNotes = (f, mood, rootNote, repeats, chordStrategy,chordOptions=defaultChordOptions) => {
         const notes = generateNotes(f, mood, rootNote, repeats, chordStrategy, chordOptions);
         setNotes(prev => prev.concat([notes]));
@@ -212,6 +213,7 @@ const SegmentContainer = ({
                         color={ color }
                         segmentType={ segment.segment }
                         setRootNote={ setSegmentField(i, 'root') }
+                        toggleLock={ toggleLock(i) }
                         setMood={ setSegmentField(i, 'mood') }
                         setRepeats={ setSegmentField(i, 'repeats') }
                         setChordStrategy={ setSegmentField(i, 'chordStrategy') }
@@ -220,8 +222,10 @@ const SegmentContainer = ({
                         setChordMinStack={ setChordOption(i, 'minStack') }
                         setChordChanceFalloff={ setChordOption(i, 'chanceFalloff') }
                         regenerateNotes={
-                            (mood, rootNote, repeats, chordStrategy, chordOptions) =>
-                                regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)
+                            locked[i]
+                                ? () => console.log('Avoiding note generation')
+                                : (mood, rootNote, repeats, chordStrategy, chordOptions) =>
+                            regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)
                         }
                         removeSegment={ () => removeSegment(i) } />;
                 }) :

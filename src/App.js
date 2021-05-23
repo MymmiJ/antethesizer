@@ -111,17 +111,18 @@ const light_theme = createMuiTheme({
  *  - Enable inserting motifs to be repeated, consisting of smaller sections with interval changes & chords specified
  * Generation:
  *  - Use pickBiasLate to descend slowly
- *  - Ensure that generation is always valid by checking octave & letter against octavian 1
+ *  - Ensure that generation is always valid by checking octave & letter against octavian! 1
  *  - Allow user to force ending the passage on the root note!
  *    (e.g. for Passage, remember real rootNote into the children and use to modify generation)
  *  - Pick different sets of movements that can move to each other at the function level!
  *    (e.g. passage as C3 => E3, then fill intervening notes, rather than generating all notes at once )
- *  - add themed 'packs' to allow more interesting generation (modal, gospel, r&b, bebop)
+ *  - add themed strategies to allow more interesting generation (modal, gospel, r&b, bebop)
  * Visualization:
  * - Add more options to viz, (flame, bar?) using https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode as guide
  * - Color picker
  * - Manually handle scale (maybe)
  * - Handle multiple oscillators better 1
+ * - Separate Circle of Fifths viz!
  * Reverse Engineering:
  * - POST-BETA FEATURE
  * - on pasting notes, locks the segment index and reverse engineers the tension/release patterns
@@ -256,6 +257,7 @@ const App = () => {
     }
   }
   const removeSelf = (id) => setSoundControls(prev => prev.filter(desc => desc.key !== id ));
+  const currentOscillators = oscillators.slice(oscillators.length - soundControls.length);
   return (
     <ThemeProvider theme={dark_theme}>
       <CssBaseline/>
@@ -281,7 +283,7 @@ const App = () => {
               removeSelf={ () => removeSelf(desc.key) } />
         )
       }
-      <Oscilloscope context={ context } source={ oscillators[oscillators.length-1] }/>
+      <Oscilloscope context={ context } source={ currentOscillators }/>
     </ThemeProvider>
   );
 }

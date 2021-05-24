@@ -17,8 +17,8 @@ import { RELEASE } from '../segments/constants';
 import OptionMenu from '../options';
 import { defaultChordOptions } from '../segments/chords.js';
 
-const generateNotes = (f, mood, rootNote, repeats, chordStrategy, chordOptions) => {
-    const notes = f(rootNote, mood, chordStrategy, chordOptions);
+const generateNotes = (f, mood, rootNote, endNote, repeats, chordStrategy, chordOptions) => {
+    const notes = f(rootNote, endNote, mood, chordStrategy, chordOptions);
     return repeatNotes(notes, repeats);
 }
 
@@ -48,15 +48,19 @@ const SegmentContainer = ({
 }) => {
     const [Menu, setMenu] = useState(false);
     const [segments, setSegments] = useState([]);
-    const addNewNotes = (f, mood, rootNote, repeats, chordStrategy,chordOptions=defaultChordOptions) => {
-        const notes = generateNotes(f, mood, rootNote, repeats, chordStrategy, chordOptions);
+    const addNewNotes = (f, mood, rootNote, endNote, repeats, chordStrategy,chordOptions=defaultChordOptions) => {
+        const notes = generateNotes(f, mood, rootNote, endNote, repeats, chordStrategy, chordOptions);
         setNotes(prev => prev.concat([notes]));
     }
 
     const addSegment = (segmentType) => {
         setSegments(prev => {
-            const segment = {...segmentType, root: defaultRootNote, repeats: 1, mood: defaultMood,
-                chordStrategy: 'none,default', chordOptions: defaultChordOptions };
+            const segment = {
+                ...segmentType,
+                root: defaultRootNote, repeats: 1, mood: defaultMood,
+                chordStrategy: 'none,default', chordOptions: defaultChordOptions,
+                endNote: 'C', useEndNote: false
+            };
             const next = prev.concat({
                 segment,
                 uuid: uuidv4()
@@ -65,6 +69,7 @@ const SegmentContainer = ({
                 segment.action,
                 segment.mood,
                 new Chord(segment.root),
+                segment.endNote,
                 segment.repeats,
                 segment.chordStrategy,    
                 segment.chordOptions
@@ -78,6 +83,7 @@ const SegmentContainer = ({
             i,
             mood = RELEASE,
             rootNote='C3',
+            endNote='C',
             repeats=1,
             chordStrategy='none,default',
             chordOptions=defaultChordOptions
@@ -96,6 +102,7 @@ const SegmentContainer = ({
             segmentType.action,
             mood,
             rootNote,
+            endNote,
             repeats,
             chordStrategy,
             chordOptions
@@ -223,6 +230,7 @@ const SegmentContainer = ({
                         color={ color }
                         segmentType={ segment.segment }
                         setRootNote={ setSegmentField(i, 'root') }
+                        setEndNote={ setSegmentField(i, 'endNote') }
                         isLocked={ locked[i] }
                         toggleLock={ toggleLock(i) }
                         setMood={ setSegmentField(i, 'mood') }
@@ -233,8 +241,8 @@ const SegmentContainer = ({
                         setChordMinStack={ setChordOption(i, 'minStack') }
                         setChordChanceFalloff={ setChordOption(i, 'chanceFalloff') }
                         regenerateNotes={
-                            (mood, rootNote, repeats, chordStrategy, chordOptions) =>
-                            regenerateNotes(segment.segment, i, mood, rootNote, repeats, chordStrategy, chordOptions)
+                            (mood, rootNote, endNote, repeats, chordStrategy, chordOptions) =>
+                            regenerateNotes(segment.segment, i, mood, rootNote, endNote, repeats, chordStrategy, chordOptions)
                         }
                         removeSegment={ () => removeSegment(i) } />;
                 }) :

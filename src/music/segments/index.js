@@ -2,7 +2,7 @@ import { Chord } from 'octavian';
 import {
     TENSION, RELEASE,
     startingNotes,
-    tenseMoves, releaseMoves } from './constants';
+    tenseMoves, releaseMoves, octaveMoves } from './constants';
 import { getStrategy } from './chords';
 
 // Move to utilities folder
@@ -79,7 +79,7 @@ const diatom = (root, mood, chordStrategy='none,default', chordOptions) => {
     return [root,next];
 }
 
-const createDiatoms = (rootNote, moods = [], chordStrategy, chordOptions) => {
+const createDiatoms = (rootNote, endNote, moods = [], chordStrategy, chordOptions) => {
     const notes = moods.reduce(
         (accumulator, mood) => {
             const next = diatom(accumulator[accumulator.length-1].notes[0], mood, chordStrategy, chordOptions);
@@ -121,49 +121,86 @@ const moodsFromMood = (mood, n = 2) => {
     return moods;
 }
 
-const noteChange = (rootNote, mood, chordStrategy, chordOptions) => {
-    return createDiatoms(rootNote, [mood], chordStrategy, chordOptions);
+const noteChange = (rootNote, mood, endNote, chordStrategy, chordOptions) => {
+    return createDiatoms(rootNote, endNote, [mood], chordStrategy, chordOptions);
 }
 
-const shortPhrase = (rootNote, mood, chordStrategy, chordOptions, n = 4, first = true) => {
+const shortPhrase = (rootNote, endNote, mood, chordStrategy, chordOptions, n = 4, first = true) => {
     if(first) n--;
     const moods = moodsFromMood(mood, n);
-    return createDiatoms(rootNote, moods, chordStrategy, chordOptions);
+    return createDiatoms(rootNote, endNote, moods, chordStrategy, chordOptions);
 }
 
-const createComplex = (rootNote, moods, chordStrategy, chordOptions, f, n, first = false) => {
+const createComplex = (rootNote, endNote, moods, chordStrategy, chordOptions, f, n, first = false) => {
+    // TODO: If endNote octave is specified, make sure the last few notes 'point' in that direction
+
     const notes = moods.reduce(
         (accumulator, mood) => {
             let next;
             // Allow moving away from root for sake of tension
-            next = f(accumulator[accumulator.length-1], mood, chordStrategy, chordOptions, n, first);
+            next = f(accumulator[accumulator.length-1], false, mood, chordStrategy, chordOptions, n, first);
             first = false;
             return [...accumulator, ...next.slice(1)];
         },
         [rootNote]
     );
+
+    // If octave is not on endNote, get octave from previous note and;
+    //    if tension, move up to closest correct note, if release move down to closest correct note
+    let endNoteChord;
+    try {
+        if(!(/[\w|#]+\d$/.test(endNote))) {
+            const previousChord = notes[notes.length-2];
+            const octave = previousChord.notes[0].octave;
+            const letter = previousChord.notes[0].letter;
+            // If e.g. G > A, we would like to move from e.g. G4 -> A5
+            // and would not like to move from e.g. G4 -> A3
+            let octaveModifier = letter > endNote;
+            if(octave) {
+                switch(moods[moods.length-1]) {
+                    case RELEASE:
+                        octaveModifier -= Math.round(Math.random(0.5));
+                        endNoteChord = new Chord(`${endNote}${octave+octaveModifier}`)
+                        break;
+                    case TENSION:
+                        octaveModifier += Math.round(Math.random(0.5));
+                        endNoteChord = new Chord(`${endNote}${octave+octaveModifier}`)
+                        break;
+                    default:
+                        endNoteChord = new Chord(`${endNote}${octave}`)
+                        break;
+                }
+            }
+        } else {
+            endNoteChord = new Chord(endNote);
+        }
+        notes[notes.length-1] = endNoteChord;
+    } catch(e) {
+        console.error('Error trying to create end note chord, leaving it alone:', endNote, e);
+    }
+
     console.log(f.name, notes.length);
     return notes;
 }
 
-const longPhrase = (rootNote, mood, chordStrategy, chordOptions, n = 2, first = true) => {
+const longPhrase = (rootNote, endNote, mood, chordStrategy, chordOptions, n = 2, first = true) => {
     const moods = moodsFromMood(mood, n);
-    return createComplex(rootNote, moods, chordStrategy, chordOptions, shortPhrase, 4, first);
+    return createComplex(rootNote, endNote, moods, chordStrategy, chordOptions, shortPhrase, 4, first);
 }
 
-const passage = (rootNote, mood, chordStrategy, chordOptions, n = 2, first = true) => {
+const passage = (rootNote, endNote, mood, chordStrategy, chordOptions, n = 2, first = true) => {
     const moods = moodsFromMood(mood, n);
-    return createComplex(rootNote, moods, chordStrategy, chordOptions, longPhrase, 4, first);
+    return createComplex(rootNote, endNote, moods, chordStrategy, chordOptions, longPhrase, 4, first);
 }
 
-const section = (rootNote, mood, chordStrategy, chordOptions, n = 2, first = true) => {
+const section = (rootNote, endNote, mood, chordStrategy, chordOptions, n = 2, first = true) => {
     const moods = moodsFromMood(mood, n);
-    return createComplex(rootNote, moods, chordStrategy, chordOptions, passage, 2, first);
+    return createComplex(rootNote, endNote, moods, chordStrategy, chordOptions, passage, 2, first);
 }
 
-const piece = (rootNote, mood, chordStrategy, chordOptions, n = 2, first = true) => {
+const piece = (rootNote, endNote, mood, chordStrategy, chordOptions, n = 2, first = true) => {
     const moods = moodsFromMood(mood, n);
-    return createComplex(rootNote, moods, chordStrategy, chordOptions, section, 2, first);
+    return createComplex(rootNote, endNote, moods, chordStrategy, chordOptions, section, 2, first);
 }
 
 const repeatNotes = (notes, n) => {

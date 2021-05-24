@@ -20,6 +20,8 @@ const Segment = ({
         name,
         gridSize,
         root,
+        endNote,
+        useEndNote,
         repeats,
         mood,
         chordStrategy,
@@ -34,6 +36,7 @@ const Segment = ({
     removeSegment,
     regenerateNotes,
     setRootNote,
+    setEndNote,
     isLocked,
     toggleLock,
     setMood,
@@ -44,8 +47,7 @@ const Segment = ({
     setChordMaxStack,
     setChordMinStack
 }) => {
-
-    const nextRootNote = value => getStrategy(chordStrategy)({ ...chordOptions, mood })(new Chord(value));
+    const chordedNote = value => getStrategy(chordStrategy)({ ...chordOptions, mood })(new Chord(value));
     return <Grid
         container
         spacing={ 3 }
@@ -59,7 +61,7 @@ const Segment = ({
         <Grid item>
             <TextField onChange={ ({ target: { value }}) => {
                 try {
-                    regenerateNotes(mood, nextRootNote(value), repeats, chordStrategy, chordOptions);
+                    regenerateNotes(mood, chordedNote(value), endNote, repeats, chordStrategy, chordOptions);
                 } catch (error) {
                     console.warn(`Invalid root note: ${ value }`, error)
                 } finally {
@@ -68,7 +70,18 @@ const Segment = ({
                 
              } } label={'Root Note'} placeholder={'A#1, Bb8, C3'} value={ root } />
         </Grid>
-        <Grid>
+        <Grid item>
+            <TextField onChange={ ({ target: { value }}) => {
+                    try {
+                        regenerateNotes(mood, chordedNote(root), value, repeats, chordStrategy, chordOptions);
+                    } catch (error) {
+                        console.warn(`Invalid end note: ${ value }`, error)
+                    } finally {
+                        setEndNote(value);
+                    }   
+                } } label={'End Note'} placeholder={'A, Bb8, C3, G'} value={ endNote } />
+        </Grid>
+        <Grid item>
             <Tooltip placement={ 'top' } title={ 'SELECT MOOD TO RESOLVE TO' } aria-label={ 'select a mood to resolve the music segment towards' }>
                 <InputLabel style={{ color }} id={`mood-select-${ name }-${ mood }-${ root }`}>Mood</InputLabel>
             </Tooltip>
@@ -80,7 +93,7 @@ const Segment = ({
                 onChange={ ({ target: { value }}) => {
                     console.log('Changing value: ', value);
                     try {
-                        regenerateNotes(value, nextRootNote(root), repeats, chordStrategy, chordOptions);
+                        regenerateNotes(value, chordedNote(root), endNote, repeats, chordStrategy, chordOptions);
                         setMood(value);
                     } catch {
                         console.warn(`Invalid mood: ${ value }`)
@@ -98,7 +111,7 @@ const Segment = ({
                 console.log('Changing repeats: ', value);
                 try {
                     if(value > 0) {
-                        regenerateNotes(mood, nextRootNote(root), value, chordStrategy, chordOptions);
+                        regenerateNotes(mood, chordedNote(root), endNote, value, chordStrategy, chordOptions);
                     }
                 } catch {
                     console.warn(`Invalid repeat value: ${ value }`)
@@ -108,7 +121,10 @@ const Segment = ({
              } } label={'Repeats'} id={`repeat-${ name }-${ repeats }`} placeholder={'1'} value={ repeats } type={ 'number' } />
         </Grid>
         <Grid item>
-            <Button onClick={ toggleLock }>{ isLocked ? <LockIcon/> : <LockOpen/> }</Button>
+            <Tooltip placement={ 'top' } title={ 'PREVENT NOTE REGENERATION' } aria-label={ 'prevent notes from automatically regenerating after changes' }>
+                <InputLabel style={{ color }} id="lock-phrase-button">Lock Phrase</InputLabel>
+            </Tooltip>
+            <Button name="lock-phrase-button" onClick={ toggleLock }>{ isLocked ? <LockIcon/> : <LockOpen/> }</Button>
         </Grid>
         {/* Move the below into its own component */}
         <Grid item>
@@ -121,7 +137,7 @@ const Segment = ({
                     console.log('Changing chord strategy: ', value);
                     try {
                         const nextRoot = getStrategy(value)({ ...chordOptions, mood })(new Chord(root));
-                        regenerateNotes(mood, nextRoot, repeats, value, chordOptions);
+                        regenerateNotes(mood, nextRoot, endNote, repeats, value, chordOptions);
                     } catch {
                         console.warn(`Invalid chord strategy value: ${ value }`)
                     } finally {
@@ -155,8 +171,7 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         try {
                             if(value > 0) {
-                                const nextRoot = getStrategy(chordStrategy)({ ...chordOptions, mood, threshold: value })(new Chord(root));
-                                regenerateNotes(mood, nextRoot, repeats, chordStrategy, {
+                                regenerateNotes(mood, chordedNote(root), endNote, repeats, chordStrategy, {
                                     ...chordOptions,
                                     threshold: value
                                 });
@@ -176,7 +191,7 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         try {
                             if(value > 0) {
-                                regenerateNotes(mood, nextRootNote(root), repeats, chordStrategy, {
+                                regenerateNotes(mood, chordedNote(root), endNote, repeats, chordStrategy, {
                                     ...chordOptions,
                                     chanceFalloff: value
                                 });
@@ -196,8 +211,7 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         const val = parseInt(value);
                         try {
-                            const nextRoot = getStrategy(chordStrategy)({ ...chordOptions, mood, maxStack: val })(new Chord(root));
-                            regenerateNotes(mood, nextRoot, repeats, chordStrategy, {
+                            regenerateNotes(mood, chordedNote(root), endNote, repeats, chordStrategy, {
                                 ...chordOptions,
                                 maxStack: value
                             });
@@ -219,8 +233,7 @@ const Segment = ({
                     onChange={ ({ target: { value }}) => {
                         const val = parseInt(value);
                         try {
-                            const nextRoot = getStrategy(chordStrategy)({ ...chordOptions, mood, minStack: value })(new Chord(root));
-                            regenerateNotes(mood, nextRoot, repeats, chordStrategy, {
+                            regenerateNotes(mood, chordedNote(root), endNote, repeats, chordStrategy, {
                                 ...chordOptions,
                                 minStack: value
                             });
